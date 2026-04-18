@@ -149,7 +149,7 @@ a { color: inherit; text-decoration: none; }
     z-index: 200;
 }
 
-.nav-links > li:hover .nav-dropdown { display: block; }
+.nav-dropdown.open { display: block; }
 
 .nav-dropdown a {
     display: flex;

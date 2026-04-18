@@ -18,45 +18,43 @@
 
       <!-- Clientes -->
       <li>
-        <button class="nav-btn" th:classappend="${seccion == 'clientes'} ? ' activo'">👤 Clientes</button>
+        <button class="nav-btn" th:classappend="${seccion == 'clientes'} ? ' activo'"
+                onclick="toggleNav(this)">👤 Clientes</button>
         <div class="nav-dropdown">
           <div class="dd-label">Gestión de Clientes</div>
           <a th:href="@{/clientes}"><span class="dd-icon">📋</span> Listado de clientes</a>
           <a th:href="@{/clientes/nuevo}"><span class="dd-icon">➕</span> Registrar cliente</a>
-          <hr>
-          <div class="dd-label">CU-04 · CU-05 · CU-07</div>
         </div>
       </li>
 
       <!-- Ventas -->
       <li>
-        <button class="nav-btn" th:classappend="${seccion == 'ventas'} ? ' activo'">💼 Ventas</button>
+        <button class="nav-btn" th:classappend="${seccion == 'ventas'} ? ' activo'"
+                onclick="toggleNav(this)">💼 Ventas</button>
         <div class="nav-dropdown">
           <div class="dd-label">Proceso de Venta</div>
           <a th:href="@{/solicitudes}"><span class="dd-icon">📝</span> Solicitudes</a>
           <a th:href="@{/cotizaciones}"><span class="dd-icon">💰</span> Cotizaciones</a>
           <a th:href="@{/pedidos}"><span class="dd-icon">📦</span> Pedidos confirmados</a>
           <a th:href="@{/pagos}"><span class="dd-icon">💵</span> Pagos iniciales (50%)</a>
-          <hr>
-          <div class="dd-label">CU-01 · 02 · 03 · 08 · 09</div>
         </div>
       </li>
 
       <!-- Producción -->
       <li>
-        <button class="nav-btn" th:classappend="${seccion == 'produccion'} ? ' activo'">🔨 Producción</button>
+        <button class="nav-btn" th:classappend="${seccion == 'produccion'} ? ' activo'"
+                onclick="toggleNav(this)">🔨 Producción</button>
         <div class="nav-dropdown">
           <div class="dd-label">Gestión de Producción</div>
           <a th:href="@{/tecnica}"><span class="dd-icon">📐</span> Info técnica del pedido</a>
           <a th:href="@{/produccion}"><span class="dd-icon">⚙️</span> Asignaciones</a>
-          <hr>
-          <div class="dd-label">CU-06 · 12 · 13 · 14 · 15</div>
         </div>
       </li>
 
       <!-- Inventario -->
       <li>
-        <button class="nav-btn" th:classappend="${seccion == 'inventario'} ? ' activo'">🪵 Inventario</button>
+        <button class="nav-btn" th:classappend="${seccion == 'inventario'} ? ' activo'"
+                onclick="toggleNav(this)">🪵 Inventario</button>
         <div class="nav-dropdown">
           <div class="dd-label">Gestión de Madera</div>
           <a th:href="@{/inventario}"><span class="dd-icon">📊</span> Stock de madera</a>
@@ -66,22 +64,19 @@
           <a th:href="@{/inventario/movimientos}"><span class="dd-icon">📋</span> Historial movimientos</a>
           <hr>
           <a th:href="@{/proveedores}"><span class="dd-icon">🏭</span> Proveedores</a>
-          <hr>
-          <div class="dd-label">CU-10 · 11 · 20 · 21 · 22 · 23 · 24</div>
         </div>
       </li>
 
       <!-- Calidad y Entrega -->
       <li>
-        <button class="nav-btn" th:classappend="${seccion == 'entrega'} ? ' activo'">🚚 Entrega</button>
+        <button class="nav-btn" th:classappend="${seccion == 'entrega'} ? ' activo'"
+                onclick="toggleNav(this)">🚚 Entrega</button>
         <div class="nav-dropdown">
           <div class="dd-label">Calidad y Entrega</div>
           <a th:href="@{/calidad}"><span class="dd-icon">✅</span> Inspección de calidad</a>
           <a th:href="@{/embalaje}"><span class="dd-icon">📦</span> Embalaje</a>
           <a th:href="@{/entregas}"><span class="dd-icon">🚚</span> Entregas</a>
           <a th:href="@{/pagos-final}"><span class="dd-icon">💳</span> Pago final</a>
-          <hr>
-          <div class="dd-label">CU-16 · 17 · 18 · 19</div>
         </div>
       </li>
 
@@ -93,6 +88,29 @@
     </ul>
   </div>
 </nav>
+
+<script>
+function toggleNav(btn) {
+  var dropdown = btn.nextElementSibling;
+  var isOpen = dropdown.classList.contains('open');
+  // Cerrar todos los dropdowns abiertos
+  document.querySelectorAll('.nav-dropdown.open').forEach(function(d) {
+    d.classList.remove('open');
+  });
+  // Abrir el clickeado si estaba cerrado
+  if (!isOpen) {
+    dropdown.classList.add('open');
+  }
+}
+// Cerrar al hacer click fuera
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.nav-links > li')) {
+    document.querySelectorAll('.nav-dropdown.open').forEach(function(d) {
+      d.classList.remove('open');
+    });
+  }
+});
+</script>
 
 </body>
 </html>
