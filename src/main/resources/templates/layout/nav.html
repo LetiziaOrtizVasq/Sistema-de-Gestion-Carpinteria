@@ -87,30 +87,27 @@
 
     </ul>
   </div>
-</nav>
 
-<script>
-function toggleNav(btn) {
-  var dropdown = btn.nextElementSibling;
-  var isOpen = dropdown.classList.contains('open');
-  // Cerrar todos los dropdowns abiertos
-  document.querySelectorAll('.nav-dropdown.open').forEach(function(d) {
-    d.classList.remove('open');
-  });
-  // Abrir el clickeado si estaba cerrado
-  if (!isOpen) {
-    dropdown.classList.add('open');
-  }
-}
-// Cerrar al hacer click fuera
-document.addEventListener('click', function(e) {
-  if (!e.target.closest('.nav-links > li')) {
+  <script>
+  function toggleNav(btn) {
+    var dropdown = btn.nextElementSibling;
+    var isOpen = dropdown.classList.contains('open');
     document.querySelectorAll('.nav-dropdown.open').forEach(function(d) {
       d.classList.remove('open');
     });
+    if (!isOpen) {
+      dropdown.classList.add('open');
+    }
   }
-});
-</script>
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.nav-links > li')) {
+      document.querySelectorAll('.nav-dropdown.open').forEach(function(d) {
+        d.classList.remove('open');
+      });
+    }
+  });
+  </script>
+</nav>
 
 </body>
 </html>
