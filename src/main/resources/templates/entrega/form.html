@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${titulo} + ' - Sistema Carpintería'">Entrega</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+<div th:replace="~{layout/nav :: nav('entrega')}"></div>
+<div class="layout">
+  <div class="page-header">
+    <div class="page-header-info">
+      <h2 th:text="${titulo}">Confirmar Entrega</h2>
+      <span class="cu-tag">CU-18 — Confirmar entrega del producto al cliente</span>
+    </div>
+    <div class="page-header-actions">
+      <a th:href="@{/entregas}" class="btn btn-secondary">← Volver</a>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <h3 th:text="${titulo}">Entrega</h3>
+      <p>Confirmá que el cliente recibió el producto conforme</p>
+    </div>
+    <form th:action="@{/entregas/guardar}" th:object="${entrega}" method="post">
+      <input type="hidden" th:field="*{id}">
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="field full-width">
+            <label>Pedido <span class="req">*</span></label>
+            <select name="pedidoId" class="form-control" required>
+              <option value="">-- Seleccione un pedido --</option>
+              <option th:each="p : ${pedidos}" th:value="${p.id}"
+                      th:text="${'#' + p.id + ' — ' + p.cotizacion.solicitud.nombreCliente + ' / ' + p.cotizacion.solicitud.tipoProducto}"
+                      th:selected="${entrega.pedido != null and entrega.pedido.id == p.id}"></option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Recibido Por <span class="req">*</span></label>
+            <input type="text" th:field="*{recibidoPor}"
+                   th:classappend="${#fields.hasErrors('recibidoPor')} ? 'input-error'"
+                   placeholder="Nombre de quien recibe" class="form-control">
+            <span class="field-error" th:if="${#fields.hasErrors('recibidoPor')}" th:errors="*{recibidoPor}"></span>
+          </div>
+          <div class="field">
+            <label>CI del Receptor</label>
+            <input type="text" th:field="*{ci}" placeholder="Ej: 1234567 CB" class="form-control">
+          </div>
+          <div class="field">
+            <label>Fecha de Entrega</label>
+            <input type="date" th:field="*{fechaEntrega}" class="form-control">
+          </div>
+          <div class="field">
+            <label>Estado</label>
+            <select th:field="*{estado}" class="form-control">
+              <option value="PENDIENTE">Pendiente</option>
+              <option value="ENTREGADO">Entregado</option>
+            </select>
+          </div>
+          <div class="field full-width">
+            <label>Observaciones</label>
+            <textarea th:field="*{observaciones}" placeholder="Notas sobre la entrega..." class="form-control"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <button type="submit" class="btn btn-primary">Confirmar Entrega</button>
+        <a th:href="@{/entregas}" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+</body>
+</html>

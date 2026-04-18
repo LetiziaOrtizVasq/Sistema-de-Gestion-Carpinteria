@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entregas - Sistema Carpintería</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<div th:replace="~{layout/nav :: nav('entrega')}"></div>
+
+<div class="layout">
+
+  <div class="page-header">
+    <div class="page-header-info">
+      <h2>Entregas</h2>
+      <span class="cu-tag">CU-18 — Confirmar entrega del producto al cliente</span>
+    </div>
+    <div class="page-header-actions">
+      <a th:href="@{/entregas/nueva}" class="btn btn-primary">＋ Registrar Entrega</a>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-toolbar">
+      <span class="count" th:text="${entregas.size()} + ' entrega(s)'"></span>
+    </div>
+
+    <div th:if="${entregas.isEmpty()}" class="empty-state">
+      <div class="es-icon">🚚</div>
+      <div class="es-title">Sin entregas</div>
+      <div class="es-text">Registrá las entregas de productos una vez que pasen la inspección de calidad.</div>
+    </div>
+
+    <table th:unless="${entregas.isEmpty()}">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Pedido</th>
+          <th>Recibido por</th>
+          <th>CI</th>
+          <th>Fecha</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="e : ${entregas}">
+          <td th:text="${e.id}"></td>
+          <td class="td-bold" th:text="${'#' + e.pedido.id + ' — ' + e.pedido.cotizacion.solicitud.nombreCliente + ' / ' + e.pedido.cotizacion.solicitud.tipoProducto}"></td>
+          <td th:text="${e.recibidoPor != null ? e.recibidoPor : '—'}"></td>
+          <td th:text="${e.ci != null ? e.ci : '—'}"></td>
+          <td th:text="${e.fechaEntrega}"></td>
+          <td>
+            <span class="badge"
+                  th:classappend="${e.estado != null and e.estado == 'ENTREGADO'} ? 'badge-exitoso' : 'badge-proceso'"
+                  th:text="${e.estado != null ? e.estado : 'PENDIENTE'}">
+            </span>
+          </td>
+          <td class="td-actions">
+            <a th:href="@{/pagos-final/nuevo(pedidoId=${e.pedido.id})}" class="btn btn-warning btn-xs">Pago Final</a>
+            <a th:href="@{/entregas/eliminar/{id}(id=${e.id})}"
+               class="btn btn-danger btn-xs"
+               onclick="return confirm('¿Eliminar este registro?')">Eliminar</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+</body>
+</html>

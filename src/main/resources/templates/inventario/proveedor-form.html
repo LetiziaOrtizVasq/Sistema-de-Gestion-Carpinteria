@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${titulo} + ' - Sistema Carpintería'">Proveedor</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<div th:replace="~{layout/nav :: nav('inventario')}"></div>
+
+<div class="layout">
+
+  <div class="page-header">
+    <div class="page-header-info">
+      <h2 th:text="${titulo}">Proveedor</h2>
+      <span class="cu-tag">Gestión de proveedores</span>
+    </div>
+    <div class="page-header-actions">
+      <a th:href="@{/proveedores}" class="btn btn-secondary">← Volver</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3 th:text="${titulo}">Proveedor</h3>
+      <p>Campos obligatorios (<span class="req">*</span>)</p>
+    </div>
+
+    <form th:action="@{/proveedores/guardar}" th:object="${proveedor}" method="post">
+      <input type="hidden" th:field="*{id}">
+
+      <div class="card-body">
+        <div class="form-grid">
+
+          <div class="field">
+            <label>Nombre <span class="req">*</span></label>
+            <input type="text" th:field="*{nombre}"
+                   th:classappend="${#fields.hasErrors('nombre')} ? 'input-error'"
+                   placeholder="Ej: Maderería El Pino" class="form-control">
+            <span class="field-error" th:if="${#fields.hasErrors('nombre')}"
+                  th:errors="*{nombre}"></span>
+          </div>
+
+          <div class="field">
+            <label>Persona de Contacto</label>
+            <input type="text" th:field="*{contacto}"
+                   placeholder="Ej: Carlos Mamani" class="form-control">
+          </div>
+
+          <div class="field">
+            <label>Teléfono</label>
+            <input type="text" th:field="*{telefono}"
+                   placeholder="Ej: 70012345" class="form-control">
+          </div>
+
+          <div class="field">
+            <label>Email</label>
+            <input type="email" th:field="*{email}"
+                   placeholder="Ej: contacto@proveedor.com" class="form-control">
+          </div>
+
+          <div class="field full-width">
+            <label>Dirección</label>
+            <input type="text" th:field="*{direccion}"
+                   placeholder="Ej: Av. Principal #123" class="form-control">
+          </div>
+
+          <div class="field">
+            <label>RUC / NIT</label>
+            <input type="text" th:field="*{ruc}"
+                   placeholder="Ej: 1234567" class="form-control">
+          </div>
+
+          <div class="field">
+            <label>Estado</label>
+            <select th:field="*{activo}" class="form-control">
+              <option value="true">Activo</option>
+              <option value="false">Inactivo</option>
+            </select>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <button type="submit" class="btn btn-primary">Guardar Proveedor</button>
+        <a th:href="@{/proveedores}" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+
+</div>
+</body>
+</html>

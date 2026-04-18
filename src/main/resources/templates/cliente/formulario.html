@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${titulo} + ' - Sistema Carpintería'">Cliente</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<div th:replace="~{layout/nav :: nav('clientes')}"></div>
+
+<div class="layout">
+
+  <div class="page-header">
+    <div class="page-header-info">
+      <h2 th:text="${titulo}">Cliente</h2>
+      <span class="cu-tag" th:text="${cliente.id == null} ? 'CU-04 — Registrar información personal' : 'CU-05 — Actualizar información del cliente'"></span>
+    </div>
+    <div class="page-header-actions">
+      <a th:href="@{/clientes}" class="btn btn-secondary">← Volver</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3 th:text="${titulo}">Cliente</h3>
+      <p>Campos obligatorios (<span class="req">*</span>)</p>
+    </div>
+
+    <form th:action="@{/clientes/guardar}" th:object="${cliente}" method="post">
+      <input type="hidden" th:field="*{id}">
+
+      <div class="card-body">
+        <div class="form-grid">
+
+          <div class="field">
+            <label>Nombre <span class="req">*</span></label>
+            <input type="text" th:field="*{nombre}"
+                   th:classappend="${#fields.hasErrors('nombre')} ? 'input-error'"
+                   placeholder="Ej: Juan" class="form-control">
+            <span class="field-error" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
+          </div>
+
+          <div class="field">
+            <label>Apellido <span class="req">*</span></label>
+            <input type="text" th:field="*{apellido}"
+                   th:classappend="${#fields.hasErrors('apellido')} ? 'input-error'"
+                   placeholder="Ej: Pérez" class="form-control">
+            <span class="field-error" th:if="${#fields.hasErrors('apellido')}" th:errors="*{apellido}"></span>
+          </div>
+
+          <div class="field">
+            <label>Teléfono <span class="req">*</span></label>
+            <input type="text" th:field="*{telefono}"
+                   th:classappend="${#fields.hasErrors('telefono')} ? 'input-error'"
+                   placeholder="Ej: 70012345" class="form-control">
+            <span class="field-error" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></span>
+          </div>
+
+          <div class="field">
+            <label>Cédula de Identidad</label>
+            <input type="text" th:field="*{ci}" placeholder="Ej: 1234567 CB" class="form-control">
+          </div>
+
+          <div class="field">
+            <label>Email</label>
+            <input type="email" th:field="*{email}" placeholder="Ej: juan@email.com" class="form-control">
+          </div>
+
+          <div class="field">
+            <label>Dirección</label>
+            <input type="text" th:field="*{direccion}" placeholder="Ej: Av. Blanco Galindo Km. 5" class="form-control">
+          </div>
+
+          <div class="field">
+            <label>Fecha de Registro</label>
+            <input type="date" th:field="*{fechaRegistro}" class="form-control">
+          </div>
+
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a th:href="@{/clientes}" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${titulo} + ' - Sistema Carpintería'">Asignación</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<div th:replace="~{layout/nav :: nav('produccion')}"></div>
+
+<div class="layout">
+
+  <div class="page-header">
+    <div class="page-header-info">
+      <h2 th:text="${titulo}">Asignación</h2>
+      <span class="cu-tag">CU-12 — Asignar pedido a producción</span>
+    </div>
+    <div class="page-header-actions">
+      <a th:href="@{/produccion}" class="btn btn-secondary">← Volver</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3 th:text="${titulo}">Asignación</h3>
+      <p>Asigná el pedido a un operario del taller</p>
+    </div>
+
+    <form th:action="@{/produccion/guardar}" th:object="${asignacion}" method="post">
+      <input type="hidden" th:field="*{id}">
+
+      <div class="card-body">
+        <div class="form-grid">
+
+          <div class="field full-width">
+            <label>Pedido a Producir <span class="req">*</span></label>
+            <select name="pedidoId" class="form-control" required>
+              <option value="">-- Seleccione un pedido --</option>
+              <option th:each="p : ${pedidos}"
+                      th:value="${p.id}"
+                      th:text="${'#' + p.id + ' — ' + p.cotizacion.solicitud.nombreCliente + ' / ' + p.cotizacion.solicitud.tipoProducto}"
+                      th:selected="${asignacion.pedido != null and asignacion.pedido.id == p.id}">
+              </option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Operario Asignado <span class="req">*</span></label>
+            <input type="text" th:field="*{operario}"
+                   th:classappend="${#fields.hasErrors('operario')} ? 'input-error'"
+                   placeholder="Ej: Juan Mamani" class="form-control">
+            <span class="field-error" th:if="${#fields.hasErrors('operario')}"
+                  th:errors="*{operario}"></span>
+          </div>
+
+          <div class="field">
+            <label>Fecha de Asignación</label>
+            <input type="date" th:field="*{fechaAsignacion}" class="form-control">
+          </div>
+
+          <div class="field">
+            <label>Fecha de Inicio Estimada</label>
+            <input type="date" th:field="*{fechaInicioEstimada}" class="form-control">
+          </div>
+
+          <div class="field full-width">
+            <label>Observaciones</label>
+            <textarea th:field="*{observaciones}"
+                      placeholder="Instrucciones especiales para el operario..."
+                      class="form-control"></textarea>
+          </div>
+
+          <div class="field">
+            <label>Estado</label>
+            <select th:field="*{estado}" class="form-control">
+              <option value="ASIGNADO">Asignado</option>
+              <option value="EN_PROCESO">En Proceso</option>
+              <option value="COMPLETADO">Completado</option>
+            </select>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <button type="submit" class="btn btn-primary">Guardar Asignación</button>
+        <a th:href="@{/produccion}" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+
+</div>
+</body>
+</html>

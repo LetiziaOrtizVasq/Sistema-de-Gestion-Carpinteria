@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cotizaciones - Sistema Carpintería</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<div th:replace="~{layout/nav :: nav('ventas')}"></div>
+
+<div class="layout">
+
+  <div class="page-header">
+    <div class="page-header-info">
+      <h2>Cotizaciones</h2>
+      <span class="cu-tag">CU-02 Generar cotización · CU-03 Registrar aceptación o rechazo</span>
+    </div>
+    <div class="page-header-actions">
+      <a th:href="@{/cotizaciones/nueva}" class="btn btn-primary">＋ Nueva Cotización</a>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-toolbar">
+      <span class="count" th:text="${cotizaciones.size()} + ' cotización(es)'"></span>
+    </div>
+
+    <div th:if="${cotizaciones.isEmpty()}" class="empty-state">
+      <div class="es-icon">💰</div>
+      <div class="es-title">Sin cotizaciones</div>
+      <div class="es-text">Usá el botón <strong>Cotizar</strong> desde una Solicitud o creá una nueva.</div>
+    </div>
+
+    <table th:unless="${cotizaciones.isEmpty()}">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Cliente</th>
+          <th>Producto</th>
+          <th>Materiales</th>
+          <th>Mano de Obra</th>
+          <th>Total (Bs.)</th>
+          <th>Válida hasta</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="c : ${cotizaciones}">
+          <td th:text="${c.id}"></td>
+          <td class="td-bold" th:text="${c.solicitud.nombreCliente}"></td>
+          <td th:text="${c.solicitud.tipoProducto}"></td>
+          <td th:text="'Bs. ' + ${#numbers.formatDecimal(c.precioMateriales, 1, 2)}"></td>
+          <td th:text="'Bs. ' + ${#numbers.formatDecimal(c.precioManoObra, 1, 2)}"></td>
+          <td class="td-total" th:text="'Bs. ' + ${#numbers.formatDecimal(c.precioTotal, 1, 2)}"></td>
+          <td th:text="${c.validaHasta}"></td>
+          <td>
+            <span class="badge"
+                  th:classappend="${c.estado == 'PENDIENTE'} ? 'badge-pendiente' :
+                                 (${c.estado == 'ENVIADA'} ? 'badge-proceso' :
+                                 (${c.estado == 'ACEPTADA'} ? 'badge-exitoso' : 'badge-peligro'))"
+                  th:text="${c.estado}">
+            </span>
+          </td>
+          <td class="td-actions">
+            <a th:if="${c.estado == 'PENDIENTE' or c.estado == 'ENVIADA'}"
+               th:href="@{/cotizaciones/{id}/aceptar(id=${c.id})}"
+               class="btn btn-success btn-xs"
+               onclick="return confirm('¿Confirmar aceptación?')">Aceptar</a>
+            <a th:if="${c.estado == 'PENDIENTE' or c.estado == 'ENVIADA'}"
+               th:href="@{/cotizaciones/{id}/rechazar(id=${c.id})}"
+               class="btn btn-danger btn-xs"
+               onclick="return confirm('¿Confirmar rechazo?')">Rechazar</a>
+            <a th:if="${c.estado == 'ACEPTADA'}"
+               th:href="@{/pedidos/nuevo(cotizacionId=${c.id})}"
+               class="btn btn-warning btn-xs">Crear Pedido</a>
+            <a th:href="@{/cotizaciones/editar/{id}(id=${c.id})}" class="btn btn-secondary btn-xs">Editar</a>
+            <a th:href="@{/cotizaciones/eliminar/{id}(id=${c.id})}"
+               class="btn btn-danger btn-xs"
+               onclick="return confirm('¿Eliminar esta cotización?')">Eliminar</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+</body>
+</html>

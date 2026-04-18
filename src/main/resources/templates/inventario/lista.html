@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inventario - Carpintería</title>
+<link rel="stylesheet" th:href="@{/css/estilo.css}"></head>
+<body>
+<div th:replace="~{layout/nav :: nav('inventario')}"></div>
+<div class="layout">
+  <div class="page-header">
+    <div class="page-header-info"><h2>Stock de Madera</h2><span class="cu-tag">CU-10 Disponibilidad · CU-11 Validación · CU-24 Alertas</span></div>
+    <div class="page-header-actions">
+      <a th:href="@{/inventario/ingreso}" class="btn btn-success btn-sm">📥 Ingreso</a>
+      <a th:href="@{/inventario/consumo}" class="btn btn-warning btn-sm">🪚 Consumo</a>
+      <a th:href="@{/inventario/reposicion}" class="btn btn-info btn-sm">🔄 Reposición</a>
+      <a th:href="@{/inventario/nuevo}" class="btn btn-primary">＋ Nueva Madera</a>
+    </div>
+  </div>
+  <div th:if="${!alertas.isEmpty()}" class="alerta-stock">
+    ⚠️ <strong th:text="${alertas.size()} + ' tipo(s) de madera'"></strong> con stock crítico. Revisá el inventario urgente.
+  </div>
+  <div class="table-card">
+    <div class="table-toolbar"><span class="count" th:text="${stocks.size()} + ' registro(s)'"></span>
+      <a th:href="@{/inventario/movimientos}" class="btn btn-secondary btn-sm">📋 Ver movimientos</a>
+    </div>
+    <div th:if="${stocks.isEmpty()}" class="empty-state">
+      <div class="es-icon">🪵</div><div class="es-title">Sin registros</div>
+      <div class="es-text">Registrá los tipos de madera disponibles en el taller.</div>
+    </div>
+    <table th:unless="${stocks.isEmpty()}">
+      <thead><tr><th>#</th><th>Tipo</th><th>Dimensión</th><th>Disponible</th><th>Stock mín.</th><th>Unidad</th><th>Precio/U</th><th>Estado</th><th>Acciones</th></tr></thead>
+      <tbody>
+        <tr th:each="s : ${stocks}">
+          <td th:text="${s.id}"></td>
+          <td class="td-bold" th:text="${s.tipoMadera}"></td>
+          <td th:text="${s.dimension != null ? s.dimension : '—'}"></td>
+          <td th:text="${#numbers.formatDecimal(s.cantidadDisponible,1,2)}"></td>
+          <td th:text="${#numbers.formatDecimal(s.stockMinimo,1,2)}"></td>
+          <td th:text="${s.unidad != null ? s.unidad : '—'}"></td>
+          <td th:text="${s.precioPorUnidad != null ? 'Bs. '+#numbers.formatDecimal(s.precioPorUnidad,1,2) : '—'}"></td>
+          <td>
+            <span th:if="${s.stockCritico}" class="badge badge-peligro">⚠ Crítico</span>
+            <span th:unless="${s.stockCritico}" class="badge badge-exitoso">OK</span>
+          </td>
+          <td class="td-actions">
+            <a th:href="@{/inventario/editar/{id}(id=${s.id})}" class="btn btn-secondary btn-xs">Editar</a>
+            <a th:href="@{/inventario/eliminar/{id}(id=${s.id})}" class="btn btn-danger btn-xs" onclick="return confirm('¿Eliminar?')">Eliminar</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body></html>

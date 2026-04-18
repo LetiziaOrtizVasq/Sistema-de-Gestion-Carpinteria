@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Producción - Sistema Carpintería</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<div th:replace="~{layout/nav :: nav('produccion')}"></div>
+
+<div class="layout">
+
+  <div class="page-header">
+    <div class="page-header-info">
+      <h2>Asignaciones de Producción</h2>
+      <span class="cu-tag">CU-12 Asignar · CU-13 Avances · CU-14 Actualizar · CU-15 Completar</span>
+    </div>
+    <div class="page-header-actions">
+      <a th:href="@{/produccion/nuevo}" class="btn btn-primary">＋ Nueva Asignación</a>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-toolbar">
+      <span class="count" th:text="${asignaciones.size()} + ' asignación(es)'"></span>
+    </div>
+
+    <div th:if="${asignaciones.isEmpty()}" class="empty-state">
+      <div class="es-icon">⚙️</div>
+      <div class="es-title">Sin asignaciones</div>
+      <div class="es-text">Asigná pedidos a los operarios del taller para iniciar la producción.</div>
+    </div>
+
+    <table th:unless="${asignaciones.isEmpty()}">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Pedido</th>
+          <th>Operario</th>
+          <th>Inicio Est.</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="a : ${asignaciones}">
+          <td th:text="${a.id}"></td>
+          <td class="td-bold" th:text="${'#' + a.pedido.id + ' — ' + a.pedido.cotizacion.solicitud.nombreCliente + ' / ' + a.pedido.cotizacion.solicitud.tipoProducto}"></td>
+          <td th:text="${a.operario}"></td>
+          <td th:text="${a.fechaInicioEstimada != null ? a.fechaInicioEstimada : '—'}"></td>
+          <td>
+            <span class="badge"
+                  th:classappend="${a.estado == 'ASIGNADO'} ? 'badge-pendiente' :
+                                 (${a.estado == 'EN_PROCESO'} ? 'badge-proceso' : 'badge-exitoso')"
+                  th:text="${a.estado}">
+            </span>
+          </td>
+          <td class="td-actions">
+            <a th:href="@{/produccion/{id}/avances(id=${a.id})}" class="btn btn-warning btn-xs">Avances</a>
+            <a th:href="@{/produccion/editar/{id}(id=${a.id})}" class="btn btn-secondary btn-xs">Editar</a>
+            <a th:href="@{/produccion/eliminar/{id}(id=${a.id})}"
+               class="btn btn-danger btn-xs"
+               onclick="return confirm('¿Eliminar esta asignación?')">Eliminar</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+</body>
+</html>

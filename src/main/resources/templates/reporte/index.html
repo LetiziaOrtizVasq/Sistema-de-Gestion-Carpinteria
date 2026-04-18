@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reportes - Sistema Carpintería</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+<div th:replace="~{layout/nav :: nav('reportes')}"></div>
+<div class="layout">
+
+  <div class="page-header">
+    <div class="page-header-info">
+      <h2>Reportes</h2>
+      <span class="cu-tag">Resumen ejecutivo del período seleccionado</span>
+    </div>
+  </div>
+
+  <!-- Filtro de fechas -->
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="card-body">
+      <form th:action="@{/reportes}" method="get" style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap">
+        <div class="field" style="margin:0">
+          <label>Desde</label>
+          <input type="date" name="desde" th:value="${desde}" class="form-control">
+        </div>
+        <div class="field" style="margin:0">
+          <label>Hasta</label>
+          <input type="date" name="hasta" th:value="${hasta}" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Aplicar Filtro</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Pedidos del período -->
+  <div class="table-card" style="margin-bottom:1.5rem">
+    <div class="table-toolbar">
+      <span class="count">Pedidos del período</span>
+      <span class="badge badge-proceso" th:text="${pedidosPeriodo.size()} + ' pedido(s)'"></span>
+    </div>
+    <div th:if="${pedidosPeriodo.isEmpty()}" class="empty-state">
+      <div class="es-icon">📦</div>
+      <div class="es-title">Sin pedidos en este período</div>
+      <div class="es-text">Ajustá el rango de fechas para ver resultados.</div>
+    </div>
+    <table th:unless="${pedidosPeriodo.isEmpty()}">
+      <thead>
+        <tr>
+          <th>#</th><th>Cliente</th><th>Producto</th><th>Total (Bs.)</th><th>Confirmación</th><th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="p : ${pedidosPeriodo}">
+          <td th:text="${p.id}"></td>
+          <td class="td-bold" th:text="${p.cotizacion.solicitud.nombreCliente}"></td>
+          <td th:text="${p.cotizacion.solicitud.tipoProducto}"></td>
+          <td class="td-total" th:text="'Bs. ' + ${#numbers.formatDecimal(p.cotizacion.precioTotal,1,2)}"></td>
+          <td th:text="${p.fechaConfirmacion}"></td>
+          <td>
+            <span class="badge"
+                  th:classappend="${p.estado == 'PENDIENTE_PAGO'} ? 'badge-pendiente' :
+                                 (${p.estado == 'PAGO_CONFIRMADO'} ? 'badge-advertencia' :
+                                 (${p.estado == 'EN_PRODUCCION'} ? 'badge-proceso' :
+                                 (${p.estado == 'LISTO_ENTREGA' or p.estado == 'ENTREGADO' or p.estado == 'CERRADO'} ? 'badge-exitoso' : 'badge-peligro')))"
+                  th:text="${p.estado}"></span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="stats-grid">
+
+    <!-- Consumo de madera por tipo -->
+    <div class="stat-card">
+      <div class="stat-title">Consumo de Madera por Tipo</div>
+      <div th:if="${consumoPorTipo.isEmpty()}" style="color:var(--text-muted);font-size:.85rem">Sin consumos en el período</div>
+      <table th:unless="${consumoPorTipo.isEmpty()}" style="width:100%">
+        <thead><tr><th>Tipo</th><th>Cantidad</th></tr></thead>
+        <tbody>
+          <tr th:each="entry : ${consumoPorTipo}">
+            <td th:text="${entry.key}"></td>
+            <td class="td-total" th:text="${#numbers.formatDecimal(entry.value,1,2)}"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Clientes frecuentes -->
+    <div class="stat-card">
+      <div class="stat-title">Clientes con más Solicitudes</div>
+      <div th:if="${clientesFrecuentes.isEmpty()}" style="color:var(--text-muted);font-size:.85rem">Sin datos aún</div>
+      <table th:unless="${clientesFrecuentes.isEmpty()}" style="width:100%">
+        <thead><tr><th>Cliente</th><th>Solicitudes</th></tr></thead>
+        <tbody>
+          <tr th:each="entry : ${clientesFrecuentes}">
+            <td class="td-bold" th:text="${entry.key}"></td>
+            <td>
+              <span class="badge badge-proceso" th:text="${entry.value}"></span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+</div>
+</body>
+</html>

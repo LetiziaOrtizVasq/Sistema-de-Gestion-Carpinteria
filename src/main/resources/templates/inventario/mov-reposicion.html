@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reposición de Madera - Sistema Carpintería</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<div th:replace="~{layout/nav :: nav('inventario')}"></div>
+
+<div class="layout">
+
+  <div class="page-header">
+    <div class="page-header-info">
+      <h2>Reposición de Stock</h2>
+      <span class="cu-tag">CU-20 — Registrar reposición de madera</span>
+    </div>
+    <div class="page-header-actions">
+      <a th:href="@{/inventario}" class="btn btn-secondary">← Volver al stock</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3>Registrar Reposición</h3>
+      <p>La reposición suma al stock actual sin vincular a un proveedor específico</p>
+    </div>
+
+    <form th:action="@{/inventario/reposicion}" method="post">
+      <div class="card-body">
+        <div class="form-grid">
+
+          <div class="field full-width">
+            <label>Tipo de Madera <span class="req">*</span></label>
+            <select name="stockId" class="form-control" required>
+              <option value="">-- Seleccione el tipo de madera --</option>
+              <option th:each="s : ${stocks}"
+                      th:value="${s.id}"
+                      th:classappend="${s.stockCritico} ? 'option-critico'"
+                      th:text="${s.tipoMadera + (s.dimension != null ? ' (' + s.dimension + ')' : '') + ' — Stock actual: ' + #numbers.formatDecimal(s.cantidadDisponible, 1, 2) + (s.stockCritico ? ' ⚠ CRÍTICO' : '')}">
+              </option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Cantidad a Reponer <span class="req">*</span></label>
+            <input type="number" name="cantidad" step="0.01" min="0.01"
+                   placeholder="0.00" class="form-control" required>
+          </div>
+
+          <div class="field full-width">
+            <label>Observaciones</label>
+            <textarea name="observaciones"
+                      placeholder="Ej: Reposición de emergencia, ajuste de inventario..."
+                      class="form-control"></textarea>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <button type="submit" class="btn btn-info">🔄 Registrar Reposición</button>
+        <a th:href="@{/inventario}" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+
+</div>
+</body>
+</html>

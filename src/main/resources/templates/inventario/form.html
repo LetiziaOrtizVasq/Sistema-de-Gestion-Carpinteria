@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${titulo} + ' - Sistema Carpintería'">Madera</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<div th:replace="~{layout/nav :: nav('inventario')}"></div>
+
+<div class="layout">
+
+  <div class="page-header">
+    <div class="page-header-info">
+      <h2 th:text="${titulo}">Registrar Madera</h2>
+      <span class="cu-tag">CU-10 Disponibilidad · CU-24 Alertas de stock</span>
+    </div>
+    <div class="page-header-actions">
+      <a th:href="@{/inventario}" class="btn btn-secondary">← Volver</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3 th:text="${titulo}">Madera</h3>
+      <p>Registrá un tipo de madera con sus características y niveles de stock</p>
+    </div>
+
+    <form th:action="@{/inventario/guardar}" th:object="${stock}" method="post">
+      <input type="hidden" th:field="*{id}">
+
+      <div class="card-body">
+        <div class="form-grid">
+
+          <div class="field">
+            <label>Tipo de Madera <span class="req">*</span></label>
+            <input type="text" th:field="*{tipoMadera}"
+                   th:classappend="${#fields.hasErrors('tipoMadera')} ? 'input-error'"
+                   placeholder="Ej: Cedro, Pino, Nogal..." class="form-control">
+            <span class="field-error" th:if="${#fields.hasErrors('tipoMadera')}"
+                  th:errors="*{tipoMadera}"></span>
+          </div>
+
+          <div class="field">
+            <label>Dimensión</label>
+            <input type="text" th:field="*{dimension}"
+                   placeholder="Ej: 2x4, 1x6, Tablón..." class="form-control">
+          </div>
+
+          <div class="field">
+            <label>Unidad de Medida</label>
+            <select th:field="*{unidad}" class="form-control">
+              <option value="">-- Seleccione --</option>
+              <option value="pies">Pies</option>
+              <option value="metros">Metros</option>
+              <option value="m2">m²</option>
+              <option value="m3">m³</option>
+              <option value="tablas">Tablas</option>
+              <option value="piezas">Piezas</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Cantidad Disponible <span class="req">*</span></label>
+            <input type="number" step="0.01" min="0"
+                   th:field="*{cantidadDisponible}"
+                   th:classappend="${#fields.hasErrors('cantidadDisponible')} ? 'input-error'"
+                   placeholder="0.00" class="form-control">
+            <span class="field-error" th:if="${#fields.hasErrors('cantidadDisponible')}"
+                  th:errors="*{cantidadDisponible}"></span>
+          </div>
+
+          <div class="field">
+            <label>Stock Mínimo <span class="req">*</span></label>
+            <input type="number" step="0.01" min="0"
+                   th:field="*{stockMinimo}"
+                   th:classappend="${#fields.hasErrors('stockMinimo')} ? 'input-error'"
+                   placeholder="0.00" class="form-control">
+            <span class="field-error" th:if="${#fields.hasErrors('stockMinimo')}"
+                  th:errors="*{stockMinimo}"></span>
+          </div>
+
+          <div class="field">
+            <label>Precio por Unidad (Bs.)</label>
+            <input type="number" step="0.01" min="0"
+                   th:field="*{precioPorUnidad}"
+                   placeholder="0.00" class="form-control">
+          </div>
+
+          <div class="field full-width">
+            <label>Descripción</label>
+            <textarea th:field="*{descripcion}"
+                      placeholder="Características adicionales de esta madera..."
+                      class="form-control"></textarea>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a th:href="@{/inventario}" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+
+</div>
+</body>
+</html>

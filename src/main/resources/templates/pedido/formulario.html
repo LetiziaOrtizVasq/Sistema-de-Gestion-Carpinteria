@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${titulo} + ' - Sistema Carpintería'">Pedido</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<div th:replace="~{layout/nav :: nav('ventas')}"></div>
+
+<div class="layout">
+
+  <div class="page-header">
+    <div class="page-header-info">
+      <h2 th:text="${titulo}">Pedido</h2>
+      <span class="cu-tag">CU-08 — Registrar pedido confirmado</span>
+    </div>
+    <div class="page-header-actions">
+      <a th:href="@{/pedidos}" class="btn btn-secondary">← Volver</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3 th:text="${titulo}">Pedido</h3>
+      <p>Solo se pueden confirmar cotizaciones aceptadas sin pedido previo</p>
+    </div>
+
+    <form th:action="@{/pedidos/guardar}" th:object="${pedido}" method="post">
+      <input type="hidden" th:field="*{id}">
+
+      <div class="card-body">
+        <div class="form-grid">
+
+          <div class="field full-width">
+            <label>Cotización Aceptada <span class="req">*</span></label>
+            <select name="cotizacionId" class="form-control">
+              <option value="">-- Seleccione una cotización --</option>
+              <option th:each="c : ${cotizaciones}"
+                      th:value="${c.id}"
+                      th:text="${'#' + c.id + ' — ' + c.solicitud.nombreCliente + ' / ' + c.solicitud.tipoProducto + ' — Bs. ' + #numbers.formatDecimal(c.precioTotal, 1, 2)}"
+                      th:selected="${pedido.cotizacion != null and pedido.cotizacion.id == c.id}">
+              </option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Fecha de Confirmación</label>
+            <input type="date" th:field="*{fechaConfirmacion}" class="form-control">
+          </div>
+
+          <div class="field">
+            <label>Fecha de Entrega Estimada <span class="req">*</span></label>
+            <input type="date" th:field="*{fechaEntregaEstimada}"
+                   th:classappend="${#fields.hasErrors('fechaEntregaEstimada')} ? 'input-error'"
+                   class="form-control">
+            <span class="field-error" th:if="${#fields.hasErrors('fechaEntregaEstimada')}"
+                  th:errors="*{fechaEntregaEstimada}"></span>
+          </div>
+
+          <div class="field full-width">
+            <label>Observaciones</label>
+            <textarea th:field="*{observaciones}"
+                      placeholder="Notas adicionales sobre el pedido..." class="form-control"></textarea>
+          </div>
+
+          <div class="field">
+            <label>Estado</label>
+            <select th:field="*{estado}" class="form-control">
+              <option value="PENDIENTE_PAGO">Pendiente de Pago</option>
+              <option value="EN_PRODUCCION">En Producción</option>
+              <option value="FINALIZADO">Finalizado</option>
+              <option value="ENTREGADO">Entregado</option>
+            </select>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <button type="submit" class="btn btn-primary">Guardar Pedido</button>
+        <a th:href="@{/pedidos}" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+
+</div>
+</body>
+</html>

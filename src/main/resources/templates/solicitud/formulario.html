@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${titulo} + ' - Sistema Carpintería'">Solicitud</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<div th:replace="~{layout/nav :: nav('ventas')}"></div>
+
+<div class="layout">
+
+  <div class="page-header">
+    <div class="page-header-info">
+      <h2 th:text="${titulo}">Solicitud</h2>
+      <span class="cu-tag">CU-01 — Registrar solicitud inicial del cliente</span>
+    </div>
+    <div class="page-header-actions">
+      <a th:href="@{/solicitudes}" class="btn btn-secondary">← Volver</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3 th:text="${titulo}">Solicitud</h3>
+      <p>Completá todos los campos obligatorios (<span class="req">*</span>)</p>
+    </div>
+
+    <form th:action="@{/solicitudes/guardar}" th:object="${solicitud}" method="post">
+      <input type="hidden" th:field="*{id}">
+
+      <div class="card-body">
+        <div class="form-grid">
+
+          <div class="field">
+            <label>Nombre del Cliente <span class="req">*</span></label>
+            <input type="text" th:field="*{nombreCliente}"
+                   th:classappend="${#fields.hasErrors('nombreCliente')} ? 'input-error'"
+                   placeholder="Ej: Juan Pérez" class="form-control">
+            <span class="field-error" th:if="${#fields.hasErrors('nombreCliente')}"
+                  th:errors="*{nombreCliente}"></span>
+          </div>
+
+          <div class="field">
+            <label>Teléfono <span class="req">*</span></label>
+            <input type="text" th:field="*{telefono}"
+                   th:classappend="${#fields.hasErrors('telefono')} ? 'input-error'"
+                   placeholder="Ej: 70012345" class="form-control">
+            <span class="field-error" th:if="${#fields.hasErrors('telefono')}"
+                  th:errors="*{telefono}"></span>
+          </div>
+
+          <div class="field">
+            <label>Tipo de Producto <span class="req">*</span></label>
+            <select th:field="*{tipoProducto}"
+                    th:classappend="${#fields.hasErrors('tipoProducto')} ? 'input-error'"
+                    class="form-control">
+              <option value="">-- Seleccione un tipo --</option>
+              <option value="Mesa">Mesa</option>
+              <option value="Silla">Silla</option>
+              <option value="Armario">Armario</option>
+              <option value="Cama">Cama</option>
+              <option value="Estante">Estante</option>
+              <option value="Escritorio">Escritorio</option>
+              <option value="Puerta">Puerta</option>
+              <option value="Ventana">Ventana</option>
+              <option value="Otro">Otro</option>
+            </select>
+            <span class="field-error" th:if="${#fields.hasErrors('tipoProducto')}"
+                  th:errors="*{tipoProducto}"></span>
+          </div>
+
+          <div class="field">
+            <label>Dimensiones Aproximadas</label>
+            <input type="text" th:field="*{dimensionesAproximadas}"
+                   placeholder="Ej: 1.20m x 0.80m x 0.75m" class="form-control">
+          </div>
+
+          <div class="field full-width">
+            <label>Descripción del Pedido <span class="req">*</span></label>
+            <textarea th:field="*{descripcion}"
+                      th:classappend="${#fields.hasErrors('descripcion')} ? 'input-error'"
+                      placeholder="Describa con detalle el producto que desea fabricar..."
+                      class="form-control"></textarea>
+            <span class="field-error" th:if="${#fields.hasErrors('descripcion')}"
+                  th:errors="*{descripcion}"></span>
+          </div>
+
+          <div class="field">
+            <label>Material Preferido</label>
+            <input type="text" th:field="*{materialPreferido}"
+                   placeholder="Ej: Cedro, Pino, Roble..." class="form-control">
+          </div>
+
+          <div class="field">
+            <label>Fecha de Solicitud <span class="req">*</span></label>
+            <input type="date" th:field="*{fechaSolicitud}" class="form-control">
+          </div>
+
+          <div class="field">
+            <label>Estado</label>
+            <select th:field="*{estado}" class="form-control">
+              <option value="PENDIENTE">Pendiente</option>
+              <option value="EN_PROCESO">En Proceso</option>
+              <option value="COTIZADA">Cotizada</option>
+              <option value="CANCELADA">Cancelada</option>
+            </select>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <button type="submit" class="btn btn-primary">Guardar Solicitud</button>
+        <a th:href="@{/solicitudes}" class="btn btn-secondary">Cancelar</a>
+      </div>
+
+    </form>
+  </div>
+
+</div>
+</body>
+</html>

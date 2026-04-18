@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${titulo} + ' - Sistema Carpintería'">Info Técnica</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<div th:replace="~{layout/nav :: nav('produccion')}"></div>
+
+<div class="layout">
+
+  <div class="page-header">
+    <div class="page-header-info">
+      <h2 th:text="${titulo}">Info Técnica</h2>
+      <span class="cu-tag">CU-06 — Registrar especificaciones técnicas del pedido</span>
+    </div>
+    <div class="page-header-actions">
+      <a th:href="@{/tecnica}" class="btn btn-secondary">← Volver</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3 th:text="${titulo}">Info Técnica</h3>
+      <p>Especificaciones exactas para fabricación del producto</p>
+    </div>
+
+    <form th:action="@{/tecnica/guardar}" th:object="${info}" method="post">
+      <input type="hidden" th:field="*{id}">
+
+      <div class="card-body">
+        <div class="form-grid">
+
+          <div class="field full-width">
+            <label>Solicitud <span class="req">*</span></label>
+            <select name="solicitudId" class="form-control" required>
+              <option value="">-- Seleccione una solicitud --</option>
+              <option th:each="s : ${solicitudes}"
+                      th:value="${s.id}"
+                      th:text="${'#' + s.id + ' — ' + s.nombreCliente + ' (' + s.tipoProducto + ')'}"
+                      th:selected="${info.solicitud != null and info.solicitud.id == s.id}">
+              </option>
+            </select>
+          </div>
+
+          <div class="field full-width">
+            <label>Especificaciones Generales <span class="req">*</span></label>
+            <textarea th:field="*{especificaciones}"
+                      th:classappend="${#fields.hasErrors('especificaciones')} ? 'input-error'"
+                      placeholder="Describe las especificaciones técnicas generales del producto..."
+                      rows="3" class="form-control"></textarea>
+            <span class="field-error" th:if="${#fields.hasErrors('especificaciones')}"
+                  th:errors="*{especificaciones}"></span>
+          </div>
+
+          <div class="field">
+            <label>Tipos de Madera Requeridos</label>
+            <input type="text" th:field="*{tiposMadera}"
+                   placeholder="Ej: Cedro, Pino..." class="form-control">
+          </div>
+
+          <div class="field">
+            <label>Acabado</label>
+            <input type="text" th:field="*{acabado}"
+                   placeholder="Ej: Barniz, Pintura, Natural..." class="form-control">
+          </div>
+
+          <div class="field">
+            <label>Dimensiones Exactas</label>
+            <input type="text" th:field="*{dimensionesExactas}"
+                   placeholder="Ej: 1.20m x 0.80m x 0.75m" class="form-control">
+          </div>
+
+          <div class="field">
+            <label>Color</label>
+            <input type="text" th:field="*{color}"
+                   placeholder="Ej: Roble oscuro, Caoba..." class="form-control">
+          </div>
+
+          <div class="field full-width">
+            <label>Notas Adicionales</label>
+            <textarea th:field="*{notasAdicionales}"
+                      placeholder="Instrucciones especiales para el operario..."
+                      rows="2" class="form-control"></textarea>
+          </div>
+
+          <div class="field">
+            <label>Fecha de Registro</label>
+            <input type="date" th:field="*{fechaRegistro}" class="form-control">
+          </div>
+
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a th:href="@{/tecnica}" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+
+</div>
+</body>
+</html>

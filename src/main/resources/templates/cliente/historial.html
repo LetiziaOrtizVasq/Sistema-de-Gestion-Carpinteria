@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historial - Sistema Carpintería</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<div th:replace="~{layout/nav :: nav('clientes')}"></div>
+
+<div class="layout">
+
+  <div class="page-header">
+    <div class="page-header-info">
+      <h2 th:text="'Historial: ' + ${cliente.nombreCompleto}">Historial</h2>
+      <span class="cu-tag">CU-07 — Consultar historial de pedidos por cliente</span>
+    </div>
+    <div class="page-header-actions">
+      <a th:href="@{/clientes}" class="btn btn-secondary">← Volver</a>
+    </div>
+  </div>
+
+  <div class="info-panel">
+    <div class="info-row">
+      <span class="info-label">Teléfono</span>
+      <span th:text="${cliente.telefono}"></span>
+    </div>
+    <div class="info-row" th:if="${cliente.email != null and cliente.email != ''}">
+      <span class="info-label">Email</span>
+      <span th:text="${cliente.email}"></span>
+    </div>
+    <div class="info-row" th:if="${cliente.ci != null and cliente.ci != ''}">
+      <span class="info-label">CI</span>
+      <span th:text="${cliente.ci}"></span>
+    </div>
+    <div class="info-row" th:if="${cliente.direccion != null and cliente.direccion != ''}">
+      <span class="info-label">Dirección</span>
+      <span th:text="${cliente.direccion}"></span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Cliente desde</span>
+      <span th:text="${cliente.fechaRegistro}"></span>
+    </div>
+  </div>
+
+  <div class="table-card" style="margin-top:1.5rem">
+    <div class="table-toolbar">
+      <span class="count" th:text="'Solicitudes: ' + ${solicitudes.size()}"></span>
+    </div>
+
+    <div th:if="${solicitudes.isEmpty()}" class="empty-state">
+      <div class="es-icon">📋</div>
+      <div class="es-title">Sin solicitudes</div>
+      <div class="es-text">Este cliente no tiene solicitudes registradas aún.</div>
+    </div>
+
+    <table th:unless="${solicitudes.isEmpty()}">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Producto</th>
+          <th>Descripción</th>
+          <th>Fecha</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="s : ${solicitudes}">
+          <td th:text="${s.id}"></td>
+          <td class="td-bold" th:text="${s.tipoProducto}"></td>
+          <td th:text="${s.descripcion}"></td>
+          <td th:text="${s.fechaSolicitud}"></td>
+          <td>
+            <span class="badge"
+                  th:classappend="${s.estado == 'PENDIENTE'} ? 'badge-pendiente' :
+                                 (${s.estado == 'EN_PROCESO'} ? 'badge-proceso' :
+                                 (${s.estado == 'COTIZADA'} ? 'badge-exitoso' : 'badge-gris'))"
+                  th:text="${s.estado}">
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+</body>
+</html>

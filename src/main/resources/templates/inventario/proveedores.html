@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proveedores - Sistema Carpintería</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<div th:replace="~{layout/nav :: nav('inventario')}"></div>
+
+<div class="layout">
+
+  <div class="page-header">
+    <div class="page-header-info">
+      <h2>Proveedores</h2>
+      <span class="cu-tag">Gestión de proveedores de madera</span>
+    </div>
+    <div class="page-header-actions">
+      <a th:href="@{/inventario}" class="btn btn-secondary btn-sm">← Inventario</a>
+      <a th:href="@{/proveedores/nuevo}" class="btn btn-primary">＋ Nuevo Proveedor</a>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-toolbar">
+      <span class="count" th:text="${proveedores.size()} + ' proveedor(es)'"></span>
+    </div>
+
+    <div th:if="${proveedores.isEmpty()}" class="empty-state">
+      <div class="es-icon">🏭</div>
+      <div class="es-title">Sin proveedores</div>
+      <div class="es-text">Registrá los proveedores de madera del taller.</div>
+    </div>
+
+    <table th:unless="${proveedores.isEmpty()}">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nombre</th>
+          <th>Contacto</th>
+          <th>Teléfono</th>
+          <th>Email</th>
+          <th>RUC/NIT</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="p : ${proveedores}">
+          <td th:text="${p.id}"></td>
+          <td class="td-bold" th:text="${p.nombre}"></td>
+          <td th:text="${p.contacto != null and p.contacto != '' ? p.contacto : '—'}"></td>
+          <td th:text="${p.telefono != null and p.telefono != '' ? p.telefono : '—'}"></td>
+          <td th:text="${p.email != null and p.email != '' ? p.email : '—'}"></td>
+          <td th:text="${p.ruc != null and p.ruc != '' ? p.ruc : '—'}"></td>
+          <td>
+            <span class="badge"
+                  th:classappend="${p.activo} ? 'badge-exitoso' : 'badge-gris'"
+                  th:text="${p.activo ? 'Activo' : 'Inactivo'}">
+            </span>
+          </td>
+          <td class="td-actions">
+            <a th:href="@{/proveedores/editar/{id}(id=${p.id})}" class="btn btn-secondary btn-xs">Editar</a>
+            <a th:href="@{/proveedores/eliminar/{id}(id=${p.id})}"
+               class="btn btn-danger btn-xs"
+               onclick="return confirm('¿Eliminar este proveedor?')">Eliminar</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+</body>
+</html>

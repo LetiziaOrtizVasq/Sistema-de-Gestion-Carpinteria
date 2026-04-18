@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solicitudes - Sistema Carpintería</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<div th:replace="~{layout/nav :: nav('ventas')}"></div>
+
+<div class="layout">
+
+  <div class="page-header">
+    <div class="page-header-info">
+      <h2>Solicitudes de Clientes</h2>
+      <span class="cu-tag">CU-01 — Registrar solicitud inicial del cliente</span>
+    </div>
+    <div class="page-header-actions">
+      <a th:href="@{/solicitudes/nueva}" class="btn btn-primary">＋ Nueva Solicitud</a>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-toolbar">
+      <span class="count" th:text="${solicitudes.size()} + ' solicitud(es)'"></span>
+    </div>
+
+    <div th:if="${solicitudes.isEmpty()}" class="empty-state">
+      <div class="es-icon">📋</div>
+      <div class="es-title">Sin solicitudes</div>
+      <div class="es-text">Hacé clic en <strong>Nueva Solicitud</strong> para comenzar.</div>
+    </div>
+
+    <table th:unless="${solicitudes.isEmpty()}">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Cliente</th>
+          <th>Teléfono</th>
+          <th>Producto</th>
+          <th>Material</th>
+          <th>Fecha</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="s : ${solicitudes}">
+          <td th:text="${s.id}"></td>
+          <td class="td-bold" th:text="${s.nombreCliente}"></td>
+          <td th:text="${s.telefono}"></td>
+          <td th:text="${s.tipoProducto}"></td>
+          <td th:text="${s.materialPreferido != null and s.materialPreferido != '' ? s.materialPreferido : '—'}"></td>
+          <td th:text="${s.fechaSolicitud}"></td>
+          <td>
+            <span class="badge"
+                  th:classappend="${s.estado == 'PENDIENTE'} ? 'badge-pendiente' :
+                                 (${s.estado == 'EN_PROCESO'} ? 'badge-proceso' :
+                                 (${s.estado == 'COTIZADA'} ? 'badge-exitoso' : 'badge-gris'))"
+                  th:text="${s.estado}">
+            </span>
+          </td>
+          <td class="td-actions">
+            <a th:href="@{/cotizaciones/nueva(solicitudId=${s.id})}" class="btn btn-warning btn-xs">Cotizar</a>
+            <a th:href="@{/solicitudes/editar/{id}(id=${s.id})}" class="btn btn-secondary btn-xs">Editar</a>
+            <a th:href="@{/solicitudes/eliminar/{id}(id=${s.id})}"
+               class="btn btn-danger btn-xs"
+               onclick="return confirm('¿Eliminar esta solicitud?')">Eliminar</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+</body>
+</html>

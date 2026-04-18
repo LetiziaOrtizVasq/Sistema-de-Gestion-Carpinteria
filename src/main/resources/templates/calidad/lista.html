@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inspecciones de Calidad - Sistema Carpintería</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<div th:replace="~{layout/nav :: nav('entrega')}"></div>
+
+<div class="layout">
+
+  <div class="page-header">
+    <div class="page-header-info">
+      <h2>Inspecciones de Calidad</h2>
+      <span class="cu-tag">CU-16 — Registrar inspección de calidad del producto terminado</span>
+    </div>
+    <div class="page-header-actions">
+      <a th:href="@{/calidad/nueva}" class="btn btn-primary">＋ Nueva Inspección</a>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-toolbar">
+      <span class="count" th:text="${inspecciones.size()} + ' inspección(es)'"></span>
+    </div>
+
+    <div th:if="${inspecciones.isEmpty()}" class="empty-state">
+      <div class="es-icon">✅</div>
+      <div class="es-title">Sin inspecciones</div>
+      <div class="es-text">Registrá las inspecciones de calidad antes de entregar los pedidos.</div>
+    </div>
+
+    <table th:unless="${inspecciones.isEmpty()}">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Pedido</th>
+          <th>Inspector</th>
+          <th>Resultado</th>
+          <th>Observaciones</th>
+          <th>Acción Retrabajo</th>
+          <th>Fecha</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="i : ${inspecciones}">
+          <td th:text="${i.id}"></td>
+          <td class="td-bold" th:text="${'#' + i.pedido.id + ' — ' + i.pedido.cotizacion.solicitud.nombreCliente}"></td>
+          <td th:text="${i.inspector}"></td>
+          <td>
+            <span class="badge"
+                  th:classappend="${i.resultado == 'APROBADO'} ? 'badge-exitoso' :
+                                 (${i.resultado == 'OBSERVADO'} ? 'badge-advertencia' : 'badge-peligro')"
+                  th:text="${i.resultado}">
+            </span>
+          </td>
+          <td th:text="${i.observaciones != null ? i.observaciones : '—'}"></td>
+          <td th:text="${i.accionRetrabajo != null ? i.accionRetrabajo : '—'}"></td>
+          <td th:text="${i.fecha}"></td>
+          <td class="td-actions">
+            <a th:href="@{/calidad/eliminar/{id}(id=${i.id})}"
+               class="btn btn-danger btn-xs"
+               onclick="return confirm('¿Eliminar esta inspección?')">Eliminar</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+</body>
+</html>

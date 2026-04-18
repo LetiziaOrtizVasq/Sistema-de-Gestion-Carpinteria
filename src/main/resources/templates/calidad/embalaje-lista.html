@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Embalaje - Sistema Carpintería</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<div th:replace="~{layout/nav :: nav('entrega')}"></div>
+
+<div class="layout">
+
+  <div class="page-header">
+    <div class="page-header-info">
+      <h2>Embalaje de Pedidos</h2>
+      <span class="cu-tag">CU-17 — Registrar embalaje del producto</span>
+    </div>
+    <div class="page-header-actions">
+      <a th:href="@{/embalaje/nuevo}" class="btn btn-primary">＋ Registrar Embalaje</a>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-toolbar">
+      <span class="count" th:text="${embalajes.size()} + ' embalaje(s)'"></span>
+    </div>
+
+    <div th:if="${embalajes.isEmpty()}" class="empty-state">
+      <div class="es-icon">📦</div>
+      <div class="es-title">Sin embalajes</div>
+      <div class="es-text">Registrá el embalaje de los pedidos listos para entregar.</div>
+    </div>
+
+    <table th:unless="${embalajes.isEmpty()}">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Pedido</th>
+          <th>Tipo Embalaje</th>
+          <th>Responsable</th>
+          <th>Fecha</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="e : ${embalajes}">
+          <td th:text="${e.id}"></td>
+          <td class="td-bold" th:text="${'#' + e.pedido.id + ' — ' + e.pedido.cotizacion.solicitud.nombreCliente}"></td>
+          <td th:text="${e.tipoEmbalaje != null ? e.tipoEmbalaje : '—'}"></td>
+          <td th:text="${e.responsable != null ? e.responsable : '—'}"></td>
+          <td th:text="${e.fechaEmbalaje}"></td>
+          <td>
+            <span class="badge"
+                  th:classappend="${e.estado != null and e.estado == 'EMBALADO'} ? 'badge-exitoso' : 'badge-proceso'"
+                  th:text="${e.estado != null ? e.estado : 'EN_PROCESO'}">
+            </span>
+          </td>
+          <td class="td-actions">
+            <a th:href="@{/embalaje/eliminar/{id}(id=${e.id})}"
+               class="btn btn-danger btn-xs"
+               onclick="return confirm('¿Eliminar este registro?')">Eliminar</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+</body>
+</html>

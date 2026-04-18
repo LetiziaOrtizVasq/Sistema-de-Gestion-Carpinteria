@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${titulo} + ' - Sistema Carpintería'">Embalaje</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<div th:replace="~{layout/nav :: nav('entrega')}"></div>
+
+<div class="layout">
+
+  <div class="page-header">
+    <div class="page-header-info">
+      <h2 th:text="${titulo}">Embalaje</h2>
+      <span class="cu-tag">CU-17 — Registrar embalaje del producto</span>
+    </div>
+    <div class="page-header-actions">
+      <a th:href="@{/embalaje}" class="btn btn-secondary">← Volver</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3 th:text="${titulo}">Embalaje</h3>
+      <p>Registrá cómo se preparó el producto para su entrega</p>
+    </div>
+
+    <form th:action="@{/embalaje/guardar}" th:object="${embalaje}" method="post">
+      <input type="hidden" th:field="*{id}">
+
+      <div class="card-body">
+        <div class="form-grid">
+
+          <div class="field full-width">
+            <label>Pedido <span class="req">*</span></label>
+            <select name="pedidoId" class="form-control" required>
+              <option value="">-- Seleccione un pedido --</option>
+              <option th:each="p : ${pedidos}"
+                      th:value="${p.id}"
+                      th:text="${'#' + p.id + ' — ' + p.cotizacion.solicitud.nombreCliente + ' / ' + p.cotizacion.solicitud.tipoProducto}"
+                      th:selected="${embalaje.pedido != null and embalaje.pedido.id == p.id}">
+              </option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Tipo de Embalaje</label>
+            <input type="text" th:field="*{tipoEmbalaje}"
+                   placeholder="Ej: Cartón, Stretch film, Madera..." class="form-control">
+          </div>
+
+          <div class="field">
+            <label>Responsable</label>
+            <input type="text" th:field="*{responsable}"
+                   placeholder="Nombre del responsable" class="form-control">
+          </div>
+
+          <div class="field">
+            <label>Fecha de Embalaje</label>
+            <input type="date" th:field="*{fechaEmbalaje}" class="form-control">
+          </div>
+
+          <div class="field">
+            <label>Estado</label>
+            <select th:field="*{estado}" class="form-control">
+              <option value="EN_PROCESO">En Proceso</option>
+              <option value="EMBALADO">Embalado</option>
+            </select>
+          </div>
+
+          <div class="field full-width">
+            <label>Observaciones</label>
+            <textarea th:field="*{observaciones}"
+                      placeholder="Detalles del embalaje..."
+                      class="form-control"></textarea>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <button type="submit" class="btn btn-primary">Guardar Embalaje</button>
+        <a th:href="@{/embalaje}" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+
+</div>
+</body>
+</html>

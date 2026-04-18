@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consumo de Madera - Sistema Carpintería</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<div th:replace="~{layout/nav :: nav('inventario')}"></div>
+
+<div class="layout">
+
+  <div class="page-header">
+    <div class="page-header-info">
+      <h2>Consumo por Pedido</h2>
+      <span class="cu-tag">CU-23 — Registrar consumo de madera por pedido</span>
+    </div>
+    <div class="page-header-actions">
+      <a th:href="@{/inventario}" class="btn btn-secondary">← Volver al stock</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3>Registrar Consumo</h3>
+      <p>Indicá qué madera se utilizó y para qué pedido. El stock se descontará automáticamente.</p>
+    </div>
+
+    <form th:action="@{/inventario/consumo}" method="post">
+      <div class="card-body">
+        <div class="form-grid">
+
+          <div class="field full-width">
+            <label>Tipo de Madera <span class="req">*</span></label>
+            <select name="stockId" class="form-control" required>
+              <option value="">-- Seleccione el tipo de madera --</option>
+              <option th:each="s : ${stocks}"
+                      th:value="${s.id}"
+                      th:text="${s.tipoMadera + (s.dimension != null ? ' (' + s.dimension + ')' : '') + ' — Disponible: ' + #numbers.formatDecimal(s.cantidadDisponible, 1, 2) + ' ' + (s.unidad != null ? s.unidad : '')}">
+              </option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Cantidad Consumida <span class="req">*</span></label>
+            <input type="number" name="cantidad" step="0.01" min="0.01"
+                   placeholder="0.00" class="form-control" required>
+          </div>
+
+          <div class="field">
+            <label>Pedido Asociado</label>
+            <select name="pedidoId" class="form-control">
+              <option value="">-- Sin pedido --</option>
+              <option th:each="p : ${pedidos}"
+                      th:value="${p.id}"
+                      th:text="${'#' + p.id + ' — ' + p.cotizacion.solicitud.nombreCliente + ' / ' + p.cotizacion.solicitud.tipoProducto}">
+              </option>
+            </select>
+          </div>
+
+          <div class="field full-width">
+            <label>Observaciones</label>
+            <textarea name="observaciones"
+                      placeholder="Ej: Utilizado en corte principal..."
+                      class="form-control"></textarea>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <button type="submit" class="btn btn-warning">🪚 Registrar Consumo</button>
+        <a th:href="@{/inventario}" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+
+</div>
+</body>
+</html>

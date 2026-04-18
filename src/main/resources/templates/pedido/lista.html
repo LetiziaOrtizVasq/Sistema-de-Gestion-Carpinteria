@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedidos - Sistema Carpintería</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<div th:replace="~{layout/nav :: nav('ventas')}"></div>
+
+<div class="layout">
+
+  <div class="page-header">
+    <div class="page-header-info">
+      <h2>Pedidos Confirmados</h2>
+      <span class="cu-tag">CU-08 — Registrar pedido confirmado</span>
+    </div>
+    <div class="page-header-actions">
+      <a th:href="@{/pedidos/nuevo}" class="btn btn-primary">＋ Nuevo Pedido</a>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-toolbar">
+      <span class="count" th:text="${pedidos.size()} + ' pedido(s)'"></span>
+    </div>
+
+    <div th:if="${pedidos.isEmpty()}" class="empty-state">
+      <div class="es-icon">📦</div>
+      <div class="es-title">Sin pedidos</div>
+      <div class="es-text">Aceptá una cotización y luego usá <strong>Crear Pedido</strong>.</div>
+    </div>
+
+    <table th:unless="${pedidos.isEmpty()}">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Cliente</th>
+          <th>Producto</th>
+          <th>Total (Bs.)</th>
+          <th>Confirmación</th>
+          <th>Entrega Est.</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="p : ${pedidos}">
+          <td th:text="${p.id}"></td>
+          <td class="td-bold" th:text="${p.cotizacion.solicitud.nombreCliente}"></td>
+          <td th:text="${p.cotizacion.solicitud.tipoProducto}"></td>
+          <td class="td-total" th:text="'Bs. ' + ${#numbers.formatDecimal(p.cotizacion.precioTotal, 1, 2)}"></td>
+          <td th:text="${p.fechaConfirmacion}"></td>
+          <td th:text="${p.fechaEntregaEstimada}"></td>
+          <td>
+            <span class="badge"
+                  th:classappend="${p.estado == 'PENDIENTE_PAGO'} ? 'badge-pendiente' :
+                                 (${p.estado == 'PAGO_CONFIRMADO'} ? 'badge-advertencia' :
+                                 (${p.estado == 'EN_PRODUCCION'} ? 'badge-proceso' :
+                                 (${p.estado == 'LISTO_ENTREGA'} ? 'badge-exitoso' :
+                                 (${p.estado == 'ENTREGADO'} ? 'badge-exitoso' :
+                                 (${p.estado == 'CERRADO'} ? 'badge-exitoso' :
+                                 (${p.estado == 'CANCELADO'} ? 'badge-peligro' : 'badge-advertencia'))))))"
+                  th:text="${p.estado}">
+            </span>
+          </td>
+          <td class="td-actions">
+            <a th:href="@{/pagos/nuevo(pedidoId=${p.id})}"
+               th:if="${p.estado == 'PENDIENTE_PAGO'}"
+               class="btn btn-warning btn-xs">Pago Inicial</a>
+            <a th:href="@{/produccion/nuevo(pedidoId=${p.id})}"
+               th:if="${p.estado == 'PAGO_CONFIRMADO'}"
+               class="btn btn-warning btn-xs">Asignar Prod.</a>
+            <a th:href="@{/calidad/nueva(pedidoId=${p.id})}"
+               th:if="${p.estado == 'EN_PRODUCCION'}"
+               class="btn btn-warning btn-xs">Inspección</a>
+            <a th:href="@{/entregas/nueva(pedidoId=${p.id})}"
+               th:if="${p.estado == 'LISTO_ENTREGA'}"
+               class="btn btn-warning btn-xs">Registrar Entrega</a>
+            <a th:href="@{/pagos-final/nuevo(pedidoId=${p.id})}"
+               th:if="${p.estado == 'ENTREGADO'}"
+               class="btn btn-warning btn-xs">Pago Final</a>
+            <a th:href="@{/pedidos/duplicar/{id}(id=${p.id})}" class="btn btn-secondary btn-xs">Duplicar</a>
+            <a th:href="@{/pedidos/cancelar/{id}(id=${p.id})}"
+               th:if="${p.estado != 'CERRADO' and p.estado != 'CANCELADO'}"
+               class="btn btn-danger btn-xs"
+               onclick="return confirm('¿Cancelar este pedido?')">Cancelar</a>
+            <a th:href="@{/pedidos/eliminar/{id}(id=${p.id})}"
+               class="btn btn-danger btn-xs"
+               onclick="return confirm('¿Eliminar este pedido?')">Eliminar</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+</body>
+</html>

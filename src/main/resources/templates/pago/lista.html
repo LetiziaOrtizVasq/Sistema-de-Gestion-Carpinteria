@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pagos Iniciales - Sistema Carpintería</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<div th:replace="~{layout/nav :: nav('ventas')}"></div>
+
+<div class="layout">
+
+  <div class="page-header">
+    <div class="page-header-info">
+      <h2>Pagos Iniciales</h2>
+      <span class="cu-tag">CU-09 — Confirmar pago inicial del 50%</span>
+    </div>
+    <div class="page-header-actions">
+      <a th:href="@{/pagos/nuevo}" class="btn btn-primary">＋ Registrar Pago</a>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-toolbar">
+      <span class="count" th:text="${pagos.size()} + ' pago(s)'"></span>
+    </div>
+
+    <div th:if="${pagos.isEmpty()}" class="empty-state">
+      <div class="es-icon">💵</div>
+      <div class="es-title">Sin pagos</div>
+      <div class="es-text">Usá el botón <strong>Registrar Pago</strong> desde un pedido confirmado.</div>
+    </div>
+
+    <table th:unless="${pagos.isEmpty()}">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Cliente</th>
+          <th>Producto</th>
+          <th>50% Requerido</th>
+          <th>Monto Pagado</th>
+          <th>Método</th>
+          <th>Fecha</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="p : ${pagos}">
+          <td th:text="${p.id}"></td>
+          <td class="td-bold" th:text="${p.pedido.cotizacion.solicitud.nombreCliente}"></td>
+          <td th:text="${p.pedido.cotizacion.solicitud.tipoProducto}"></td>
+          <td th:text="'Bs. ' + ${#numbers.formatDecimal(p.montoRequerido, 1, 2)}"></td>
+          <td class="td-total" th:text="'Bs. ' + ${#numbers.formatDecimal(p.montoPagado, 1, 2)}"></td>
+          <td th:text="${p.metodoPago}"></td>
+          <td th:text="${p.fechaPago}"></td>
+          <td>
+            <span class="badge"
+                  th:classappend="${p.estado == 'PENDIENTE'} ? 'badge-pendiente' : 'badge-exitoso'"
+                  th:text="${p.estado}">
+            </span>
+          </td>
+          <td class="td-actions">
+            <a th:href="@{/pagos/eliminar/{id}(id=${p.id})}"
+               class="btn btn-danger btn-xs"
+               onclick="return confirm('¿Eliminar este pago?')">Eliminar</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+</body>
+</html>

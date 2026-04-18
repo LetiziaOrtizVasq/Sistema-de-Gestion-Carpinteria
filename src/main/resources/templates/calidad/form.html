@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${titulo} + ' - Sistema Carpintería'">Inspección</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<div th:replace="~{layout/nav :: nav('entrega')}"></div>
+
+<div class="layout">
+
+  <div class="page-header">
+    <div class="page-header-info">
+      <h2 th:text="${titulo}">Inspección de Calidad</h2>
+      <span class="cu-tag">CU-16 — Registrar inspección de calidad</span>
+    </div>
+    <div class="page-header-actions">
+      <a th:href="@{/calidad}" class="btn btn-secondary">← Volver</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3 th:text="${titulo}">Inspección</h3>
+      <p>Verificá que el producto cumple con las especificaciones acordadas</p>
+    </div>
+
+    <form th:action="@{/calidad/guardar}" th:object="${inspeccion}" method="post">
+      <input type="hidden" th:field="*{id}">
+
+      <div class="card-body">
+        <div class="form-grid">
+
+          <div class="field full-width">
+            <label>Pedido <span class="req">*</span></label>
+            <select name="pedidoId" class="form-control" required>
+              <option value="">-- Seleccione un pedido --</option>
+              <option th:each="p : ${pedidos}"
+                      th:value="${p.id}"
+                      th:text="${'#' + p.id + ' — ' + p.cotizacion.solicitud.nombreCliente + ' / ' + p.cotizacion.solicitud.tipoProducto}"
+                      th:selected="${inspeccion.pedido != null and inspeccion.pedido.id == p.id}">
+              </option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Inspector <span class="req">*</span></label>
+            <input type="text" th:field="*{inspector}"
+                   th:classappend="${#fields.hasErrors('inspector')} ? 'input-error'"
+                   placeholder="Nombre del inspector" class="form-control">
+            <span class="field-error" th:if="${#fields.hasErrors('inspector')}"
+                  th:errors="*{inspector}"></span>
+          </div>
+
+          <div class="field">
+            <label>Resultado <span class="req">*</span></label>
+            <select th:field="*{resultado}"
+                    th:classappend="${#fields.hasErrors('resultado')} ? 'input-error'"
+                    class="form-control">
+              <option value="">-- Seleccione resultado --</option>
+              <option value="APROBADO">Aprobado — pasa a Listo para Entrega</option>
+              <option value="OBSERVADO">Observado (correcciones menores)</option>
+              <option value="RETRABAJO">Retrabajo — vuelve a Producción</option>
+              <option value="RECHAZADO">Rechazado — vuelve a Producción</option>
+            </select>
+            <span class="field-error" th:if="${#fields.hasErrors('resultado')}"
+                  th:errors="*{resultado}"></span>
+          </div>
+
+          <div class="field">
+            <label>Fecha de Inspección</label>
+            <input type="date" th:field="*{fecha}" class="form-control">
+          </div>
+
+          <div class="field full-width">
+            <label>Observaciones</label>
+            <textarea th:field="*{observaciones}"
+                      placeholder="Describa los hallazgos de la inspección..."
+                      class="form-control"></textarea>
+          </div>
+
+          <div class="field full-width">
+            <label>Acción de Retrabajo <small style="color:var(--text-muted)">(completar solo si el resultado es Retrabajo o Rechazado)</small></label>
+            <textarea th:field="*{accionRetrabajo}"
+                      placeholder="Describa qué se debe corregir y volver a hacer..."
+                      class="form-control"></textarea>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <button type="submit" class="btn btn-primary">Guardar Inspección</button>
+        <a th:href="@{/calidad}" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+
+</div>
+</body>
+</html>
