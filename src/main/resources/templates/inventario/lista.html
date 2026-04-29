@@ -43,7 +43,10 @@
           </td>
           <td class="td-actions">
             <a th:href="@{/inventario/editar/{id}(id=${s.id})}" class="btn btn-secondary btn-xs">Editar</a>
-            <a th:href="@{/inventario/eliminar/{id}(id=${s.id})}" class="btn btn-danger btn-xs" onclick="return confirm('¿Eliminar?')">Eliminar</a>
+            <form th:action="@{/inventario/{id}(id=${s.id})}" method="post" style="display:inline" onsubmit="return confirm('¿Eliminar?')">
+            <input type="hidden" name="_method" value="DELETE">
+            <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
+          </form>
           </td>
         </tr>
       </tbody>

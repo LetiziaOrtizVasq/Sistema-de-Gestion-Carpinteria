@@ -39,9 +39,7 @@
           <th>#</th>
           <th>Cliente</th>
           <th>Teléfono</th>
-          <th>Producto</th>
-          <th>Material</th>
-          <th>Fecha</th>
+          <th>Artículos</th>
           <th>Estado</th>
           <th>Acciones</th>
         </tr>
@@ -51,9 +49,7 @@
           <td th:text="${s.id}"></td>
           <td class="td-bold" th:text="${s.nombreCliente}"></td>
           <td th:text="${s.telefono}"></td>
-          <td th:text="${s.tipoProducto}"></td>
-          <td th:text="${s.materialPreferido != null and s.materialPreferido != '' ? s.materialPreferido : '—'}"></td>
-          <td th:text="${s.fechaSolicitud}"></td>
+          <td th:text="${s.resumenProductos}"></td>
           <td>
             <span class="badge"
                   th:classappend="${s.estado == 'PENDIENTE'} ? 'badge-pendiente' :
@@ -65,9 +61,10 @@
           <td class="td-actions">
             <a th:href="@{/cotizaciones/nueva(solicitudId=${s.id})}" class="btn btn-warning btn-xs">Cotizar</a>
             <a th:href="@{/solicitudes/editar/{id}(id=${s.id})}" class="btn btn-secondary btn-xs">Editar</a>
-            <a th:href="@{/solicitudes/eliminar/{id}(id=${s.id})}"
-               class="btn btn-danger btn-xs"
-               onclick="return confirm('¿Eliminar esta solicitud?')">Eliminar</a>
+            <form th:action="@{/solicitudes/{id}(id=${s.id})}" method="post" style="display:inline" onsubmit="return confirm('¿Eliminar esta solicitud?')">
+              <input type="hidden" name="_method" value="DELETE">
+              <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
+            </form>
           </td>
         </tr>
       </tbody>

@@ -31,27 +31,27 @@
       <thead>
         <tr>
           <th>#</th><th>Cliente</th><th>Producto</th><th>50% Restante</th>
-          <th>Monto Pagado</th><th>Método</th><th>Fecha</th><th>Estado</th><th>Acciones</th>
+          <th>Monto Pagado</th><th>Método</th><th>Estado</th><th>Acciones</th>
         </tr>
       </thead>
       <tbody>
         <tr th:each="p : ${pagos}">
           <td th:text="${p.id}"></td>
           <td class="td-bold" th:text="${p.pedido.cotizacion.solicitud.nombreCliente}"></td>
-          <td th:text="${p.pedido.cotizacion.solicitud.tipoProducto}"></td>
+          <td th:text="${p.pedido.cotizacion.solicitud.resumenProductos}"></td>
           <td th:text="'Bs. ' + ${#numbers.formatDecimal(p.montoRequerido, 1, 2)}"></td>
           <td class="td-total" th:text="'Bs. ' + ${#numbers.formatDecimal(p.montoPagado, 1, 2)}"></td>
           <td th:text="${p.metodoPago}"></td>
-          <td th:text="${p.fechaPago}"></td>
           <td>
             <span class="badge"
                   th:classappend="${p.estado == 'PENDIENTE'} ? 'badge-pendiente' : 'badge-exitoso'"
                   th:text="${p.estado}"></span>
           </td>
           <td class="td-actions">
-            <a th:href="@{/pagos-final/eliminar/{id}(id=${p.id})}"
-               class="btn btn-danger btn-xs"
-               onclick="return confirm('¿Eliminar?')">Eliminar</a>
+            <form th:action="@{/pagos-final/{id}(id=${p.id})}" method="post" style="display:inline" onsubmit="return ¿Eliminar?('¿Eliminar?')">
+              <input type="hidden" name="_method" value="DELETE">
+              <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
+            </form>
           </td>
         </tr>
       </tbody>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
   <meta charset="UTF-8">
@@ -28,7 +28,7 @@
       <p>Verificá que el producto cumple con las especificaciones acordadas</p>
     </div>
 
-    <form th:action="@{/calidad/guardar}" th:object="${inspeccion}" method="post">
+    <form th:action="@{/calidad}" th:object="${inspeccion}" method="post">
       <input type="hidden" th:field="*{id}">
 
       <div class="card-body">
@@ -40,7 +40,7 @@
               <option value="">-- Seleccione un pedido --</option>
               <option th:each="p : ${pedidos}"
                       th:value="${p.id}"
-                      th:text="${'#' + p.id + ' — ' + p.cotizacion.solicitud.nombreCliente + ' / ' + p.cotizacion.solicitud.tipoProducto}"
+                      th:text="${'#' + p.id + ' — ' + p.cotizacion.solicitud.nombreCliente + ' / ' + p.cotizacion.solicitud.resumenProductos}"
                       th:selected="${inspeccion.pedido != null and inspeccion.pedido.id == p.id}">
               </option>
             </select>
@@ -70,10 +70,7 @@
                   th:errors="*{resultado}"></span>
           </div>
 
-          <div class="field">
-            <label>Fecha de Inspección</label>
-            <input type="date" th:field="*{fecha}" class="form-control">
-          </div>
+          <input type="hidden" th:field="*{fecha}">
 
           <div class="field full-width">
             <label>Observaciones</label>

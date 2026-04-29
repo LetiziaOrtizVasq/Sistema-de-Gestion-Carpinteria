@@ -40,7 +40,6 @@
           <th>Pedido</th>
           <th>Tipo Embalaje</th>
           <th>Responsable</th>
-          <th>Fecha</th>
           <th>Estado</th>
           <th>Acciones</th>
         </tr>
@@ -51,7 +50,6 @@
           <td class="td-bold" th:text="${'#' + e.pedido.id + ' — ' + e.pedido.cotizacion.solicitud.nombreCliente}"></td>
           <td th:text="${e.tipoEmbalaje != null ? e.tipoEmbalaje : '—'}"></td>
           <td th:text="${e.responsable != null ? e.responsable : '—'}"></td>
-          <td th:text="${e.fechaEmbalaje}"></td>
           <td>
             <span class="badge"
                   th:classappend="${e.estado != null and e.estado == 'EMBALADO'} ? 'badge-exitoso' : 'badge-proceso'"
@@ -59,9 +57,10 @@
             </span>
           </td>
           <td class="td-actions">
-            <a th:href="@{/embalaje/eliminar/{id}(id=${e.id})}"
-               class="btn btn-danger btn-xs"
-               onclick="return confirm('¿Eliminar este registro?')">Eliminar</a>
+            <form th:action="@{/embalaje/{id}(id=${e.id})}" method="post" style="display:inline" onsubmit="return ¿Eliminar este registro?('¿Eliminar este registro?')">
+              <input type="hidden" name="_method" value="DELETE">
+              <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
+            </form>
           </td>
         </tr>
       </tbody>

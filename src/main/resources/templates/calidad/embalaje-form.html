@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
   <meta charset="UTF-8">
@@ -28,7 +28,7 @@
       <p>Registrá cómo se preparó el producto para su entrega</p>
     </div>
 
-    <form th:action="@{/embalaje/guardar}" th:object="${embalaje}" method="post">
+    <form th:action="@{/embalaje}" th:object="${embalaje}" method="post">
       <input type="hidden" th:field="*{id}">
 
       <div class="card-body">
@@ -40,7 +40,7 @@
               <option value="">-- Seleccione un pedido --</option>
               <option th:each="p : ${pedidos}"
                       th:value="${p.id}"
-                      th:text="${'#' + p.id + ' — ' + p.cotizacion.solicitud.nombreCliente + ' / ' + p.cotizacion.solicitud.tipoProducto}"
+                      th:text="${'#' + p.id + ' — ' + p.cotizacion.solicitud.nombreCliente + ' / ' + p.cotizacion.solicitud.resumenProductos}"
                       th:selected="${embalaje.pedido != null and embalaje.pedido.id == p.id}">
               </option>
             </select>
@@ -58,10 +58,7 @@
                    placeholder="Nombre del responsable" class="form-control">
           </div>
 
-          <div class="field">
-            <label>Fecha de Embalaje</label>
-            <input type="date" th:field="*{fechaEmbalaje}" class="form-control">
-          </div>
+          <input type="hidden" th:field="*{fechaEmbalaje}">
 
           <div class="field">
             <label>Estado</label>

@@ -42,7 +42,6 @@
           <th>Materiales</th>
           <th>Mano de Obra</th>
           <th>Total (Bs.)</th>
-          <th>Válida hasta</th>
           <th>Estado</th>
           <th>Acciones</th>
         </tr>
@@ -51,11 +50,10 @@
         <tr th:each="c : ${cotizaciones}">
           <td th:text="${c.id}"></td>
           <td class="td-bold" th:text="${c.solicitud.nombreCliente}"></td>
-          <td th:text="${c.solicitud.tipoProducto}"></td>
+          <td th:text="${c.solicitud.resumenProductos}"></td>
           <td th:text="'Bs. ' + ${#numbers.formatDecimal(c.precioMateriales, 1, 2)}"></td>
           <td th:text="'Bs. ' + ${#numbers.formatDecimal(c.precioManoObra, 1, 2)}"></td>
           <td class="td-total" th:text="'Bs. ' + ${#numbers.formatDecimal(c.precioTotal, 1, 2)}"></td>
-          <td th:text="${c.validaHasta}"></td>
           <td>
             <span class="badge"
                   th:classappend="${c.estado == 'PENDIENTE'} ? 'badge-pendiente' :
@@ -77,9 +75,10 @@
                th:href="@{/pedidos/nuevo(cotizacionId=${c.id})}"
                class="btn btn-warning btn-xs">Crear Pedido</a>
             <a th:href="@{/cotizaciones/editar/{id}(id=${c.id})}" class="btn btn-secondary btn-xs">Editar</a>
-            <a th:href="@{/cotizaciones/eliminar/{id}(id=${c.id})}"
-               class="btn btn-danger btn-xs"
-               onclick="return confirm('¿Eliminar esta cotización?')">Eliminar</a>
+            <form th:action="@{/cotizaciones/{id}(id=${c.id})}" method="post" style="display:inline" onsubmit="return confirm('¿Eliminar esta cotización?')">
+              <input type="hidden" name="_method" value="DELETE">
+              <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
+            </form>
           </td>
         </tr>
       </tbody>

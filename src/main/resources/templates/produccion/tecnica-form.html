@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
   <meta charset="UTF-8">
@@ -28,7 +28,7 @@
       <p>Especificaciones exactas para fabricación del producto</p>
     </div>
 
-    <form th:action="@{/tecnica/guardar}" th:object="${info}" method="post">
+    <form th:action="@{/tecnica}" th:object="${info}" method="post">
       <input type="hidden" th:field="*{id}">
 
       <div class="card-body">
@@ -40,7 +40,7 @@
               <option value="">-- Seleccione una solicitud --</option>
               <option th:each="s : ${solicitudes}"
                       th:value="${s.id}"
-                      th:text="${'#' + s.id + ' — ' + s.nombreCliente + ' (' + s.tipoProducto + ')'}"
+                      th:text="${'#' + s.id + ' — ' + s.nombreCliente + ' (' + s.resumenProductos + ')'}"
                       th:selected="${info.solicitud != null and info.solicitud.id == s.id}">
               </option>
             </select>
@@ -87,10 +87,7 @@
                       rows="2" class="form-control"></textarea>
           </div>
 
-          <div class="field">
-            <label>Fecha de Registro</label>
-            <input type="date" th:field="*{fechaRegistro}" class="form-control">
-          </div>
+          <input type="hidden" th:field="*{fechaRegistro}">
 
         </div>
       </div>

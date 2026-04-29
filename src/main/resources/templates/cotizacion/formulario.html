@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
   <meta charset="UTF-8">
@@ -28,7 +28,7 @@
       <p>El total se calcula automáticamente (Materiales + Mano de Obra)</p>
     </div>
 
-    <form th:action="@{/cotizaciones/guardar}" th:object="${cotizacion}" method="post">
+    <form th:action="@{/cotizaciones}" th:object="${cotizacion}" method="post">
       <input type="hidden" th:field="*{id}">
 
       <div class="card-body">
@@ -41,7 +41,7 @@
               <option value="">-- Seleccione una solicitud --</option>
               <option th:each="s : ${solicitudes}"
                       th:value="${s.id}"
-                      th:text="${'#' + s.id + ' — ' + s.nombreCliente + ' (' + s.tipoProducto + ')'}"
+                      th:text="${'#' + s.id + ' — ' + s.nombreCliente + ' (' + s.resumenProductos + ')'}"
                       th:selected="${cotizacion.solicitud != null and cotizacion.solicitud.id == s.id}">
               </option>
             </select>
@@ -81,10 +81,7 @@
                       class="form-control"></textarea>
           </div>
 
-          <div class="field">
-            <label>Fecha de Cotización</label>
-            <input type="date" th:field="*{fechaCotizacion}" class="form-control">
-          </div>
+          <input type="hidden" th:field="*{fechaCotizacion}">
 
           <div class="field">
             <label>Válida Hasta <span class="req">*</span></label>

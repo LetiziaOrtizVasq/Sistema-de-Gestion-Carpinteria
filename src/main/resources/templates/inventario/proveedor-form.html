@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
   <meta charset="UTF-8">
@@ -28,7 +28,7 @@
       <p>Campos obligatorios (<span class="req">*</span>)</p>
     </div>
 
-    <form th:action="@{/proveedores/guardar}" th:object="${proveedor}" method="post">
+    <form th:action="@{/proveedores}" th:object="${proveedor}" method="post">
       <input type="hidden" th:field="*{id}">
 
       <div class="card-body">

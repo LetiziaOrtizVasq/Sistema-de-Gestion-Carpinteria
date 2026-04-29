@@ -40,8 +40,6 @@
           <th>Cliente</th>
           <th>Producto</th>
           <th>Total (Bs.)</th>
-          <th>Confirmación</th>
-          <th>Entrega Est.</th>
           <th>Estado</th>
           <th>Acciones</th>
         </tr>
@@ -50,10 +48,8 @@
         <tr th:each="p : ${pedidos}">
           <td th:text="${p.id}"></td>
           <td class="td-bold" th:text="${p.cotizacion.solicitud.nombreCliente}"></td>
-          <td th:text="${p.cotizacion.solicitud.tipoProducto}"></td>
+          <td th:text="${p.cotizacion.solicitud.resumenProductos}"></td>
           <td class="td-total" th:text="'Bs. ' + ${#numbers.formatDecimal(p.cotizacion.precioTotal, 1, 2)}"></td>
-          <td th:text="${p.fechaConfirmacion}"></td>
-          <td th:text="${p.fechaEntregaEstimada}"></td>
           <td>
             <span class="badge"
                   th:classappend="${p.estado == 'PENDIENTE_PAGO'} ? 'badge-pendiente' :
@@ -87,9 +83,10 @@
                th:if="${p.estado != 'CERRADO' and p.estado != 'CANCELADO'}"
                class="btn btn-danger btn-xs"
                onclick="return confirm('¿Cancelar este pedido?')">Cancelar</a>
-            <a th:href="@{/pedidos/eliminar/{id}(id=${p.id})}"
-               class="btn btn-danger btn-xs"
-               onclick="return confirm('¿Eliminar este pedido?')">Eliminar</a>
+            <form th:action="@{/pedidos/{id}(id=${p.id})}" method="post" style="display:inline" onsubmit="return confirm('¿Eliminar este pedido?')">
+              <input type="hidden" name="_method" value="DELETE">
+              <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
+            </form>
           </td>
         </tr>
       </tbody>

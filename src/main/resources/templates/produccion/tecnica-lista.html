@@ -42,7 +42,6 @@
           <th>Acabado</th>
           <th>Dimensiones Exactas</th>
           <th>Color</th>
-          <th>Fecha</th>
           <th>Acciones</th>
         </tr>
       </thead>
@@ -54,12 +53,12 @@
           <td th:text="${t.acabado != null ? t.acabado : '—'}"></td>
           <td th:text="${t.dimensionesExactas != null ? t.dimensionesExactas : '—'}"></td>
           <td th:text="${t.color != null ? t.color : '—'}"></td>
-          <td th:text="${t.fechaRegistro}"></td>
           <td class="td-actions">
             <a th:href="@{/tecnica/editar/{id}(id=${t.id})}" class="btn btn-secondary btn-xs">Editar</a>
-            <a th:href="@{/tecnica/eliminar/{id}(id=${t.id})}"
-               class="btn btn-danger btn-xs"
-               onclick="return confirm('¿Eliminar esta información técnica?')">Eliminar</a>
+            <form th:action="@{/tecnica/{id}(id=${t.id})}" method="post" style="display:inline" onsubmit="return confirm('¿Eliminar esta información técnica?')">
+              <input type="hidden" name="_method" value="DELETE">
+              <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
+            </form>
           </td>
         </tr>
       </tbody>

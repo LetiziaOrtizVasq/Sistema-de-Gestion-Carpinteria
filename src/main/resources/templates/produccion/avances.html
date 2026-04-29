@@ -26,7 +26,7 @@
   <div class="info-panel">
     <div class="info-row">
       <span class="info-label">Pedido</span>
-      <span th:text="${'#' + asignacion.pedido.id + ' — ' + asignacion.pedido.cotizacion.solicitud.nombreCliente + ' / ' + asignacion.pedido.cotizacion.solicitud.tipoProducto}"></span>
+      <span th:text="${'#' + asignacion.pedido.id + ' — ' + asignacion.pedido.cotizacion.solicitud.nombreCliente + ' / ' + asignacion.pedido.cotizacion.solicitud.resumenProductos}"></span>
     </div>
     <div class="info-row">
       <span class="info-label">Operario</span>
@@ -49,7 +49,7 @@
       <p>CU-13 — Ingresá el progreso de cada etapa de producción</p>
     </div>
 
-    <form th:action="@{/produccion/{id}/avances/guardar(id=${asignacion.id})}"
+    <form th:action="@{/produccion/{id}/avances(id=${asignacion.id})}"
           th:object="${avance}" method="post">
 
       <div class="card-body">
@@ -81,10 +81,7 @@
                   th:errors="*{porcentaje}"></span>
           </div>
 
-          <div class="field">
-            <label>Fecha</label>
-            <input type="date" th:field="*{fecha}" class="form-control">
-          </div>
+          <input type="hidden" th:field="*{fecha}">
 
           <div class="field">
             <label>¿Etapa Completada?</label>
@@ -132,7 +129,6 @@
           <th>Descripción</th>
           <th>%</th>
           <th>Completado</th>
-          <th>Fecha</th>
           <th>Acciones</th>
         </tr>
       </thead>
@@ -154,11 +150,11 @@
                   th:text="${av.completado ? 'Sí' : 'No'}">
             </span>
           </td>
-          <td th:text="${av.fecha}"></td>
           <td class="td-actions">
-            <a th:href="@{/produccion/avances/eliminar/{id}(id=${av.id})}"
-               class="btn btn-danger btn-xs"
-               onclick="return confirm('¿Eliminar este avance?')">Eliminar</a>
+            <form th:action="@{/produccion/avances/{id}(id=${av.id})}" method="post" style="display:inline" onsubmit="return confirm('¿Eliminar este avance?')">
+              <input type="hidden" name="_method" value="DELETE">
+              <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
+            </form>
           </td>
         </tr>
       </tbody>

@@ -39,10 +39,6 @@
       <span class="info-label">Dirección</span>
       <span th:text="${cliente.direccion}"></span>
     </div>
-    <div class="info-row">
-      <span class="info-label">Cliente desde</span>
-      <span th:text="${cliente.fechaRegistro}"></span>
-    </div>
   </div>
 
   <div class="table-card" style="margin-top:1.5rem">
@@ -60,18 +56,14 @@
       <thead>
         <tr>
           <th>#</th>
-          <th>Producto</th>
-          <th>Descripción</th>
-          <th>Fecha</th>
+          <th>Artículos</th>
           <th>Estado</th>
         </tr>
       </thead>
       <tbody>
         <tr th:each="s : ${solicitudes}">
           <td th:text="${s.id}"></td>
-          <td class="td-bold" th:text="${s.tipoProducto}"></td>
-          <td th:text="${s.descripcion}"></td>
-          <td th:text="${s.fechaSolicitud}"></td>
+          <td class="td-bold" th:text="${s.resumenProductos}"></td>
           <td>
             <span class="badge"
                   th:classappend="${s.estado == 'PENDIENTE'} ? 'badge-pendiente' :

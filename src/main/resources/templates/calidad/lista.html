@@ -42,7 +42,6 @@
           <th>Resultado</th>
           <th>Observaciones</th>
           <th>Acción Retrabajo</th>
-          <th>Fecha</th>
           <th>Acciones</th>
         </tr>
       </thead>
@@ -60,11 +59,11 @@
           </td>
           <td th:text="${i.observaciones != null ? i.observaciones : '—'}"></td>
           <td th:text="${i.accionRetrabajo != null ? i.accionRetrabajo : '—'}"></td>
-          <td th:text="${i.fecha}"></td>
           <td class="td-actions">
-            <a th:href="@{/calidad/eliminar/{id}(id=${i.id})}"
-               class="btn btn-danger btn-xs"
-               onclick="return confirm('¿Eliminar esta inspección?')">Eliminar</a>
+            <form th:action="@{/calidad/{id}(id=${i.id})}" method="post" style="display:inline" onsubmit="return ¿Eliminar esta inspección?('¿Eliminar esta inspección?')">
+              <input type="hidden" name="_method" value="DELETE">
+              <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
+            </form>
           </td>
         </tr>
       </tbody>

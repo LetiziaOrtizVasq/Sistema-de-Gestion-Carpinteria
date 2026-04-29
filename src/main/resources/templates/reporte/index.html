@@ -48,16 +48,15 @@
     <table th:unless="${pedidosPeriodo.isEmpty()}">
       <thead>
         <tr>
-          <th>#</th><th>Cliente</th><th>Producto</th><th>Total (Bs.)</th><th>Confirmación</th><th>Estado</th>
+          <th>#</th><th>Cliente</th><th>Producto</th><th>Total (Bs.)</th><th>Estado</th>
         </tr>
       </thead>
       <tbody>
         <tr th:each="p : ${pedidosPeriodo}">
           <td th:text="${p.id}"></td>
           <td class="td-bold" th:text="${p.cotizacion.solicitud.nombreCliente}"></td>
-          <td th:text="${p.cotizacion.solicitud.tipoProducto}"></td>
+          <td th:text="${p.cotizacion.solicitud.resumenProductos}"></td>
           <td class="td-total" th:text="'Bs. ' + ${#numbers.formatDecimal(p.cotizacion.precioTotal,1,2)}"></td>
-          <td th:text="${p.fechaConfirmacion}"></td>
           <td>
             <span class="badge"
                   th:classappend="${p.estado == 'PENDIENTE_PAGO'} ? 'badge-pendiente' :

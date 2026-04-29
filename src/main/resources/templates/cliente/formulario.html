@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
   <meta charset="UTF-8">
@@ -28,7 +28,7 @@
       <p>Campos obligatorios (<span class="req">*</span>)</p>
     </div>
 
-    <form th:action="@{/clientes/guardar}" th:object="${cliente}" method="post">
+    <form th:action="@{/clientes}" th:object="${cliente}" method="post">
       <input type="hidden" th:field="*{id}">
 
       <div class="card-body">
@@ -73,10 +73,7 @@
             <input type="text" th:field="*{direccion}" placeholder="Ej: Av. Blanco Galindo Km. 5" class="form-control">
           </div>
 
-          <div class="field">
-            <label>Fecha de Registro</label>
-            <input type="date" th:field="*{fechaRegistro}" class="form-control">
-          </div>
+          <input type="hidden" th:field="*{fechaRegistro}">
 
         </div>
       </div>

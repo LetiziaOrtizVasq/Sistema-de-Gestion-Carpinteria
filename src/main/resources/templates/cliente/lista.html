@@ -58,7 +58,6 @@
           <th>Teléfono</th>
           <th>Email</th>
           <th>Dirección</th>
-          <th>Registro</th>
           <th>Acciones</th>
         </tr>
       </thead>
@@ -70,13 +69,13 @@
           <td th:text="${c.telefono}"></td>
           <td th:text="${c.email != null and c.email != '' ? c.email : '—'}"></td>
           <td th:text="${c.direccion != null and c.direccion != '' ? c.direccion : '—'}"></td>
-          <td th:text="${c.fechaRegistro}"></td>
           <td class="td-actions">
             <a th:href="@{/clientes/{id}/historial(id=${c.id})}" class="btn btn-warning btn-xs">Historial</a>
             <a th:href="@{/clientes/editar/{id}(id=${c.id})}" class="btn btn-secondary btn-xs">Editar</a>
-            <a th:href="@{/clientes/eliminar/{id}(id=${c.id})}"
-               class="btn btn-danger btn-xs"
-               onclick="return confirm('¿Eliminar este cliente?')">Eliminar</a>
+            <form th:action="@{/clientes/{id}(id=${c.id})}" method="post" style="display:inline" onsubmit="return confirm('¿Eliminar este cliente?')">
+              <input type="hidden" name="_method" value="DELETE">
+              <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
+            </form>
           </td>
         </tr>
       </tbody>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
   <meta charset="UTF-8">
@@ -23,7 +23,7 @@
       <h3 th:text="${titulo}">Pago Final</h3>
       <p>El sistema calcula automáticamente el 50% restante del total</p>
     </div>
-    <form th:action="@{/pagos-final/guardar}" th:object="${pagoFinal}" method="post">
+    <form th:action="@{/pagos-final}" th:object="${pagoFinal}" method="post">
       <input type="hidden" th:field="*{id}">
       <div class="card-body">
         <div class="form-grid">
@@ -32,7 +32,7 @@
             <select name="pedidoId" class="form-control" required>
               <option value="">-- Seleccione un pedido --</option>
               <option th:each="p : ${pedidos}" th:value="${p.id}"
-                      th:text="${'#' + p.id + ' — ' + p.cotizacion.solicitud.nombreCliente + ' / ' + p.cotizacion.solicitud.tipoProducto + ' — Total: Bs. ' + #numbers.formatDecimal(p.cotizacion.precioTotal, 1, 2)}"
+                      th:text="${'#' + p.id + ' — ' + p.cotizacion.solicitud.nombreCliente + ' / ' + p.cotizacion.solicitud.resumenProductos + ' — Total: Bs. ' + #numbers.formatDecimal(p.cotizacion.precioTotal, 1, 2)}"
                       th:selected="${pagoFinal.pedido != null and pagoFinal.pedido.id == p.id}"></option>
             </select>
           </div>
@@ -56,10 +56,7 @@
             </select>
             <span class="field-error" th:if="${#fields.hasErrors('metodoPago')}" th:errors="*{metodoPago}"></span>
           </div>
-          <div class="field">
-            <label>Fecha de Pago</label>
-            <input type="date" th:field="*{fechaPago}" class="form-control">
-          </div>
+          <input type="hidden" th:field="*{fechaPago}">
           <div class="field">
             <label>Número de Comprobante</label>
             <input type="text" th:field="*{comprobante}" placeholder="Ej: TRX-20240415-002" class="form-control">

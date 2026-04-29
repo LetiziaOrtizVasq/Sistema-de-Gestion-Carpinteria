@@ -40,7 +40,6 @@
           <th>Pedido</th>
           <th>Recibido por</th>
           <th>CI</th>
-          <th>Fecha</th>
           <th>Estado</th>
           <th>Acciones</th>
         </tr>
@@ -48,10 +47,9 @@
       <tbody>
         <tr th:each="e : ${entregas}">
           <td th:text="${e.id}"></td>
-          <td class="td-bold" th:text="${'#' + e.pedido.id + ' — ' + e.pedido.cotizacion.solicitud.nombreCliente + ' / ' + e.pedido.cotizacion.solicitud.tipoProducto}"></td>
+          <td class="td-bold" th:text="${'#' + e.pedido.id + ' — ' + e.pedido.cotizacion.solicitud.nombreCliente + ' / ' + e.pedido.cotizacion.solicitud.resumenProductos}"></td>
           <td th:text="${e.recibidoPor != null ? e.recibidoPor : '—'}"></td>
           <td th:text="${e.ci != null ? e.ci : '—'}"></td>
-          <td th:text="${e.fechaEntrega}"></td>
           <td>
             <span class="badge"
                   th:classappend="${e.estado != null and e.estado == 'ENTREGADO'} ? 'badge-exitoso' : 'badge-proceso'"
@@ -60,9 +58,10 @@
           </td>
           <td class="td-actions">
             <a th:href="@{/pagos-final/nuevo(pedidoId=${e.pedido.id})}" class="btn btn-warning btn-xs">Pago Final</a>
-            <a th:href="@{/entregas/eliminar/{id}(id=${e.id})}"
-               class="btn btn-danger btn-xs"
-               onclick="return confirm('¿Eliminar este registro?')">Eliminar</a>
+            <form th:action="@{/entregas/{id}(id=${e.id})}" method="post" style="display:inline" onsubmit="return ¿Eliminar este registro?('¿Eliminar este registro?')">
+              <input type="hidden" name="_method" value="DELETE">
+              <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
+            </form>
           </td>
         </tr>
       </tbody>

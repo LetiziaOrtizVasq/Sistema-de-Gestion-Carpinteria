@@ -55,7 +55,7 @@
               <option value="">-- Sin pedido --</option>
               <option th:each="p : ${pedidos}"
                       th:value="${p.id}"
-                      th:text="${'#' + p.id + ' — ' + p.cotizacion.solicitud.nombreCliente + ' / ' + p.cotizacion.solicitud.tipoProducto}">
+                      th:text="${'#' + p.id + ' — ' + p.cotizacion.solicitud.nombreCliente + ' / ' + p.cotizacion.solicitud.resumenProductos}">
               </option>
             </select>
           </div>

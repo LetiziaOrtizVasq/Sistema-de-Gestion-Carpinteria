@@ -45,7 +45,6 @@
           <th>Cantidad</th>
           <th>Proveedor</th>
           <th>Pedido</th>
-          <th>Fecha</th>
           <th>Observaciones</th>
         </tr>
       </thead>
@@ -63,7 +62,6 @@
           <td th:text="${#numbers.formatDecimal(m.cantidad, 1, 2)}"></td>
           <td th:text="${m.proveedor != null ? m.proveedor.nombre : '—'}"></td>
           <td th:text="${m.pedido != null ? '#' + m.pedido.id : '—'}"></td>
-          <td th:text="${m.fecha}"></td>
           <td th:text="${m.observaciones != null and m.observaciones != '' ? m.observaciones : '—'}"></td>
         </tr>
       </tbody>
