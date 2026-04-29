@@ -18,5 +18,5 @@ if %errorlevel% neq 0 (
 
 echo Iniciando Sistema de Carpinteria...
 echo Una vez que veas "Started CarpinteriaApplication" abre: http://localhost:8080
-mvn -pl carpinteria-app spring-boot:run
+mvn -pl carpinteria-app -am spring-boot:run
 pause

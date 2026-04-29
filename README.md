@@ -41,7 +41,7 @@ El script verifica si MySQL está activo, lo inicia si hace falta, y luego levan
 
 ```bash
 # Desde la raíz del proyecto:
-mvn -pl carpinteria-app spring-boot:run
+mvn -pl carpinteria-app -am spring-boot:run
 ```
 
 Una vez iniciado, abrir en el navegador: **http://localhost:8080**
