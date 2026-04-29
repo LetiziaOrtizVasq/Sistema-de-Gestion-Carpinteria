@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.carpinteria</groupId>
+        <artifactId>carpinteria-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>carpinteria-calidad</artifactId>
+    <name>Carpintería — Módulo Calidad y Entregas</name>
+    <!--
+        CU-16: Registrar inspección de calidad
+        CU-17: Registrar embalaje
+        CU-18: Confirmar entrega
+        CU-19: Registrar pago final
+        Requiere: carpinteria-ventas, carpinteria-pagos
+    -->
+
+    <dependencies>
+        <dependency>
+            <groupId>com.carpinteria</groupId>
+            <artifactId>carpinteria-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.carpinteria</groupId>
+            <artifactId>carpinteria-ventas</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.carpinteria</groupId>
+            <artifactId>carpinteria-pagos</artifactId>
+        </dependency>
+    </dependencies>
+</project>
