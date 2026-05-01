@@ -25,8 +25,12 @@ Sistema web para la gestión integral de una carpintería artesanal: clientes, s
 - Java 21 (ubicado en `C:\Users\ortiz\Java\jdk-21.0.10+7`)
 - Maven 3.9 (ubicado en `C:\Users\ortiz\Maven\apache-maven-3.9.14`)
 - MySQL 8.4 corriendo en el puerto 3306
-  - Base de datos: `carpinteriadb`
   - Usuario: `root` · Contraseña: `Carpinteria2025!`
+  - Crear la base de datos antes de correr el proyecto (solo la primera vez):
+    ```sql
+    CREATE DATABASE carpinteriadb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    ```
+  - Las tablas se crean automáticamente al iniciar la aplicación por primera vez.
 
 ---
 
