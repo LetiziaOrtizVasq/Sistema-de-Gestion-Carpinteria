@@ -9,6 +9,7 @@
 <body>
 
 <div th:replace="~{layout/nav :: nav('entrega')}"></div>
+<div th:if="${pasoActual != null}" th:replace="~{layout/stepper :: stepper(${pasoActual})}"></div>
 
 <div class="layout">
 

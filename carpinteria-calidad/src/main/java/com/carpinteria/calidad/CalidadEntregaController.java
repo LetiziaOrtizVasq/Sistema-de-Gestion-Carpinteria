@@ -28,16 +28,21 @@ public class CalidadEntregaController {
         model.addAttribute("inspeccion", i);
         model.addAttribute("pedidos", service.pedidosSinInspeccion());
         model.addAttribute("titulo", "Registrar Inspección de Calidad");
+        model.addAttribute("pasoActual", 6);
         return "calidad/form";
     }
 
     @PostMapping("/calidad")
     public String guardarInspeccion(@Valid @ModelAttribute("inspeccion") InspeccionCalidad i,
                                     BindingResult r,
-                                    @RequestParam("pedidoId") Long pedidoId, Model model) {
-        if (r.hasErrors()) { model.addAttribute("pedidos", service.pedidosSinInspeccion()); model.addAttribute("titulo", "Registrar Inspección"); return "calidad/form"; }
+                                    @RequestParam(value = "pedidoId", required = false) Long pedidoId, Model model) {
+        if (pedidoId == null) r.rejectValue("pedido", "required", "El pedido es obligatorio");
+        if (r.hasErrors()) { model.addAttribute("pedidos", service.pedidosSinInspeccion()); model.addAttribute("titulo", "Registrar Inspección"); model.addAttribute("pasoActual", 6); return "calidad/form"; }
         i.setPedido(service.buscarPedidoPorId(pedidoId));
-        service.guardarInspeccion(i);
+        InspeccionCalidad savedI = service.guardarInspeccion(i);
+        if ("APROBADO".equals(savedI.getResultado())) {
+            return "redirect:/embalaje/nuevo?pedidoId=" + pedidoId;
+        }
         return "redirect:/calidad";
     }
 
@@ -58,17 +63,19 @@ public class CalidadEntregaController {
         model.addAttribute("embalaje", e);
         model.addAttribute("pedidos", service.pedidosSinEmbalaje());
         model.addAttribute("titulo", "Registrar Embalaje");
+        model.addAttribute("pasoActual", 7);
         return "calidad/embalaje-form";
     }
 
     @PostMapping("/embalaje")
     public String guardarEmbalaje(@Valid @ModelAttribute("embalaje") EmbalajePedido e,
                                   BindingResult r,
-                                  @RequestParam("pedidoId") Long pedidoId, Model model) {
-        if (r.hasErrors()) { model.addAttribute("pedidos", service.pedidosSinEmbalaje()); model.addAttribute("titulo", "Registrar Embalaje"); return "calidad/embalaje-form"; }
+                                  @RequestParam(value = "pedidoId", required = false) Long pedidoId, Model model) {
+        if (pedidoId == null) r.rejectValue("pedido", "required", "El pedido es obligatorio");
+        if (r.hasErrors()) { model.addAttribute("pedidos", service.pedidosSinEmbalaje()); model.addAttribute("titulo", "Registrar Embalaje"); model.addAttribute("pasoActual", 7); return "calidad/embalaje-form"; }
         e.setPedido(service.buscarPedidoPorId(pedidoId));
         service.guardarEmbalaje(e);
-        return "redirect:/embalaje";
+        return "redirect:/entregas/nueva?pedidoId=" + pedidoId;
     }
 
     @DeleteMapping("/embalaje/{id}")
@@ -87,18 +94,20 @@ public class CalidadEntregaController {
         if (pedidoId != null) e.setPedido(service.buscarPedidoPorId(pedidoId));
         model.addAttribute("entrega", e);
         model.addAttribute("pedidos", service.pedidosSinEntrega());
-        model.addAttribute("titulo", "Confirmar Entrega");
+        model.addAttribute("titulo", "Confirmar Entrega al Cliente");
+        model.addAttribute("pasoActual", 7);
         return "entrega/form";
     }
 
     @PostMapping("/entregas")
     public String guardarEntrega(@Valid @ModelAttribute("entrega") EntregaPedido e,
                                  BindingResult r,
-                                 @RequestParam("pedidoId") Long pedidoId, Model model) {
-        if (r.hasErrors()) { model.addAttribute("pedidos", service.pedidosSinEntrega()); model.addAttribute("titulo", "Confirmar Entrega"); return "entrega/form"; }
+                                 @RequestParam(value = "pedidoId", required = false) Long pedidoId, Model model) {
+        if (pedidoId == null) r.rejectValue("pedido", "required", "El pedido es obligatorio");
+        if (r.hasErrors()) { model.addAttribute("pedidos", service.pedidosSinEntrega()); model.addAttribute("titulo", "Confirmar Entrega al Cliente"); model.addAttribute("pasoActual", 7); return "entrega/form"; }
         e.setPedido(service.buscarPedidoPorId(pedidoId));
         service.guardarEntrega(e);
-        return "redirect:/entregas";
+        return "redirect:/pagos-final/nuevo?pedidoId=" + pedidoId;
     }
 
     @DeleteMapping("/entregas/{id}")
@@ -117,14 +126,16 @@ public class CalidadEntregaController {
         if (pedidoId != null) pf.setPedido(service.buscarPedidoPorId(pedidoId));
         model.addAttribute("pagoFinal", pf);
         model.addAttribute("pedidos", service.pedidosSinPagoFinal());
-        model.addAttribute("titulo", "Registrar Pago Final");
+        model.addAttribute("titulo", "Registrar Pago Final (50% restante)");
+        model.addAttribute("pasoActual", 8);
         return "entrega/pago-final-form";
     }
 
     @PostMapping("/pagos-final")
     public String guardarPagoFinal(@Valid @ModelAttribute("pagoFinal") PagoFinal pf,
                                    BindingResult r,
-                                   @RequestParam("pedidoId") Long pedidoId, Model model) {
+                                   @RequestParam(value = "pedidoId", required = false) Long pedidoId, Model model) {
+        if (pedidoId == null) r.rejectValue("pedido", "required", "El pedido es obligatorio");
         if (r.hasErrors()) { model.addAttribute("pedidos", service.pedidosSinPagoFinal()); model.addAttribute("titulo", "Registrar Pago Final"); return "entrega/pago-final-form"; }
         pf.setPedido(service.buscarPedidoPorId(pedidoId));
         service.guardarPagoFinal(pf);

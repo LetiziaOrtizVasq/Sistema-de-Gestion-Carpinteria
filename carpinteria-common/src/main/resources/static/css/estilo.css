@@ -583,3 +583,74 @@ tbody td {
     tbody td { padding: 10px 10px; font-size: .78rem; }
     .stats-grid { grid-template-columns: 1fr 1fr; }
 }
+
+/* ================================================================
+   STEPPER — Flujo paso a paso
+   ================================================================ */
+.stepper-wrap {
+    background: var(--blanco);
+    border-bottom: 1px solid var(--border);
+    padding: 1.25rem 2rem 1rem;
+    overflow-x: auto;
+}
+.stepper {
+    display: flex;
+    align-items: flex-start;
+    max-width: 860px;
+    margin: 0 auto;
+}
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    position: relative;
+}
+.step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: calc(50% + 16px);
+    right: calc(-50% + 16px);
+    height: 2px;
+    background: var(--border);
+    z-index: 0;
+}
+.step-circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--crema-d);
+    border: 2px solid var(--border);
+    color: var(--gris);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: .78rem;
+    position: relative;
+    z-index: 1;
+}
+.step-label {
+    font-size: .62rem;
+    color: var(--gris);
+    margin-top: .35rem;
+    text-align: center;
+    font-weight: 500;
+    white-space: nowrap;
+}
+.step.step-done:not(:last-child)::after { background: var(--verde); }
+.step.step-done .step-circle {
+    background: var(--verde);
+    border-color: var(--verde);
+    color: white;
+    font-size: .85rem;
+}
+.step.step-done .step-label { color: var(--verde); }
+.step.step-active .step-circle {
+    background: var(--dorado);
+    border-color: var(--dorado);
+    color: white;
+    box-shadow: 0 0 0 4px rgba(200,134,10,.18);
+}
+.step.step-active .step-label { color: var(--cafe-700); font-weight: 700; }

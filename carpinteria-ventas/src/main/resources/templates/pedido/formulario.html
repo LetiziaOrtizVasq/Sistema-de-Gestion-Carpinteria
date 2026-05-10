@@ -9,6 +9,7 @@
 <body>
 
 <div th:replace="~{layout/nav :: nav('ventas')}"></div>
+<div th:if="${pasoActual != null}" th:replace="~{layout/stepper :: stepper(${pasoActual})}"></div>
 
 <div class="layout">
 
@@ -36,7 +37,8 @@
 
           <div class="field full-width">
             <label>Cotización Aceptada <span class="req">*</span></label>
-            <select name="cotizacionId" class="form-control">
+            <select name="cotizacionId" class="form-control"
+                    th:classappend="${#fields.hasErrors('cotizacion')} ? 'input-error'">
               <option value="">-- Seleccione una cotización --</option>
               <option th:each="c : ${cotizaciones}"
                       th:value="${c.id}"
@@ -44,6 +46,8 @@
                       th:selected="${pedido.cotizacion != null and pedido.cotizacion.id == c.id}">
               </option>
             </select>
+            <span class="field-error" th:if="${#fields.hasErrors('cotizacion')}"
+                  th:errors="*{cotizacion}"></span>
           </div>
 
           <div class="field">

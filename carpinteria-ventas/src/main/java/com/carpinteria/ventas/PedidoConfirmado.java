@@ -12,7 +12,6 @@ public class PedidoConfirmado {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "La cotización es obligatoria")
     @OneToOne(optional = false)
     @JoinColumn(name = "cotizacion_id", nullable = false, unique = true)
     private Cotizacion cotizacion;

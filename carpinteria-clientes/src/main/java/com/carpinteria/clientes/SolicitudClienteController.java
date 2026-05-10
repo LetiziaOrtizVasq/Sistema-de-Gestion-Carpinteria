@@ -29,6 +29,7 @@ public class SolicitudClienteController {
     public String mostrarFormulario(Model model) {
         model.addAttribute("solicitud", new SolicitudCliente());
         model.addAttribute("titulo", "Nueva Solicitud");
+        model.addAttribute("pasoActual", 1);
         return "solicitud/formulario";
     }
 
@@ -63,8 +64,8 @@ public class SolicitudClienteController {
             return "solicitud/formulario";
         }
 
-        service.guardar(solicitud);
-        return "redirect:/solicitudes";
+        SolicitudCliente saved = service.guardar(solicitud);
+        return "redirect:/cotizaciones/nueva?solicitudId=" + saved.getId();
     }
 
     @GetMapping("/editar/{id}")

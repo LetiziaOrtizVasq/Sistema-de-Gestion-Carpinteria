@@ -31,22 +31,24 @@ public class ProduccionController {
         model.addAttribute("asignacion", a);
         model.addAttribute("pedidos", service.pedidosSinAsignacion());
         model.addAttribute("titulo", "Asignar Pedido a Producción");
+        model.addAttribute("pasoActual", 5);
         return "produccion/form";
     }
 
     @PostMapping
     public String guardar(@Valid @ModelAttribute("asignacion") AsignacionProduccion a,
                           BindingResult r,
-                          @RequestParam("pedidoId") Long pedidoId,
+                          @RequestParam(value = "pedidoId", required = false) Long pedidoId,
                           Model model) {
+        if (pedidoId == null) r.rejectValue("pedido", "required", "El pedido es obligatorio");
         if (r.hasErrors()) {
             model.addAttribute("pedidos", service.pedidosSinAsignacion());
             model.addAttribute("titulo", "Asignar Pedido a Producción");
             return "produccion/form";
         }
         a.setPedido(service.buscarPedidoPorId(pedidoId));
-        service.guardarAsignacion(a);
-        return "redirect:/produccion";
+        AsignacionProduccion saved = service.guardarAsignacion(a);
+        return "redirect:/produccion/" + saved.getId() + "/avances";
     }
 
     @GetMapping("/editar/{id}")

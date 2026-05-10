@@ -35,6 +35,7 @@ public class PedidoConfirmadoController {
         model.addAttribute("pedido", pedido);
         model.addAttribute("cotizaciones", service.listarCotizacionesAceptadas());
         model.addAttribute("titulo", "Registrar Pedido Confirmado");
+        model.addAttribute("pasoActual", 3);
         return "pedido/formulario";
     }
 
@@ -42,8 +43,11 @@ public class PedidoConfirmadoController {
     @PostMapping
     public String guardar(@Valid @ModelAttribute("pedido") PedidoConfirmado pedido,
                           BindingResult result,
-                          @RequestParam("cotizacionId") Long cotizacionId,
+                          @RequestParam(value = "cotizacionId", required = false) Long cotizacionId,
                           Model model) {
+        if (cotizacionId == null) {
+            result.rejectValue("cotizacion", "required", "La cotización es obligatoria");
+        }
         if (result.hasErrors()) {
             model.addAttribute("cotizaciones", service.listarCotizacionesAceptadas());
             model.addAttribute("titulo", pedido.getId() == null ? "Registrar Pedido Confirmado" : "Editar Pedido");
@@ -51,7 +55,7 @@ public class PedidoConfirmadoController {
         }
         pedido.setCotizacion(service.buscarCotizacionPorId(cotizacionId));
         service.guardar(pedido);
-        return "redirect:/pedidos";
+        return "redirect:/pagos/nuevo?pedidoId=" + pedido.getId();
     }
 
     // CU-08: Editar pedido

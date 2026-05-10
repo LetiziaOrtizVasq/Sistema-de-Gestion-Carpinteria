@@ -36,6 +36,7 @@ public class CotizacionController {
         model.addAttribute("cotizacion", cotizacion);
         model.addAttribute("solicitudes", service.listarSolicitudes());
         model.addAttribute("titulo", "Nueva Cotización");
+        model.addAttribute("pasoActual", 2);
         return "cotizacion/formulario";
     }
 
@@ -43,8 +44,9 @@ public class CotizacionController {
     @PostMapping
     public String guardar(@Valid @ModelAttribute("cotizacion") Cotizacion cotizacion,
                           BindingResult result,
-                          @RequestParam("solicitudId") Long solicitudId,
+                          @RequestParam(value = "solicitudId", required = false) Long solicitudId,
                           Model model) {
+        if (solicitudId == null) result.rejectValue("solicitud", "required", "La solicitud es obligatoria");
         if (result.hasErrors()) {
             model.addAttribute("solicitudes", service.listarSolicitudes());
             model.addAttribute("titulo", cotizacion.getId() == null ? "Nueva Cotización" : "Editar Cotización");
@@ -64,13 +66,13 @@ public class CotizacionController {
         return "cotizacion/formulario";
     }
 
-    // CU-03: Registrar aceptación de cotización
+    // CU-03: Registrar aceptación de cotización → avanza al siguiente paso (pedido)
     @GetMapping("/{id}/aceptar")
     public String aceptar(@PathVariable Long id) {
         Cotizacion cotizacion = service.buscarPorId(id);
         cotizacion.setEstado("ACEPTADA");
         service.guardar(cotizacion);
-        return "redirect:/cotizaciones";
+        return "redirect:/pedidos/nuevo?cotizacionId=" + id;
     }
 
     // CU-03: Registrar rechazo de cotización

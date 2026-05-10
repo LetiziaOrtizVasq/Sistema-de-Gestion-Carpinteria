@@ -36,8 +36,9 @@ public class InformacionTecnicaController {
     @PostMapping
     public String guardar(@Valid @ModelAttribute("info") InformacionTecnica info,
                           BindingResult r,
-                          @RequestParam("solicitudId") Long solicitudId,
+                          @RequestParam(value = "solicitudId", required = false) Long solicitudId,
                           Model model) {
+        if (solicitudId == null) r.rejectValue("solicitud", "required", "La solicitud es obligatoria");
         if (r.hasErrors()) {
             model.addAttribute("solicitudes", service.solicitudesSinInfoTecnica());
             model.addAttribute("titulo", info.getId() == null ? "Registrar Info Técnica" : "Editar Info Técnica");

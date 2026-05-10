@@ -34,7 +34,8 @@ public class PagoInicialController {
         }
         model.addAttribute("pago", pago);
         model.addAttribute("pedidos", service.listarPedidosSinPago());
-        model.addAttribute("titulo", "Confirmar Pago Inicial");
+        model.addAttribute("titulo", "Confirmar Pago Inicial (50%)");
+        model.addAttribute("pasoActual", 4);
         return "pago/formulario";
     }
 
@@ -42,8 +43,11 @@ public class PagoInicialController {
     @PostMapping
     public String guardar(@Valid @ModelAttribute("pago") PagoInicial pago,
                           BindingResult result,
-                          @RequestParam("pedidoId") Long pedidoId,
+                          @RequestParam(value = "pedidoId", required = false) Long pedidoId,
                           Model model) {
+        if (pedidoId == null) {
+            result.rejectValue("pedido", "required", "El pedido es obligatorio");
+        }
         if (result.hasErrors()) {
             model.addAttribute("pedidos", service.listarPedidosSinPago());
             model.addAttribute("titulo", "Confirmar Pago Inicial");
@@ -51,7 +55,7 @@ public class PagoInicialController {
         }
         pago.setPedido(service.buscarPedidoPorId(pedidoId));
         service.guardar(pago);
-        return "redirect:/pagos";
+        return "redirect:/produccion/nuevo?pedidoId=" + pedidoId;
     }
 
     @DeleteMapping("/{id}")

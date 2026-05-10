@@ -255,33 +255,61 @@ PENDIENTE_PAGO → PAGO_CONFIRMADO → EN_PRODUCCION → LISTO_ENTREGA → ENTRE
 
 ---
 
-## 8. Flujo Completo del Sistema
+## 8. Flujo Completo del Sistema — Paso a Paso
+
+El sistema guía al usuario a través de un flujo de 8 pasos. Cada formulario muestra una barra de progreso en la parte superior indicando en qué paso se encuentra. El flujo es **no obligatorio**: se puede abandonar en cualquier momento y retomar después desde la lista de pedidos usando el botón de acción correspondiente al estado actual.
 
 ```
-1. Cliente llega con un pedido
-        ↓
-2. Se registra el CLIENTE y su SOLICITUD (con los artículos)
-        ↓
-3. Se genera una COTIZACIÓN (materiales + mano de obra)
-        ↓
-4. El cliente aprueba → se confirma el PEDIDO
-        ↓
-5. El cliente paga el 50% → PAGO INICIAL registrado
-        ↓
-6. Se registran las ESPECIFICACIONES TÉCNICAS del producto
-        ↓
-7. El pedido se asigna a un operario → PRODUCCIÓN
-        ↓
-8. Se registran los AVANCES por etapa (Corte, Ensamble, etc.)
-        ↓
-9. Producto terminado → INSPECCIÓN DE CALIDAD
-        ↓
-10. Se realiza el EMBALAJE del producto
-        ↓
-11. Se confirma la ENTREGA al cliente
-        ↓
-12. El cliente paga el 50% restante → PAGO FINAL → Pedido CERRADO
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Paso 1      Paso 2      Paso 3      Paso 4      Paso 5      Paso 6-7-8    │
+│  Solicitud → Cotización → Pedido → Pago 50% → Producción → Calidad/Entrega │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
+
+**Paso 1 — Solicitud** (`/solicitudes/nueva`)
+- El cliente describe los muebles que quiere
+- Al guardar → pasa automáticamente al Paso 2
+
+**Paso 2 — Cotización** (`/cotizaciones/nueva`)
+- Se calculan materiales + mano de obra
+- Al **Aceptar** la cotización → pasa automáticamente al Paso 3
+- Si se rechaza → el proceso termina aquí (el cliente puede volver cuando quiera)
+
+**Paso 3 — Pedido** (`/pedidos/nuevo`)
+- Se confirma el pedido con fecha de entrega estimada
+- Al guardar → pasa automáticamente al Paso 4
+
+**Paso 4 — Pago Inicial** (`/pagos/nuevo`)
+- El cliente paga el 50% del total
+- El sistema actualiza el estado del pedido a `PAGO_CONFIRMADO`
+- Al guardar → pasa automáticamente al Paso 5
+
+**Paso 5 — Producción** (`/produccion/nuevo`)
+- Se asigna el pedido a un operario del taller
+- Al guardar → abre directamente los avances de producción
+- El operario registra avances por etapa: Corte → Ensamble → Lijado → Pintura → Terminado
+
+**Paso 6 — Inspección de Calidad** (`/calidad/nueva`)
+- Se inspecciona el producto terminado
+- Si **Aprobado** → pasa automáticamente al Paso 7 (Embalaje)
+- Si **Retrabajo/Rechazado** → vuelve a producción (el ciclo se repite)
+
+**Paso 7 — Embalaje + Entrega**
+- Embalaje (`/embalaje/nuevo`): se prepara el producto para envío → pasa a Entrega
+- Entrega (`/entregas/nueva`): se confirma que el cliente recibió el producto → pasa al Paso 8
+
+**Paso 8 — Pago Final** (`/pagos-final/nuevo`)
+- El cliente paga el 50% restante
+- El sistema cierra el pedido: estado → `CERRADO`
+
+**Estados del pedido a lo largo del flujo:**
+```
+PENDIENTE_PAGO → PAGO_CONFIRMADO → EN_PRODUCCION → LISTO_ENTREGA → ENTREGADO → CERRADO
+     Paso 3           Paso 4           Paso 5           Paso 6          Paso 7      Paso 8
+```
+
+**Retomar el flujo en cualquier momento:**  
+Desde `/pedidos`, cada fila muestra un botón de acción contextual según el estado actual del pedido, permitiendo continuar exactamente donde se dejó.
 
 ---
 

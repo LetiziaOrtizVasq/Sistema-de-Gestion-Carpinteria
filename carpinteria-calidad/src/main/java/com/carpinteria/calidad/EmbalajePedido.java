@@ -14,7 +14,6 @@ public class EmbalajePedido {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "El pedido es obligatorio")
     @OneToOne(optional = false)
     @JoinColumn(name = "pedido_id", nullable = false, unique = true)
     private PedidoConfirmado pedido;
