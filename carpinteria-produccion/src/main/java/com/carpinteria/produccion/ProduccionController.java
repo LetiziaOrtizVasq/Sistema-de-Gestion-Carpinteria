@@ -4,6 +4,7 @@ import com.carpinteria.produccion.AsignacionProduccion;
 import com.carpinteria.produccion.AvanceProduccion;
 import com.carpinteria.produccion.ProduccionService;
 import jakarta.validation.Valid;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -47,8 +48,16 @@ public class ProduccionController {
             return "produccion/form";
         }
         a.setPedido(service.buscarPedidoPorId(pedidoId));
-        AsignacionProduccion saved = service.guardarAsignacion(a);
-        return "redirect:/produccion/" + saved.getId() + "/avances";
+        try {
+            AsignacionProduccion saved = service.guardarAsignacion(a);
+            return "redirect:/produccion/" + saved.getId() + "/avances";
+        } catch (DataIntegrityViolationException e) {
+            r.rejectValue("pedido", "duplicate", "Este pedido ya tiene una asignación de producción");
+            model.addAttribute("pedidos", service.pedidosSinAsignacion());
+            model.addAttribute("titulo", "Asignar Pedido a Producción");
+            model.addAttribute("pasoActual", 5);
+            return "produccion/form";
+        }
     }
 
     @GetMapping("/editar/{id}")
