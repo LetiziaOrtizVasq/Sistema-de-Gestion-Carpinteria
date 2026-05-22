@@ -4,43 +4,51 @@
 <div th:fragment="stepper(paso)" class="stepper-wrap">
   <div class="stepper">
 
-    <div class="step" th:classappend="${paso > 1} ? 'step-done' : (${paso == 1} ? 'step-active' : '')">
+    <div class="step"
+         th:classappend="${paso > 1} ? 'step-done' : (${paso == 1} ? 'step-active' : '')">
       <div class="step-circle" th:text="${paso > 1} ? '✓' : '1'">1</div>
       <div class="step-label">Solicitud</div>
     </div>
 
-    <div class="step" th:classappend="${paso > 2} ? 'step-done' : (${paso == 2} ? 'step-active' : '')">
+    <div class="step"
+         th:classappend="${paso > 2} ? 'step-done' : (${paso == 2} ? 'step-active' : '')">
       <div class="step-circle" th:text="${paso > 2} ? '✓' : '2'">2</div>
       <div class="step-label">Cotización</div>
     </div>
 
-    <div class="step" th:classappend="${paso > 3} ? 'step-done' : (${paso == 3} ? 'step-active' : '')">
+    <div class="step"
+         th:classappend="${paso > 3} ? 'step-done' : (${paso == 3} ? 'step-active' : '')">
       <div class="step-circle" th:text="${paso > 3} ? '✓' : '3'">3</div>
       <div class="step-label">Pedido</div>
     </div>
 
-    <div class="step" th:classappend="${paso > 4} ? 'step-done' : (${paso == 4} ? 'step-active' : '')">
+    <div class="step"
+         th:classappend="${paso > 4} ? 'step-done' : (${paso == 4} ? 'step-active' : '')">
       <div class="step-circle" th:text="${paso > 4} ? '✓' : '4'">4</div>
       <div class="step-label">Pago 50%</div>
     </div>
 
-    <div class="step" th:classappend="${paso > 5} ? 'step-done' : (${paso == 5} ? 'step-active' : '')">
+    <div class="step"
+         th:classappend="${paso > 5} ? 'step-done' : (${paso == 5} ? 'step-active' : '')">
       <div class="step-circle" th:text="${paso > 5} ? '✓' : '5'">5</div>
       <div class="step-label">Producción</div>
     </div>
 
-    <div class="step" th:classappend="${paso > 6} ? 'step-done' : (${paso == 6} ? 'step-active' : '')">
+    <div class="step"
+         th:classappend="${paso > 6} ? 'step-done' : (${paso == 6} ? 'step-active' : '')">
       <div class="step-circle" th:text="${paso > 6} ? '✓' : '6'">6</div>
       <div class="step-label">Calidad</div>
     </div>
 
-    <div class="step" th:classappend="${paso > 7} ? 'step-done' : (${paso == 7} ? 'step-active' : '')">
+    <div class="step"
+         th:classappend="${paso > 7} ? 'step-done' : (${paso == 7} ? 'step-active' : '')">
       <div class="step-circle" th:text="${paso > 7} ? '✓' : '7'">7</div>
       <div class="step-label">Entrega</div>
     </div>
 
-    <div class="step" th:classappend="${paso == 8} ? 'step-active' : ''">
-      <div class="step-circle">8</div>
+    <div class="step"
+         th:classappend="${paso == 8} ? 'step-active' : (${paso > 8} ? 'step-done' : '')">
+      <div class="step-circle" th:text="${paso > 8} ? '✓' : '8'">8</div>
       <div class="step-label">Pago Final</div>
     </div>
 

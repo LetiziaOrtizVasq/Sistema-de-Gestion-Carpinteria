@@ -3,85 +3,96 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clientes - Sistema Carpintería</title>
+  <title>Clientes - MaderaCraft</title>
   <link rel="stylesheet" th:href="@{/css/estilo.css}">
 </head>
 <body>
-
-<div th:replace="~{layout/nav :: nav('clientes')}"></div>
-
-<div class="layout">
-
-  <div class="page-header">
-    <div class="page-header-info">
-      <h2>Clientes</h2>
-      <span class="cu-tag">CU-04 Registrar · CU-05 Actualizar · CU-07 Historial</span>
+<div class="app-shell">
+  <div th:replace="~{layout/nav :: nav('clientes')}"></div>
+  <div class="main-wrapper">
+    <div class="topbar-mobile">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <span class="mobile-brand">MaderaCraft</span>
     </div>
-    <div class="page-header-actions">
-      <a th:href="@{/clientes/nuevo}" class="btn btn-primary">＋ Nuevo Cliente</a>
-    </div>
-  </div>
+    <div class="content-area">
 
-  <!-- Búsqueda rápida -->
-  <div class="card" style="margin-bottom:1.5rem">
-    <div class="card-body">
-      <form th:action="@{/clientes}" method="get" style="display:flex;gap:1rem;align-items:flex-end">
-        <div class="field" style="margin:0;flex:1">
-          <label>Buscar por nombre o CI/NIT</label>
-          <input type="text" name="buscar" th:value="${buscar}"
-                 placeholder="Ej: Juan, 12345678..."
-                 class="form-control">
+      <nav class="breadcrumb">
+        <a th:href="@{/}">Inicio</a>
+        <span class="bc-sep">›</span>
+        <span class="bc-current">Clientes</span>
+      </nav>
+
+      <div class="page-header">
+        <div class="page-header-info">
+          <h2>Clientes</h2>
+          <span class="cu-tag">CU-04 · CU-05 · CU-07</span>
         </div>
-        <button type="submit" class="btn btn-primary">Buscar</button>
-        <a th:href="@{/clientes}" class="btn btn-secondary">Limpiar</a>
-      </form>
+        <div class="page-header-actions">
+          <a th:href="@{/clientes/nuevo}" class="btn btn-primary">+ Nuevo cliente</a>
+        </div>
+      </div>
+
+      <!-- Búsqueda -->
+      <div class="card" style="margin-bottom:1.5rem">
+        <div class="card-body">
+          <form th:action="@{/clientes}" method="get" style="display:flex;gap:1rem;align-items:flex-end">
+            <div class="field" style="margin:0;flex:1">
+              <label>Buscar por nombre o CI/NIT</label>
+              <input type="text" name="buscar" th:value="${buscar}"
+                     placeholder="Ej: Juan Pérez, 12345678..."
+                     class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary">Buscar</button>
+            <a th:href="@{/clientes}" class="btn btn-secondary">Limpiar</a>
+          </form>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-toolbar">
+          <span class="count" th:text="${clientes.size()} + ' cliente(s)'"></span>
+          <a th:href="@{/clientes/nuevo}" class="btn btn-primary btn-sm">+ Nuevo</a>
+        </div>
+
+        <div th:if="${clientes.isEmpty()}" class="empty-state">
+          <div class="es-icon">👤</div>
+          <div class="es-title">Sin clientes registrados</div>
+          <div class="es-text">Registrá el primer cliente para comenzar a gestionar pedidos.</div>
+          <a th:href="@{/clientes/nuevo}" class="btn btn-primary">+ Registrar primer cliente</a>
+        </div>
+
+        <table th:unless="${clientes.isEmpty()}">
+          <thead>
+            <tr>
+              <th>#</th><th>Nombre completo</th><th>CI</th>
+              <th>Teléfono</th><th>Email</th><th>Dirección</th><th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="c : ${clientes}">
+              <td class="td-id" th:text="${c.id}"></td>
+              <td class="td-bold" th:text="${c.nombreCompleto}"></td>
+              <td th:text="${c.ci != null and c.ci != '' ? c.ci : '—'}"></td>
+              <td th:text="${c.telefono}"></td>
+              <td th:text="${c.email != null and c.email != '' ? c.email : '—'}"></td>
+              <td th:text="${c.direccion != null and c.direccion != '' ? c.direccion : '—'}"></td>
+              <td class="td-actions">
+                <a th:href="@{/clientes/{id}/historial(id=${c.id})}" class="btn btn-info btn-xs">Historial</a>
+                <a th:href="@{/clientes/editar/{id}(id=${c.id})}" class="btn btn-secondary btn-xs">Editar</a>
+                <form th:action="@{/clientes/{id}(id=${c.id})}" method="post" style="display:inline"
+                      onsubmit="return confirm('¿Eliminar este cliente?')">
+                  <input type="hidden" name="_method" value="DELETE">
+                  <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
+                </form>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
     </div>
   </div>
-
-  <div class="table-card">
-    <div class="table-toolbar">
-      <span class="count" th:text="${clientes.size()} + ' cliente(s)'"></span>
-    </div>
-
-    <div th:if="${clientes.isEmpty()}" class="empty-state">
-      <div class="es-icon">👤</div>
-      <div class="es-title">Sin clientes</div>
-      <div class="es-text">Registrá el primer cliente con el botón de arriba.</div>
-    </div>
-
-    <table th:unless="${clientes.isEmpty()}">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Nombre</th>
-          <th>CI</th>
-          <th>Teléfono</th>
-          <th>Email</th>
-          <th>Dirección</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr th:each="c : ${clientes}">
-          <td th:text="${c.id}"></td>
-          <td class="td-bold" th:text="${c.nombreCompleto}"></td>
-          <td th:text="${c.ci != null and c.ci != '' ? c.ci : '—'}"></td>
-          <td th:text="${c.telefono}"></td>
-          <td th:text="${c.email != null and c.email != '' ? c.email : '—'}"></td>
-          <td th:text="${c.direccion != null and c.direccion != '' ? c.direccion : '—'}"></td>
-          <td class="td-actions">
-            <a th:href="@{/clientes/{id}/historial(id=${c.id})}" class="btn btn-warning btn-xs">Historial</a>
-            <a th:href="@{/clientes/editar/{id}(id=${c.id})}" class="btn btn-secondary btn-xs">Editar</a>
-            <form th:action="@{/clientes/{id}(id=${c.id})}" method="post" style="display:inline" onsubmit="return confirm('¿Eliminar este cliente?')">
-              <input type="hidden" name="_method" value="DELETE">
-              <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
-            </form>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
 </div>
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 </body>
 </html>

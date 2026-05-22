@@ -2,112 +2,139 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 
-<nav class="nav" th:fragment="nav(seccion)">
-  <div class="nav-inner">
+<aside class="sidebar" th:fragment="nav(seccion)">
 
-    <!-- Logo -->
-    <a th:href="@{/}" class="nav-logo">
-      <span class="logo-icon">🪵</span>
-      <div class="logo-text">
-        <strong>Carpintería</strong>
-        <span>Sistema de Gestión</span>
+  <!-- Logo -->
+  <div class="sidebar-header">
+    <a th:href="@{/}" class="sidebar-logo">
+      <div class="logo-icon-wrap">🪵</div>
+      <div class="logo-text-wrap">
+        <span class="logo-name">MaderaCraft</span>
+        <span class="logo-sub">Sistema de Gestión</span>
       </div>
     </a>
+  </div>
 
-    <ul class="nav-links">
+  <!-- Navigation -->
+  <nav class="sidebar-nav">
 
-      <!-- Clientes -->
-      <li>
-        <button class="nav-btn" th:classappend="${seccion == 'clientes'} ? ' activo'"
-                onclick="toggleNav(this)">👤 Clientes</button>
-        <div class="nav-dropdown">
-          <div class="dd-label">Gestión de Clientes</div>
-          <a th:href="@{/clientes}"><span class="dd-icon">📋</span> Listado de clientes</a>
-          <a th:href="@{/clientes/nuevo}"><span class="dd-icon">➕</span> Registrar cliente</a>
-        </div>
-      </li>
+    <a th:href="@{/}" class="sidebar-link"
+       th:classappend="${seccion == 'dashboard'} ? ' active'">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Dashboard</span>
+    </a>
 
-      <!-- Ventas -->
-      <li>
-        <button class="nav-btn" th:classappend="${seccion == 'ventas'} ? ' activo'"
-                onclick="toggleNav(this)">💼 Ventas</button>
-        <div class="nav-dropdown">
-          <div class="dd-label">Proceso de Venta</div>
-          <a th:href="@{/solicitudes}"><span class="dd-icon">📝</span> Solicitudes</a>
-          <a th:href="@{/cotizaciones}"><span class="dd-icon">💰</span> Cotizaciones</a>
-          <a th:href="@{/pedidos}"><span class="dd-icon">📦</span> Pedidos confirmados</a>
-          <a th:href="@{/pagos}"><span class="dd-icon">💵</span> Pagos iniciales (50%)</a>
-        </div>
-      </li>
+    <div class="sidebar-label">Comercial</div>
 
-      <!-- Producción -->
-      <li>
-        <button class="nav-btn" th:classappend="${seccion == 'produccion'} ? ' activo'"
-                onclick="toggleNav(this)">🔨 Producción</button>
-        <div class="nav-dropdown">
-          <div class="dd-label">Gestión de Producción</div>
-          <a th:href="@{/tecnica}"><span class="dd-icon">📐</span> Info técnica del pedido</a>
-          <a th:href="@{/produccion}"><span class="dd-icon">⚙️</span> Asignaciones</a>
-        </div>
-      </li>
+    <div class="sidebar-group" th:classappend="${seccion == 'clientes'} ? ' open'">
+      <button class="sidebar-link" th:classappend="${seccion == 'clientes'} ? ' active'"
+              onclick="toggleGroup(this)">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label">Clientes</span>
+        <span class="nav-arrow">›</span>
+      </button>
+      <div class="sidebar-sub">
+        <a th:href="@{/clientes}" class="sidebar-sub-link"><span class="sub-dot"></span>Lista de clientes</a>
+        <a th:href="@{/clientes/nuevo}" class="sidebar-sub-link"><span class="sub-dot"></span>Registrar cliente</a>
+      </div>
+    </div>
 
-      <!-- Inventario -->
-      <li>
-        <button class="nav-btn" th:classappend="${seccion == 'inventario'} ? ' activo'"
-                onclick="toggleNav(this)">🪵 Inventario</button>
-        <div class="nav-dropdown">
-          <div class="dd-label">Gestión de Madera</div>
-          <a th:href="@{/inventario}"><span class="dd-icon">📊</span> Stock de madera</a>
-          <a th:href="@{/inventario/ingreso}"><span class="dd-icon">📥</span> Ingreso desde proveedor</a>
-          <a th:href="@{/inventario/consumo}"><span class="dd-icon">🪚</span> Consumo por pedido</a>
-          <a th:href="@{/inventario/reposicion}"><span class="dd-icon">🔄</span> Reposición</a>
-          <a th:href="@{/inventario/movimientos}"><span class="dd-icon">📋</span> Historial movimientos</a>
-          <hr>
-          <a th:href="@{/proveedores}"><span class="dd-icon">🏭</span> Proveedores</a>
-        </div>
-      </li>
+    <div class="sidebar-group" th:classappend="${seccion == 'ventas'} ? ' open'">
+      <button class="sidebar-link" th:classappend="${seccion == 'ventas'} ? ' active'"
+              onclick="toggleGroup(this)">
+        <span class="nav-icon">💼</span>
+        <span class="nav-label">Ventas</span>
+        <span class="nav-arrow">›</span>
+      </button>
+      <div class="sidebar-sub">
+        <a th:href="@{/solicitudes}" class="sidebar-sub-link"><span class="sub-dot"></span>1 · Solicitudes</a>
+        <a th:href="@{/cotizaciones}" class="sidebar-sub-link"><span class="sub-dot"></span>2 · Cotizaciones</a>
+        <a th:href="@{/pedidos}" class="sidebar-sub-link"><span class="sub-dot"></span>3 · Pedidos</a>
+        <a th:href="@{/pagos}" class="sidebar-sub-link"><span class="sub-dot"></span>4 · Pagos iniciales</a>
+      </div>
+    </div>
 
-      <!-- Calidad y Entrega -->
-      <li>
-        <button class="nav-btn" th:classappend="${seccion == 'entrega'} ? ' activo'"
-                onclick="toggleNav(this)">🚚 Entrega</button>
-        <div class="nav-dropdown">
-          <div class="dd-label">Calidad y Entrega</div>
-          <a th:href="@{/calidad}"><span class="dd-icon">✅</span> Inspección de calidad</a>
-          <a th:href="@{/embalaje}"><span class="dd-icon">📦</span> Embalaje</a>
-          <a th:href="@{/entregas}"><span class="dd-icon">🚚</span> Entregas</a>
-          <a th:href="@{/pagos-final}"><span class="dd-icon">💳</span> Pago final</a>
-        </div>
-      </li>
+    <div class="sidebar-label">Operaciones</div>
 
-      <!-- Reportes -->
-      <li>
-        <a th:href="@{/reportes}" th:classappend="${seccion == 'reportes'} ? ' activo'">📊 Reportes</a>
-      </li>
+    <div class="sidebar-group" th:classappend="${seccion == 'produccion'} ? ' open'">
+      <button class="sidebar-link" th:classappend="${seccion == 'produccion'} ? ' active'"
+              onclick="toggleGroup(this)">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-label">Producción</span>
+        <span class="nav-arrow">›</span>
+      </button>
+      <div class="sidebar-sub">
+        <a th:href="@{/tecnica}" class="sidebar-sub-link"><span class="sub-dot"></span>Info técnica</a>
+        <a th:href="@{/produccion}" class="sidebar-sub-link"><span class="sub-dot"></span>Asignaciones</a>
+      </div>
+    </div>
 
-    </ul>
+    <div class="sidebar-group" th:classappend="${seccion == 'inventario'} ? ' open'">
+      <button class="sidebar-link" th:classappend="${seccion == 'inventario'} ? ' active'"
+              onclick="toggleGroup(this)">
+        <span class="nav-icon">🪵</span>
+        <span class="nav-label">Inventario</span>
+        <span class="nav-arrow">›</span>
+      </button>
+      <div class="sidebar-sub">
+        <a th:href="@{/inventario}" class="sidebar-sub-link"><span class="sub-dot"></span>Stock de madera</a>
+        <a th:href="@{/inventario/ingreso}" class="sidebar-sub-link"><span class="sub-dot"></span>Ingreso</a>
+        <a th:href="@{/inventario/consumo}" class="sidebar-sub-link"><span class="sub-dot"></span>Consumo</a>
+        <a th:href="@{/inventario/reposicion}" class="sidebar-sub-link"><span class="sub-dot"></span>Reposición</a>
+        <a th:href="@{/inventario/movimientos}" class="sidebar-sub-link"><span class="sub-dot"></span>Movimientos</a>
+        <a th:href="@{/proveedores}" class="sidebar-sub-link"><span class="sub-dot"></span>Proveedores</a>
+      </div>
+    </div>
+
+    <div class="sidebar-label">Entrega</div>
+
+    <div class="sidebar-group" th:classappend="${seccion == 'entrega'} ? ' open'">
+      <button class="sidebar-link" th:classappend="${seccion == 'entrega'} ? ' active'"
+              onclick="toggleGroup(this)">
+        <span class="nav-icon">🚚</span>
+        <span class="nav-label">Calidad y Entrega</span>
+        <span class="nav-arrow">›</span>
+      </button>
+      <div class="sidebar-sub">
+        <a th:href="@{/calidad}" class="sidebar-sub-link"><span class="sub-dot"></span>5 · Inspección calidad</a>
+        <a th:href="@{/embalaje}" class="sidebar-sub-link"><span class="sub-dot"></span>6 · Embalaje</a>
+        <a th:href="@{/entregas}" class="sidebar-sub-link"><span class="sub-dot"></span>7 · Entregas</a>
+        <a th:href="@{/pagos-final}" class="sidebar-sub-link"><span class="sub-dot"></span>8 · Pago final</a>
+      </div>
+    </div>
+
+    <div class="sidebar-label">Análisis</div>
+
+    <a th:href="@{/reportes}" class="sidebar-link"
+       th:classappend="${seccion == 'reportes'} ? ' active'">
+      <span class="nav-icon">📊</span>
+      <span class="nav-label">Reportes</span>
+    </a>
+
+  </nav>
+
+  <!-- Footer -->
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="user-avatar">C</div>
+      <div class="user-meta">
+        <span class="user-name">Carpintería</span>
+        <span class="user-role">Sistema activo</span>
+      </div>
+    </div>
   </div>
 
   <script>
-  function toggleNav(btn) {
-    var dropdown = btn.nextElementSibling;
-    var isOpen = dropdown.classList.contains('open');
-    document.querySelectorAll('.nav-dropdown.open').forEach(function(d) {
-      d.classList.remove('open');
-    });
-    if (!isOpen) {
-      dropdown.classList.add('open');
+    function toggleGroup(btn) {
+      var group = btn.closest('.sidebar-group');
+      var isOpen = group.classList.contains('open');
+      document.querySelectorAll('.sidebar-group.open').forEach(function(g) { g.classList.remove('open'); });
+      if (!isOpen) group.classList.add('open');
     }
-  }
-  document.addEventListener('click', function(e) {
-    if (!e.target.closest('.nav-links > li')) {
-      document.querySelectorAll('.nav-dropdown.open').forEach(function(d) {
-        d.classList.remove('open');
-      });
-    }
-  });
+    function toggleSidebar() { document.body.classList.toggle('sidebar-open'); }
   </script>
-</nav>
+
+</aside>
 
 </body>
 </html>

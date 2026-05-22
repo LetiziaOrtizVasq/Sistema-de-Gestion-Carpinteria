@@ -3,74 +3,89 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Solicitudes - Sistema Carpintería</title>
+  <title>Solicitudes - MaderaCraft</title>
   <link rel="stylesheet" th:href="@{/css/estilo.css}">
 </head>
 <body>
-
-<div th:replace="~{layout/nav :: nav('ventas')}"></div>
-
-<div class="layout">
-
-  <div class="page-header">
-    <div class="page-header-info">
-      <h2>Solicitudes de Clientes</h2>
-      <span class="cu-tag">CU-01 — Registrar solicitud inicial del cliente</span>
+<div class="app-shell">
+  <div th:replace="~{layout/nav :: nav('ventas')}"></div>
+  <div class="main-wrapper">
+    <div class="topbar-mobile">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <span class="mobile-brand">MaderaCraft</span>
     </div>
-    <div class="page-header-actions">
-      <a th:href="@{/solicitudes/nueva}" class="btn btn-primary">＋ Nueva Solicitud</a>
+    <div class="content-area">
+
+      <nav class="breadcrumb">
+        <a th:href="@{/}">Inicio</a>
+        <span class="bc-sep">›</span>
+        Ventas
+        <span class="bc-sep">›</span>
+        <span class="bc-current">Solicitudes</span>
+      </nav>
+
+      <div class="page-header">
+        <div class="page-header-info">
+          <h2>Solicitudes de Clientes</h2>
+          <span class="cu-tag">CU-01 — Paso 1 del proceso de venta</span>
+        </div>
+        <div class="page-header-actions">
+          <a th:href="@{/solicitudes/nueva}" class="btn btn-primary">+ Nueva solicitud</a>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-toolbar">
+          <span class="count" th:text="${solicitudes.size()} + ' solicitud(es)'"></span>
+        </div>
+
+        <div th:if="${solicitudes.isEmpty()}" class="empty-state">
+          <div class="es-icon">📝</div>
+          <div class="es-title">Sin solicitudes</div>
+          <div class="es-text">Registrá la primera solicitud de un cliente para iniciar el proceso de venta.</div>
+          <a th:href="@{/solicitudes/nueva}" class="btn btn-primary">+ Registrar primera solicitud</a>
+        </div>
+
+        <table th:unless="${solicitudes.isEmpty()}">
+          <thead>
+            <tr>
+              <th>#</th><th>Cliente</th><th>Teléfono</th>
+              <th>Artículos solicitados</th><th>Estado</th><th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="s : ${solicitudes}">
+              <td class="td-id" th:text="${s.id}"></td>
+              <td class="td-bold" th:text="${s.nombreCliente}"></td>
+              <td th:text="${s.telefono}"></td>
+              <td th:text="${s.resumenProductos}"></td>
+              <td>
+                <span class="badge"
+                      th:classappend="${s.estado == 'PENDIENTE'} ? 'badge-pendiente' :
+                                     (${s.estado == 'EN_PROCESO'} ? 'badge-proceso' :
+                                     (${s.estado == 'COTIZADA'} ? 'badge-exitoso' : 'badge-gris'))"
+                      th:text="${s.estado}"></span>
+              </td>
+              <td class="td-actions">
+                <a th:href="@{/cotizaciones/nueva(solicitudId=${s.id})}"
+                   class="btn btn-warning btn-xs">Cotizar →</a>
+                <a th:href="@{/solicitudes/editar/{id}(id=${s.id})}"
+                   class="btn btn-secondary btn-xs">Editar</a>
+                <form th:action="@{/solicitudes/{id}(id=${s.id})}" method="post"
+                      style="display:inline"
+                      onsubmit="return confirm('¿Eliminar esta solicitud?')">
+                  <input type="hidden" name="_method" value="DELETE">
+                  <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
+                </form>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
     </div>
   </div>
-
-  <div class="table-card">
-    <div class="table-toolbar">
-      <span class="count" th:text="${solicitudes.size()} + ' solicitud(es)'"></span>
-    </div>
-
-    <div th:if="${solicitudes.isEmpty()}" class="empty-state">
-      <div class="es-icon">📋</div>
-      <div class="es-title">Sin solicitudes</div>
-      <div class="es-text">Hacé clic en <strong>Nueva Solicitud</strong> para comenzar.</div>
-    </div>
-
-    <table th:unless="${solicitudes.isEmpty()}">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Cliente</th>
-          <th>Teléfono</th>
-          <th>Artículos</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr th:each="s : ${solicitudes}">
-          <td th:text="${s.id}"></td>
-          <td class="td-bold" th:text="${s.nombreCliente}"></td>
-          <td th:text="${s.telefono}"></td>
-          <td th:text="${s.resumenProductos}"></td>
-          <td>
-            <span class="badge"
-                  th:classappend="${s.estado == 'PENDIENTE'} ? 'badge-pendiente' :
-                                 (${s.estado == 'EN_PROCESO'} ? 'badge-proceso' :
-                                 (${s.estado == 'COTIZADA'} ? 'badge-exitoso' : 'badge-gris'))"
-                  th:text="${s.estado}">
-            </span>
-          </td>
-          <td class="td-actions">
-            <a th:href="@{/cotizaciones/nueva(solicitudId=${s.id})}" class="btn btn-warning btn-xs">Cotizar</a>
-            <a th:href="@{/solicitudes/editar/{id}(id=${s.id})}" class="btn btn-secondary btn-xs">Editar</a>
-            <form th:action="@{/solicitudes/{id}(id=${s.id})}" method="post" style="display:inline" onsubmit="return confirm('¿Eliminar esta solicitud?')">
-              <input type="hidden" name="_method" value="DELETE">
-              <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
-            </form>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
 </div>
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 </body>
 </html>

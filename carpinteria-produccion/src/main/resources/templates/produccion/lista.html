@@ -3,71 +3,84 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Producción - Sistema Carpintería</title>
+  <title>Producción - MaderaCraft</title>
   <link rel="stylesheet" th:href="@{/css/estilo.css}">
 </head>
 <body>
-
-<div th:replace="~{layout/nav :: nav('produccion')}"></div>
-
-<div class="layout">
-
-  <div class="page-header">
-    <div class="page-header-info">
-      <h2>Asignaciones de Producción</h2>
-      <span class="cu-tag">CU-12 Asignar · CU-13 Avances · CU-14 Actualizar · CU-15 Completar</span>
+<div class="app-shell">
+  <div th:replace="~{layout/nav :: nav('produccion')}"></div>
+  <div class="main-wrapper">
+    <div class="topbar-mobile">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <span class="mobile-brand">MaderaCraft</span>
     </div>
-    <div class="page-header-actions">
-      <a th:href="@{/produccion/nuevo}" class="btn btn-primary">＋ Nueva Asignación</a>
+    <div class="content-area">
+
+      <nav class="breadcrumb">
+        <a th:href="@{/}">Inicio</a>
+        <span class="bc-sep">›</span>
+        Operaciones
+        <span class="bc-sep">›</span>
+        <span class="bc-current">Producción</span>
+      </nav>
+
+      <div class="page-header">
+        <div class="page-header-info">
+          <h2>Asignaciones de Producción</h2>
+          <span class="cu-tag">CU-12 Asignar · CU-13 Avances · CU-14 Actualizar · CU-15 Completar</span>
+        </div>
+        <div class="page-header-actions">
+          <a th:href="@{/produccion/nuevo}" class="btn btn-primary">+ Nueva Asignación</a>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-toolbar">
+          <span class="count" th:text="${asignaciones.size()} + ' asignación(es)'"></span>
+        </div>
+
+        <div th:if="${asignaciones.isEmpty()}" class="empty-state">
+          <div class="es-icon">⚙</div>
+          <div class="es-title">Sin asignaciones</div>
+          <div class="es-text">Asigná pedidos a los operarios del taller para iniciar la producción.</div>
+          <a th:href="@{/produccion/nuevo}" class="btn btn-primary">+ Nueva Asignación</a>
+        </div>
+
+        <table th:unless="${asignaciones.isEmpty()}">
+          <thead>
+            <tr>
+              <th>#</th><th>Pedido</th><th>Operario</th><th>Estado</th><th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="a : ${asignaciones}">
+              <td class="td-id" th:text="${a.id}"></td>
+              <td class="td-bold" th:text="${'#' + a.pedido.id + ' — ' + a.pedido.cotizacion.solicitud.nombreCliente + ' / ' + a.pedido.cotizacion.solicitud.resumenProductos}"></td>
+              <td th:text="${a.operario}"></td>
+              <td>
+                <span class="badge"
+                      th:classappend="${a.estado == 'ASIGNADO'} ? 'badge-pendiente' :
+                                     (${a.estado == 'EN_PROCESO'} ? 'badge-proceso' : 'badge-exitoso')"
+                      th:text="${a.estado}"></span>
+              </td>
+              <td class="td-actions">
+                <a th:href="@{/produccion/{id}/avances(id=${a.id})}" class="btn btn-warning btn-xs">Avances</a>
+                <a th:href="@{/produccion/editar/{id}(id=${a.id})}" class="btn btn-secondary btn-xs">Editar</a>
+                <form th:action="@{/produccion/{id}(id=${a.id})}" method="post"
+                      style="display:inline"
+                      onsubmit="return confirm('¿Eliminar esta asignación?')">
+                  <input type="hidden" name="_method" value="DELETE">
+                  <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
+                </form>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
     </div>
   </div>
-
-  <div class="table-card">
-    <div class="table-toolbar">
-      <span class="count" th:text="${asignaciones.size()} + ' asignación(es)'"></span>
-    </div>
-
-    <div th:if="${asignaciones.isEmpty()}" class="empty-state">
-      <div class="es-icon">⚙️</div>
-      <div class="es-title">Sin asignaciones</div>
-      <div class="es-text">Asigná pedidos a los operarios del taller para iniciar la producción.</div>
-    </div>
-
-    <table th:unless="${asignaciones.isEmpty()}">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Pedido</th>
-          <th>Operario</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr th:each="a : ${asignaciones}">
-          <td th:text="${a.id}"></td>
-          <td class="td-bold" th:text="${'#' + a.pedido.id + ' — ' + a.pedido.cotizacion.solicitud.nombreCliente + ' / ' + a.pedido.cotizacion.solicitud.resumenProductos}"></td>
-          <td th:text="${a.operario}"></td>
-          <td>
-            <span class="badge"
-                  th:classappend="${a.estado == 'ASIGNADO'} ? 'badge-pendiente' :
-                                 (${a.estado == 'EN_PROCESO'} ? 'badge-proceso' : 'badge-exitoso')"
-                  th:text="${a.estado}">
-            </span>
-          </td>
-          <td class="td-actions">
-            <a th:href="@{/produccion/{id}/avances(id=${a.id})}" class="btn btn-warning btn-xs">Avances</a>
-            <a th:href="@{/produccion/editar/{id}(id=${a.id})}" class="btn btn-secondary btn-xs">Editar</a>
-            <form th:action="@{/produccion/{id}(id=${a.id})}" method="post" style="display:inline" onsubmit="return confirm('¿Eliminar esta asignación?')">
-              <input type="hidden" name="_method" value="DELETE">
-              <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
-            </form>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
 </div>
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 </body>
 </html>

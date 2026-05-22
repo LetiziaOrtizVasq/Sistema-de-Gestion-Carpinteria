@@ -1,103 +1,108 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pago Inicial - Sistema Carpintería</title>
+  <title th:text="${titulo} + ' - MaderaCraft'">Pago Inicial</title>
   <link rel="stylesheet" th:href="@{/css/estilo.css}">
 </head>
 <body>
-
-<div th:replace="~{layout/nav :: nav('ventas')}"></div>
-<div th:if="${pasoActual != null}" th:replace="~{layout/stepper :: stepper(${pasoActual})}"></div>
-
-<div class="layout">
-
-  <div class="page-header">
-    <div class="page-header-info">
-      <h2 th:text="${titulo}">Pago Inicial</h2>
-      <span class="cu-tag">CU-09 — Confirmar pago inicial del 50%</span>
+<div class="app-shell">
+  <div th:replace="~{layout/nav :: nav('ventas')}"></div>
+  <div class="main-wrapper">
+    <div class="topbar-mobile">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <span class="mobile-brand">MaderaCraft</span>
     </div>
-    <div class="page-header-actions">
-      <a th:href="@{/pagos}" class="btn btn-secondary">← Volver</a>
-    </div>
-  </div>
+    <div th:if="${pasoActual != null}" th:replace="~{layout/stepper :: stepper(${pasoActual})}"></div>
+    <div class="content-area">
 
-  <div class="card">
-    <div class="card-header">
-      <h3 th:text="${titulo}">Pago Inicial</h3>
-      <p>El sistema calcula automáticamente el 50% requerido del total del pedido</p>
-    </div>
+      <nav class="breadcrumb">
+        <a th:href="@{/}">Inicio</a>
+        <span class="bc-sep">›</span>
+        <a th:href="@{/pagos}">Pagos Iniciales</a>
+        <span class="bc-sep">›</span>
+        <span class="bc-current" th:text="${titulo}">Nuevo</span>
+      </nav>
 
-    <form th:action="@{/pagos}" th:object="${pago}" method="post">
-      <input type="hidden" th:field="*{id}">
-
-      <div class="card-body">
-        <div class="form-grid">
-
-          <div class="field full-width">
-            <label>Pedido <span class="req">*</span></label>
-            <select name="pedidoId" class="form-control">
-              <option value="">-- Seleccione un pedido --</option>
-              <option th:each="p : ${pedidos}"
-                      th:value="${p.id}"
-                      th:text="${'#' + p.id + ' — ' + p.cotizacion.solicitud.nombreCliente + ' / ' + p.cotizacion.solicitud.resumenProductos + ' — Total: Bs. ' + #numbers.formatDecimal(p.cotizacion.precioTotal, 1, 2)}"
-                      th:selected="${pago.pedido != null and pago.pedido.id == p.id}">
-              </option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label>Monto Pagado (Bs.) <span class="req">*</span></label>
-            <input type="number" step="0.01" min="0"
-                   th:field="*{montoPagado}"
-                   th:classappend="${#fields.hasErrors('montoPagado')} ? 'input-error'"
-                   placeholder="0.00" class="form-control">
-            <span class="field-error" th:if="${#fields.hasErrors('montoPagado')}"
-                  th:errors="*{montoPagado}"></span>
-          </div>
-
-          <div class="field">
-            <label>Método de Pago <span class="req">*</span></label>
-            <select th:field="*{metodoPago}"
-                    th:classappend="${#fields.hasErrors('metodoPago')} ? 'input-error'"
-                    class="form-control">
-              <option value="">-- Seleccione --</option>
-              <option value="Efectivo">Efectivo</option>
-              <option value="Transferencia">Transferencia Bancaria</option>
-              <option value="QR">Pago QR</option>
-              <option value="Cheque">Cheque</option>
-            </select>
-            <span class="field-error" th:if="${#fields.hasErrors('metodoPago')}"
-                  th:errors="*{metodoPago}"></span>
-          </div>
-
-          <input type="hidden" th:field="*{fechaPago}">
-
-          <div class="field">
-            <label>Número de Comprobante</label>
-            <input type="text" th:field="*{comprobante}"
-                   placeholder="Ej: TRX-20240415-001" class="form-control">
-          </div>
-
-          <div class="field">
-            <label>Estado</label>
-            <select th:field="*{estado}" class="form-control">
-              <option value="PENDIENTE">Pendiente</option>
-              <option value="CONFIRMADO">Confirmado</option>
-            </select>
-          </div>
-
+      <div class="page-header">
+        <div class="page-header-info">
+          <h2 th:text="${titulo}">Pago Inicial</h2>
+          <span class="cu-tag">CU-09 — Confirmar pago inicial del 50%</span>
+        </div>
+        <div class="page-header-actions">
+          <a th:href="@{/pagos}" class="btn btn-secondary">← Volver</a>
         </div>
       </div>
 
-      <div class="card-footer">
-        <button type="submit" class="btn btn-primary">Confirmar Pago</button>
-        <a th:href="@{/pagos}" class="btn btn-secondary">Cancelar</a>
+      <div class="card">
+        <div class="card-header">
+          <h3 th:text="${titulo}">Pago Inicial</h3>
+          <p>El sistema calcula automáticamente el 50% requerido del total del pedido</p>
+        </div>
+        <form th:action="@{/pagos}" th:object="${pago}" method="post">
+          <input type="hidden" th:field="*{id}">
+          <div class="card-body">
+            <div class="form-grid">
+              <div class="field full-width">
+                <label>Pedido <span class="req">*</span></label>
+                <select name="pedidoId" class="form-control">
+                  <option value="">-- Seleccione un pedido --</option>
+                  <option th:each="p : ${pedidos}"
+                          th:value="${p.id}"
+                          th:text="${'#' + p.id + ' — ' + p.cotizacion.solicitud.nombreCliente + ' / ' + p.cotizacion.solicitud.resumenProductos + ' — Total: Bs. ' + #numbers.formatDecimal(p.cotizacion.precioTotal, 1, 2)}"
+                          th:selected="${pago.pedido != null and pago.pedido.id == p.id}">
+                  </option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Monto Pagado (Bs.) <span class="req">*</span></label>
+                <input type="number" step="0.01" min="0"
+                       th:field="*{montoPagado}"
+                       th:classappend="${#fields.hasErrors('montoPagado')} ? 'input-error'"
+                       placeholder="0.00" class="form-control">
+                <span class="field-error" th:if="${#fields.hasErrors('montoPagado')}"
+                      th:errors="*{montoPagado}"></span>
+              </div>
+              <div class="field">
+                <label>Método de Pago <span class="req">*</span></label>
+                <select th:field="*{metodoPago}"
+                        th:classappend="${#fields.hasErrors('metodoPago')} ? 'input-error'"
+                        class="form-control">
+                  <option value="">-- Seleccione --</option>
+                  <option value="Efectivo">Efectivo</option>
+                  <option value="Transferencia">Transferencia Bancaria</option>
+                  <option value="QR">Pago QR</option>
+                  <option value="Cheque">Cheque</option>
+                </select>
+                <span class="field-error" th:if="${#fields.hasErrors('metodoPago')}"
+                      th:errors="*{metodoPago}"></span>
+              </div>
+              <input type="hidden" th:field="*{fechaPago}">
+              <div class="field">
+                <label>Número de Comprobante</label>
+                <input type="text" th:field="*{comprobante}"
+                       placeholder="Ej: TRX-20240415-001" class="form-control">
+              </div>
+              <div class="field">
+                <label>Estado</label>
+                <select th:field="*{estado}" class="form-control">
+                  <option value="PENDIENTE">Pendiente</option>
+                  <option value="CONFIRMADO">Confirmado</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button type="submit" class="btn btn-primary">Confirmar Pago</button>
+            <a th:href="@{/pagos}" class="btn btn-secondary">Cancelar</a>
+          </div>
+        </form>
       </div>
-    </form>
-  </div>
 
+    </div>
+  </div>
 </div>
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 </body>
 </html>

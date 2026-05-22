@@ -1,172 +1,140 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title th:text="${titulo} + ' - Sistema Carpintería'">Solicitud</title>
+  <title th:text="${titulo} + ' - MaderaCraft'">Solicitud</title>
   <link rel="stylesheet" th:href="@{/css/estilo.css}">
   <style>
-    .items-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:.5rem; }
-    .item-row { display:grid; grid-template-columns:160px 60px 1fr 150px 150px 36px; gap:.5rem; margin-bottom:.4rem; align-items:start; }
-    .item-row label { font-size:.75rem; color:var(--text-muted); margin-bottom:.15rem; display:block; }
-    .items-table-head { display:grid; grid-template-columns:160px 60px 1fr 150px 150px 36px; gap:.5rem; font-size:.75rem; color:var(--text-muted); font-weight:600; padding:.2rem 0; border-bottom:1px solid var(--border); margin-bottom:.4rem; }
+    .item-row { display:grid; grid-template-columns:160px 60px 1fr 150px 150px 36px; gap:.5rem; margin-bottom:.4rem; align-items:start; animation: fadeInUp .15s ease; }
+    .items-table-head { display:grid; grid-template-columns:160px 60px 1fr 150px 150px 36px; gap:.5rem; font-size:.7rem; color:var(--text-3); font-weight:600; padding:.2rem 0; border-bottom:1px solid var(--border); margin-bottom:.4rem; text-transform:uppercase; letter-spacing:.4px; }
+    @media(max-width:768px){.item-row,.items-table-head{grid-template-columns:1fr 1fr;}.items-table-head{display:none;}}
   </style>
 </head>
 <body>
-
-<div th:replace="~{layout/nav :: nav('ventas')}"></div>
-<div th:if="${pasoActual != null}" th:replace="~{layout/stepper :: stepper(${pasoActual})}"></div>
-
-<div class="layout">
-
-  <div class="page-header">
-    <div class="page-header-info">
-      <h2 th:text="${titulo}">Solicitud</h2>
-      <span class="cu-tag">CU-01 — Registrar solicitud inicial del cliente</span>
+<div class="app-shell">
+  <div th:replace="~{layout/nav :: nav('ventas')}"></div>
+  <div class="main-wrapper">
+    <div class="topbar-mobile">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <span class="mobile-brand">MaderaCraft</span>
     </div>
-    <div class="page-header-actions">
-      <a th:href="@{/solicitudes}" class="btn btn-secondary">← Volver</a>
-    </div>
-  </div>
+    <div th:if="${pasoActual != null}" th:replace="~{layout/stepper :: stepper(${pasoActual})}"></div>
+    <div class="content-area">
 
-  <div class="card">
-    <div class="card-header">
-      <h3 th:text="${titulo}">Solicitud</h3>
-      <p>Completá todos los campos obligatorios (<span class="req">*</span>)</p>
-    </div>
+      <nav class="breadcrumb">
+        <a th:href="@{/}">Inicio</a>
+        <span class="bc-sep">›</span>
+        <a th:href="@{/solicitudes}">Solicitudes</a>
+        <span class="bc-sep">›</span>
+        <span class="bc-current" th:text="${titulo}">Nueva</span>
+      </nav>
 
-    <form th:action="@{/solicitudes}" th:object="${solicitud}" method="post">
-      <input type="hidden" th:field="*{id}">
-
-      <div class="card-body">
-        <div class="form-grid">
-
-          <div class="field">
-            <label>Nombre del Cliente <span class="req">*</span></label>
-            <input type="text" th:field="*{nombreCliente}"
-                   th:classappend="${#fields.hasErrors('nombreCliente')} ? 'input-error'"
-                   placeholder="Ej: Juan Pérez" class="form-control">
-            <span class="field-error" th:if="${#fields.hasErrors('nombreCliente')}"
-                  th:errors="*{nombreCliente}"></span>
-          </div>
-
-          <div class="field">
-            <label>Teléfono <span class="req">*</span></label>
-            <input type="text" th:field="*{telefono}"
-                   th:classappend="${#fields.hasErrors('telefono')} ? 'input-error'"
-                   placeholder="Ej: 70012345" class="form-control">
-            <span class="field-error" th:if="${#fields.hasErrors('telefono')}"
-                  th:errors="*{telefono}"></span>
-          </div>
-
-          <div class="field">
-            <label>Estado</label>
-            <select th:field="*{estado}" class="form-control">
-              <option value="PENDIENTE">Pendiente</option>
-              <option value="EN_PROCESO">En Proceso</option>
-              <option value="COTIZADA">Cotizada</option>
-              <option value="CANCELADA">Cancelada</option>
-            </select>
-          </div>
-
-          <input type="hidden" th:field="*{fechaSolicitud}">
-
-          <!-- Artículos del pedido -->
-          <div class="field full-width" style="margin-top:.5rem">
-            <div class="items-header">
-              <label style="margin:0">Artículos del Pedido <span class="req">*</span></label>
-              <button type="button" class="btn btn-primary btn-xs" onclick="agregarFila()">+ Agregar artículo</button>
-            </div>
-            <span class="field-error" th:if="${itemError != null}" th:text="${itemError}"></span>
-
-            <div class="items-table-head" style="margin-top:.5rem">
-              <span>Tipo de Producto</span>
-              <span>Cant.</span>
-              <span>Descripción</span>
-              <span>Dimensiones</span>
-              <span>Material</span>
-              <span></span>
-            </div>
-
-            <div id="items-container">
-              <!-- Filas existentes (modo edición) -->
-              <div th:each="item : ${solicitud.items}" class="item-row">
-                <select name="iTipo" class="form-control">
-                  <option value="">-- Tipo --</option>
-                  <option value="Mesa"       th:selected="${item.tipoProducto == 'Mesa'}">Mesa</option>
-                  <option value="Silla"      th:selected="${item.tipoProducto == 'Silla'}">Silla</option>
-                  <option value="Armario"    th:selected="${item.tipoProducto == 'Armario'}">Armario</option>
-                  <option value="Cama"       th:selected="${item.tipoProducto == 'Cama'}">Cama</option>
-                  <option value="Estante"    th:selected="${item.tipoProducto == 'Estante'}">Estante</option>
-                  <option value="Escritorio" th:selected="${item.tipoProducto == 'Escritorio'}">Escritorio</option>
-                  <option value="Puerta"     th:selected="${item.tipoProducto == 'Puerta'}">Puerta</option>
-                  <option value="Ventana"    th:selected="${item.tipoProducto == 'Ventana'}">Ventana</option>
-                  <option value="Otro"       th:selected="${item.tipoProducto == 'Otro'}">Otro</option>
-                </select>
-                <input type="number" name="iCant" class="form-control" th:value="${item.cantidad}" min="1" placeholder="1">
-                <input type="text" name="iDesc" class="form-control" th:value="${item.descripcion}" placeholder="Descripción del artículo">
-                <input type="text" name="iDim"  class="form-control" th:value="${item.dimensionesAproximadas}" placeholder="Ej: 1.20m x 0.80m">
-                <input type="text" name="iMat"  class="form-control" th:value="${item.materialPreferido}" placeholder="Ej: Cedro, Pino">
-                <button type="button" class="btn btn-danger btn-xs" onclick="eliminarFila(this)" title="Eliminar">×</button>
-              </div>
-            </div>
-          </div>
-
+      <div class="page-header">
+        <div class="page-header-info">
+          <h2 th:text="${titulo}">Solicitud</h2>
+          <span class="cu-tag">CU-01 — Registrar solicitud inicial del cliente</span>
+        </div>
+        <div class="page-header-actions">
+          <a th:href="@{/solicitudes}" class="btn btn-secondary">← Volver</a>
         </div>
       </div>
 
-      <div class="card-footer">
-        <button type="submit" class="btn btn-primary">Guardar Solicitud</button>
-        <a th:href="@{/solicitudes}" class="btn btn-secondary">Cancelar</a>
+      <div class="card">
+        <div class="card-header">
+          <h3 th:text="${titulo}">Solicitud</h3>
+          <p>Completá todos los campos obligatorios (<span style="color:#e8a832">*</span>)</p>
+        </div>
+        <form th:action="@{/solicitudes}" th:object="${solicitud}" method="post">
+          <input type="hidden" th:field="*{id}">
+          <div class="card-body">
+            <div class="form-grid">
+              <div class="field">
+                <label>Nombre del Cliente <span class="req">*</span></label>
+                <input type="text" th:field="*{nombreCliente}"
+                       th:classappend="${#fields.hasErrors('nombreCliente')} ? 'input-error'"
+                       placeholder="Ej: Juan Pérez" class="form-control">
+                <span class="field-error" th:if="${#fields.hasErrors('nombreCliente')}" th:errors="*{nombreCliente}"></span>
+              </div>
+              <div class="field">
+                <label>Teléfono <span class="req">*</span></label>
+                <input type="text" th:field="*{telefono}"
+                       th:classappend="${#fields.hasErrors('telefono')} ? 'input-error'"
+                       placeholder="Ej: 70012345" class="form-control">
+                <span class="field-error" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></span>
+              </div>
+              <div class="field">
+                <label>Estado</label>
+                <select th:field="*{estado}" class="form-control">
+                  <option value="PENDIENTE">Pendiente</option>
+                  <option value="EN_PROCESO">En Proceso</option>
+                  <option value="COTIZADA">Cotizada</option>
+                  <option value="CANCELADA">Cancelada</option>
+                </select>
+              </div>
+              <input type="hidden" th:field="*{fechaSolicitud}">
+
+              <div class="field full-width" style="margin-top:.5rem">
+                <div class="items-header">
+                  <label style="margin:0">Artículos del Pedido <span class="req">*</span></label>
+                  <button type="button" class="btn btn-primary btn-xs" onclick="agregarFila()">+ Agregar artículo</button>
+                </div>
+                <span class="field-error" th:if="${itemError != null}" th:text="${itemError}"></span>
+                <div class="items-table-head" style="margin-top:.5rem">
+                  <span>Tipo de Producto</span><span>Cant.</span>
+                  <span>Descripción</span><span>Dimensiones</span>
+                  <span>Material</span><span></span>
+                </div>
+                <div id="items-container">
+                  <div th:each="item : ${solicitud.items}" class="item-row">
+                    <select name="iTipo" class="form-control">
+                      <option value="">-- Tipo --</option>
+                      <option value="Mesa"       th:selected="${item.tipoProducto == 'Mesa'}">Mesa</option>
+                      <option value="Silla"      th:selected="${item.tipoProducto == 'Silla'}">Silla</option>
+                      <option value="Armario"    th:selected="${item.tipoProducto == 'Armario'}">Armario</option>
+                      <option value="Cama"       th:selected="${item.tipoProducto == 'Cama'}">Cama</option>
+                      <option value="Estante"    th:selected="${item.tipoProducto == 'Estante'}">Estante</option>
+                      <option value="Escritorio" th:selected="${item.tipoProducto == 'Escritorio'}">Escritorio</option>
+                      <option value="Puerta"     th:selected="${item.tipoProducto == 'Puerta'}">Puerta</option>
+                      <option value="Ventana"    th:selected="${item.tipoProducto == 'Ventana'}">Ventana</option>
+                      <option value="Otro"       th:selected="${item.tipoProducto == 'Otro'}">Otro</option>
+                    </select>
+                    <input type="number" name="iCant" class="form-control" th:value="${item.cantidad}" min="1" placeholder="1">
+                    <input type="text" name="iDesc" class="form-control" th:value="${item.descripcion}" placeholder="Descripción">
+                    <input type="text" name="iDim"  class="form-control" th:value="${item.dimensionesAproximadas}" placeholder="1.20m x 0.80m">
+                    <input type="text" name="iMat"  class="form-control" th:value="${item.materialPreferido}" placeholder="Cedro, Pino...">
+                    <button type="button" class="btn btn-danger btn-xs" onclick="eliminarFila(this)" title="Eliminar">×</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button type="submit" class="btn btn-primary">Guardar solicitud</button>
+            <a th:href="@{/solicitudes}" class="btn btn-secondary">Cancelar</a>
+          </div>
+        </form>
       </div>
 
-    </form>
+    </div>
   </div>
-
 </div>
-
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 <script th:inline="javascript">
-  const tiposOpciones = `
-    <option value="">-- Tipo --</option>
-    <option value="Mesa">Mesa</option>
-    <option value="Silla">Silla</option>
-    <option value="Armario">Armario</option>
-    <option value="Cama">Cama</option>
-    <option value="Estante">Estante</option>
-    <option value="Escritorio">Escritorio</option>
-    <option value="Puerta">Puerta</option>
-    <option value="Ventana">Ventana</option>
-    <option value="Otro">Otro</option>
-  `;
-
+  const tiposOpciones = `<option value="">-- Tipo --</option><option value="Mesa">Mesa</option><option value="Silla">Silla</option><option value="Armario">Armario</option><option value="Cama">Cama</option><option value="Estante">Estante</option><option value="Escritorio">Escritorio</option><option value="Puerta">Puerta</option><option value="Ventana">Ventana</option><option value="Otro">Otro</option>`;
   function agregarFila() {
-    const container = document.getElementById('items-container');
     const div = document.createElement('div');
     div.className = 'item-row';
-    div.innerHTML = `
-      <select name="iTipo" class="form-control">${tiposOpciones}</select>
-      <input type="number" name="iCant" class="form-control" value="1" min="1" placeholder="1">
-      <input type="text" name="iDesc" class="form-control" placeholder="Descripción del artículo">
-      <input type="text" name="iDim"  class="form-control" placeholder="Ej: 1.20m x 0.80m">
-      <input type="text" name="iMat"  class="form-control" placeholder="Ej: Cedro, Pino">
-      <button type="button" class="btn btn-danger btn-xs" onclick="eliminarFila(this)" title="Eliminar">×</button>
-    `;
-    container.appendChild(div);
+    div.innerHTML = `<select name="iTipo" class="form-control">${tiposOpciones}</select><input type="number" name="iCant" class="form-control" value="1" min="1"><input type="text" name="iDesc" class="form-control" placeholder="Descripción"><input type="text" name="iDim" class="form-control" placeholder="1.20m x 0.80m"><input type="text" name="iMat" class="form-control" placeholder="Cedro, Pino..."><button type="button" class="btn btn-danger btn-xs" onclick="eliminarFila(this)">×</button>`;
+    document.getElementById('items-container').appendChild(div);
   }
-
   function eliminarFila(btn) {
-    const container = document.getElementById('items-container');
-    if (container.children.length <= 1) {
-      alert('Debe haber al menos un artículo en la solicitud.');
-      return;
-    }
+    const c = document.getElementById('items-container');
+    if (c.children.length <= 1) { alert('Debe haber al menos un artículo.'); return; }
     btn.closest('.item-row').remove();
   }
-
-  // Si no hay ítems (nueva solicitud), agregar una fila vacía al cargar
   const existentes = /*[[${solicitud.items != null ? solicitud.items.size() : 0}]]*/ 0;
   if (existentes === 0) agregarFila();
 </script>
-
 </body>
 </html>

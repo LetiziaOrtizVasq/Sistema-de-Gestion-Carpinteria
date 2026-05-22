@@ -3,68 +3,79 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Info Técnica - Sistema Carpintería</title>
+  <title>Info Técnica - MaderaCraft</title>
   <link rel="stylesheet" th:href="@{/css/estilo.css}">
 </head>
 <body>
-
-<div th:replace="~{layout/nav :: nav('produccion')}"></div>
-
-<div class="layout">
-
-  <div class="page-header">
-    <div class="page-header-info">
-      <h2>Información Técnica</h2>
-      <span class="cu-tag">CU-06 — Registrar especificaciones técnicas del pedido</span>
+<div class="app-shell">
+  <div th:replace="~{layout/nav :: nav('produccion')}"></div>
+  <div class="main-wrapper">
+    <div class="topbar-mobile">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <span class="mobile-brand">MaderaCraft</span>
     </div>
-    <div class="page-header-actions">
-      <a th:href="@{/tecnica/nueva}" class="btn btn-primary">＋ Nueva Info Técnica</a>
+    <div class="content-area">
+
+      <nav class="breadcrumb">
+        <a th:href="@{/}">Inicio</a>
+        <span class="bc-sep">›</span>
+        Operaciones
+        <span class="bc-sep">›</span>
+        <span class="bc-current">Información Técnica</span>
+      </nav>
+
+      <div class="page-header">
+        <div class="page-header-info">
+          <h2>Información Técnica</h2>
+          <span class="cu-tag">CU-06 — Registrar especificaciones técnicas del pedido</span>
+        </div>
+        <div class="page-header-actions">
+          <a th:href="@{/tecnica/nueva}" class="btn btn-primary">+ Nueva Info Técnica</a>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-toolbar">
+          <span class="count" th:text="${tecnicos.size()} + ' registro(s)'"></span>
+        </div>
+        <div th:if="${tecnicos.isEmpty()}" class="empty-state">
+          <div class="es-icon">📐</div>
+          <div class="es-title">Sin especificaciones técnicas</div>
+          <div class="es-text">Registrá las dimensiones exactas, materiales y acabados para cada pedido.</div>
+          <a th:href="@{/tecnica/nueva}" class="btn btn-primary">+ Nueva especificación</a>
+        </div>
+        <table th:unless="${tecnicos.isEmpty()}">
+          <thead>
+            <tr>
+              <th>#</th><th>Solicitud</th><th>Tipos de Madera</th>
+              <th>Acabado</th><th>Dimensiones Exactas</th><th>Color</th><th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="t : ${tecnicos}">
+              <td class="td-id" th:text="${t.id}"></td>
+              <td class="td-bold" th:text="${'#' + t.solicitud.id + ' — ' + t.solicitud.nombreCliente}"></td>
+              <td th:text="${t.tiposMadera != null ? t.tiposMadera : '—'}"></td>
+              <td th:text="${t.acabado != null ? t.acabado : '—'}"></td>
+              <td th:text="${t.dimensionesExactas != null ? t.dimensionesExactas : '—'}"></td>
+              <td th:text="${t.color != null ? t.color : '—'}"></td>
+              <td class="td-actions">
+                <a th:href="@{/tecnica/editar/{id}(id=${t.id})}" class="btn btn-secondary btn-xs">Editar</a>
+                <form th:action="@{/tecnica/{id}(id=${t.id})}" method="post"
+                      style="display:inline"
+                      onsubmit="return confirm('¿Eliminar esta información técnica?')">
+                  <input type="hidden" name="_method" value="DELETE">
+                  <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
+                </form>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
     </div>
   </div>
-
-  <div class="table-card">
-    <div class="table-toolbar">
-      <span class="count" th:text="${tecnicos.size()} + ' registro(s)'"></span>
-    </div>
-
-    <div th:if="${tecnicos.isEmpty()}" class="empty-state">
-      <div class="es-icon">📐</div>
-      <div class="es-title">Sin especificaciones técnicas</div>
-      <div class="es-text">Registrá las dimensiones exactas, materiales y acabados para cada pedido.</div>
-    </div>
-
-    <table th:unless="${tecnicos.isEmpty()}">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Solicitud</th>
-          <th>Tipos de Madera</th>
-          <th>Acabado</th>
-          <th>Dimensiones Exactas</th>
-          <th>Color</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr th:each="t : ${tecnicos}">
-          <td th:text="${t.id}"></td>
-          <td class="td-bold" th:text="${'#' + t.solicitud.id + ' — ' + t.solicitud.nombreCliente}"></td>
-          <td th:text="${t.tiposMadera != null ? t.tiposMadera : '—'}"></td>
-          <td th:text="${t.acabado != null ? t.acabado : '—'}"></td>
-          <td th:text="${t.dimensionesExactas != null ? t.dimensionesExactas : '—'}"></td>
-          <td th:text="${t.color != null ? t.color : '—'}"></td>
-          <td class="td-actions">
-            <a th:href="@{/tecnica/editar/{id}(id=${t.id})}" class="btn btn-secondary btn-xs">Editar</a>
-            <form th:action="@{/tecnica/{id}(id=${t.id})}" method="post" style="display:inline" onsubmit="return confirm('¿Eliminar esta información técnica?')">
-              <input type="hidden" name="_method" value="DELETE">
-              <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
-            </form>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
 </div>
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 </body>
 </html>

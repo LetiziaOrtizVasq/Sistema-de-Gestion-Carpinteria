@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - MaderaCraft</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- Sidebar -->
+  <div th:replace="~{layout/nav :: nav('dashboard')}"></div>
+
+  <!-- Main -->
+  <div class="main-wrapper">
+    <div class="topbar-mobile">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <span class="mobile-brand">MaderaCraft</span>
+    </div>
+
+    <div class="content-area">
+
+      <!-- Welcome Banner -->
+      <div class="welcome-banner">
+        <div class="welcome-content">
+          <div class="welcome-greeting">
+            ¡Bienvenido a <span class="accent">MaderaCraft</span>!
+          </div>
+          <div class="welcome-subtitle" th:text="${fechaHoy}">hoy</div>
+        </div>
+        <div class="welcome-actions">
+          <a th:href="@{/solicitudes/nueva}" class="btn-welcome-primary">
+            + Nueva solicitud
+          </a>
+          <a th:href="@{/reportes}" class="btn-welcome-secondary">
+            Ver reportes
+          </a>
+        </div>
+      </div>
+
+      <!-- KPI Grid -->
+      <div class="kpi-grid">
+        <div class="kpi-card kpi-cafe">
+          <div class="kpi-icon-wrap">👥</div>
+          <div class="kpi-body">
+            <div class="kpi-value" th:text="${totalClientes}">0</div>
+            <div class="kpi-label">Clientes registrados</div>
+            <div class="kpi-sub">Total en el sistema</div>
+          </div>
+        </div>
+        <div class="kpi-card kpi-verde">
+          <div class="kpi-icon-wrap">📦</div>
+          <div class="kpi-body">
+            <div class="kpi-value" th:text="${pedidosActivos}">0</div>
+            <div class="kpi-label">Pedidos activos</div>
+            <div class="kpi-sub" th:text="${pendientesPago} + ' en espera de pago'">0 en espera</div>
+          </div>
+        </div>
+        <div class="kpi-card kpi-dorado">
+          <div class="kpi-icon-wrap">⚙️</div>
+          <div class="kpi-body">
+            <div class="kpi-value" th:text="${enProduccion}">0</div>
+            <div class="kpi-label">En producción</div>
+            <div class="kpi-sub" th:text="${listoEntrega} + ' listo(s) para entregar'">0 listos</div>
+          </div>
+        </div>
+        <div class="kpi-card" th:classappend="${alertasStock > 0} ? 'kpi-rojo' : 'kpi-cafe'">
+          <div class="kpi-icon-wrap" th:text="${alertasStock > 0} ? '⚠️' : '✅'">✅</div>
+          <div class="kpi-body">
+            <div class="kpi-value" th:text="${alertasStock}">0</div>
+            <div class="kpi-label">Alertas de stock</div>
+            <div class="kpi-sub"
+                 th:text="${alertasStock > 0} ? 'Stock crítico — revisar inventario' : 'Inventario en buen estado'">
+              OK
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard grid: acciones rápidas + flujo -->
+      <div class="dashboard-grid">
+
+        <!-- Acciones rápidas -->
+        <div>
+          <div class="section-title" style="margin-bottom:14px">
+            <span>⚡</span> Acciones rápidas
+          </div>
+          <div class="quick-actions-grid">
+            <a th:href="@{/solicitudes/nueva}" class="quick-action">
+              <div class="qa-icon">📝</div>
+              <div class="qa-body">
+                <div class="qa-title">Nueva solicitud</div>
+                <div class="qa-desc">Inicia el proceso de venta</div>
+              </div>
+              <span class="qa-arrow">›</span>
+            </a>
+            <a th:href="@{/clientes/nuevo}" class="quick-action">
+              <div class="qa-icon">👤</div>
+              <div class="qa-body">
+                <div class="qa-title">Registrar cliente</div>
+                <div class="qa-desc">Añade un nuevo cliente</div>
+              </div>
+              <span class="qa-arrow">›</span>
+            </a>
+            <a th:href="@{/inventario}" class="quick-action">
+              <div class="qa-icon">🪵</div>
+              <div class="qa-body">
+                <div class="qa-title">Ver inventario</div>
+                <div class="qa-desc">Stock de madera disponible</div>
+              </div>
+              <span class="qa-arrow">›</span>
+            </a>
+            <a th:href="@{/pedidos}" class="quick-action">
+              <div class="qa-icon">📦</div>
+              <div class="qa-body">
+                <div class="qa-title">Ver pedidos</div>
+                <div class="qa-desc">Estado de todos los pedidos</div>
+              </div>
+              <span class="qa-arrow">›</span>
+            </a>
+          </div>
+
+          <!-- Alertas de stock crítico -->
+          <div th:if="${!stockCritico.isEmpty()}" style="margin-top: 20px">
+            <div class="section-title"><span>⚠️</span> Stock crítico</div>
+            <div class="alerta-stock" th:each="s : ${stockCritico}" style="margin-bottom: 8px">
+              <strong th:text="${s.tipoMadera}">Madera</strong>
+              — disponible:
+              <strong th:text="${#numbers.formatDecimal(s.cantidadDisponible,1,2)} + ' ' + (${s.unidad != null} ? s.unidad : '')">0</strong>
+              / mín:
+              <span th:text="${#numbers.formatDecimal(s.stockMinimo,1,2)}">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Flujo de trabajo -->
+        <div class="workflow-card">
+          <div class="workflow-header">
+            <div class="workflow-title">Flujo de trabajo</div>
+            <div class="workflow-subtitle">El sistema te guía paso a paso</div>
+          </div>
+          <div class="workflow-steps">
+            <a th:href="@{/solicitudes}" class="wf-step">
+              <div class="wf-num">1</div>
+              <div class="wf-info">
+                <div class="wf-name">Solicitud del cliente</div>
+                <div class="wf-detail">Registra lo que necesita</div>
+              </div>
+              <span class="wf-arrow">›</span>
+            </a>
+            <a th:href="@{/cotizaciones}" class="wf-step">
+              <div class="wf-num">2</div>
+              <div class="wf-info">
+                <div class="wf-name">Cotización</div>
+                <div class="wf-detail">Calcula materiales + mano de obra</div>
+              </div>
+              <span class="wf-arrow">›</span>
+            </a>
+            <a th:href="@{/pedidos}" class="wf-step">
+              <div class="wf-num">3</div>
+              <div class="wf-info">
+                <div class="wf-name">Pedido confirmado</div>
+                <div class="wf-detail">El cliente acepta la cotización</div>
+              </div>
+              <span class="wf-arrow">›</span>
+            </a>
+            <a th:href="@{/pagos}" class="wf-step">
+              <div class="wf-num">4</div>
+              <div class="wf-info">
+                <div class="wf-name">Pago inicial 50%</div>
+                <div class="wf-detail">Confirma el anticipo</div>
+              </div>
+              <span class="wf-arrow">›</span>
+            </a>
+            <a th:href="@{/produccion}" class="wf-step">
+              <div class="wf-num">5</div>
+              <div class="wf-info">
+                <div class="wf-name">Producción</div>
+                <div class="wf-detail">Asigna operarios, registra avances</div>
+              </div>
+              <span class="wf-arrow">›</span>
+            </a>
+            <a th:href="@{/calidad}" class="wf-step">
+              <div class="wf-num">6</div>
+              <div class="wf-info">
+                <div class="wf-name">Inspección de calidad</div>
+                <div class="wf-detail">Verifica el producto terminado</div>
+              </div>
+              <span class="wf-arrow">›</span>
+            </a>
+            <a th:href="@{/entregas}" class="wf-step">
+              <div class="wf-num">7</div>
+              <div class="wf-info">
+                <div class="wf-name">Entrega al cliente</div>
+                <div class="wf-detail">Embalaje y despacho</div>
+              </div>
+              <span class="wf-arrow">›</span>
+            </a>
+            <a th:href="@{/pagos-final}" class="wf-step">
+              <div class="wf-num">8</div>
+              <div class="wf-info">
+                <div class="wf-name">Pago final 50%</div>
+                <div class="wf-detail">Cierra el proceso</div>
+              </div>
+              <span class="wf-arrow">›</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pedidos recientes -->
+      <div class="section-title"><span>🕒</span> Pedidos recientes</div>
+      <div class="table-card">
+        <div th:if="${ultimosPedidos.isEmpty()}" class="empty-state">
+          <div class="es-icon">📦</div>
+          <div class="es-title">Sin pedidos aún</div>
+          <div class="es-text">Cuando registres pedidos confirmados aparecerán aquí.</div>
+          <a th:href="@{/solicitudes/nueva}" class="btn btn-primary">+ Iniciar nueva venta</a>
+        </div>
+        <table th:unless="${ultimosPedidos.isEmpty()}">
+          <thead>
+            <tr>
+              <th>Pedido</th>
+              <th>Cliente</th>
+              <th>Producto</th>
+              <th>Total (Bs.)</th>
+              <th>Estado</th>
+              <th>Siguiente paso</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="p : ${ultimosPedidos}">
+              <td class="td-bold" th:text="'#' + ${p.id}">#1</td>
+              <td th:text="${p.cotizacion.solicitud.nombreCliente}">Cliente</td>
+              <td th:text="${p.cotizacion.solicitud.resumenProductos}">Producto</td>
+              <td class="td-total" th:text="'Bs. ' + ${#numbers.formatDecimal(p.cotizacion.precioTotal,1,2)}">Bs. 0</td>
+              <td>
+                <span class="badge"
+                      th:classappend="${p.estado == 'PENDIENTE_PAGO'} ? 'badge-pendiente' :
+                                     (${p.estado == 'PAGO_CONFIRMADO'} ? 'badge-advertencia' :
+                                     (${p.estado == 'EN_PRODUCCION'} ? 'badge-proceso' :
+                                     (${p.estado == 'LISTO_ENTREGA' or p.estado == 'ENTREGADO' or p.estado == 'CERRADO'} ? 'badge-exitoso' : 'badge-peligro')))"
+                      th:text="${p.estado}">Estado</span>
+              </td>
+              <td>
+                <a th:href="@{/pagos/nuevo(pedidoId=${p.id})}"
+                   th:if="${p.estado == 'PENDIENTE_PAGO'}"
+                   class="btn btn-warning btn-xs">Registrar pago</a>
+                <a th:href="@{/produccion/nuevo(pedidoId=${p.id})}"
+                   th:if="${p.estado == 'PAGO_CONFIRMADO'}"
+                   class="btn btn-primary btn-xs">Asignar prod.</a>
+                <a th:href="@{/calidad/nueva(pedidoId=${p.id})}"
+                   th:if="${p.estado == 'EN_PRODUCCION'}"
+                   class="btn btn-primary btn-xs">Inspección</a>
+                <a th:href="@{/entregas/nueva(pedidoId=${p.id})}"
+                   th:if="${p.estado == 'LISTO_ENTREGA'}"
+                   class="btn btn-success btn-xs">Registrar entrega</a>
+                <a th:href="@{/pedidos}"
+                   th:if="${p.estado == 'ENTREGADO' or p.estado == 'CERRADO' or p.estado == 'CANCELADO'}"
+                   class="btn btn-secondary btn-xs">Ver detalle</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div><!-- .content-area -->
+  </div><!-- .main-wrapper -->
+</div><!-- .app-shell -->
+
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+</body>
+</html>
