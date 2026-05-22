@@ -67,15 +67,12 @@
           <tbody>
             <tr th:each="p : ${pedidosPeriodo}">
               <td class="td-id" th:text="${p.id}"></td>
-              <td class="td-bold" th:text="${p.cotizacion.solicitud.nombreCliente}"></td>
-              <td th:text="${p.cotizacion.solicitud.resumenProductos}"></td>
-              <td class="td-total" th:text="'Bs. ' + ${#numbers.formatDecimal(p.cotizacion.precioTotal,1,2)}"></td>
+              <td class="td-bold" th:text="${p.pedido.cotizacion.solicitud.nombreCliente}"></td>
+              <td th:text="${p.pedido.cotizacion.solicitud.resumenProductos}"></td>
+              <td class="td-total" th:text="'Bs. ' + ${#numbers.formatDecimal(p.pedido.cotizacion.precioTotal,1,2)}"></td>
               <td>
                 <span class="badge"
-                      th:classappend="${p.estado == 'PENDIENTE_PAGO'} ? 'badge-pendiente' :
-                                     (${p.estado == 'PAGO_CONFIRMADO'} ? 'badge-advertencia' :
-                                     (${p.estado == 'EN_PRODUCCION'} ? 'badge-proceso' :
-                                     (${p.estado == 'LISTO_ENTREGA' or p.estado == 'ENTREGADO' or p.estado == 'CERRADO'} ? 'badge-exitoso' : 'badge-peligro')))"
+                      th:classappend="${p.estado == 'PENDIENTE'} ? 'badge-pendiente' : 'badge-exitoso'"
                       th:text="${p.estado}"></span>
               </td>
             </tr>
