@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reposición de Madera - MaderaCraft</title>
+  <title>Reposición de Madera - Carpintería</title>
   <link rel="stylesheet" th:href="@{/css/estilo.css}">
 </head>
 <body>
@@ -12,7 +12,7 @@
   <div class="main-wrapper">
     <div class="topbar-mobile">
       <button class="hamburger" onclick="toggleSidebar()">☰</button>
-      <span class="mobile-brand">MaderaCraft</span>
+      <span class="mobile-brand">Carpintería</span>
     </div>
     <div class="content-area">
 
@@ -27,7 +27,6 @@
       <div class="page-header">
         <div class="page-header-info">
           <h2>Reposición de Stock</h2>
-          <span class="cu-tag">CU-20 — Registrar reposición de madera</span>
         </div>
         <div class="page-header-actions">
           <a th:href="@{/inventario}" class="btn btn-secondary">← Volver al stock</a>
@@ -49,7 +48,7 @@
                   <option th:each="s : ${stocks}"
                           th:value="${s.id}"
                           th:classappend="${s.stockCritico} ? 'option-critico'"
-                          th:text="${s.tipoMadera + (s.dimension != null ? ' (' + s.dimension + ')' : '') + ' — Stock actual: ' + #numbers.formatDecimal(s.cantidadDisponible, 1, 2) + (s.stockCritico ? ' ⚠ CRÍTICO' : '')}">
+                          th:text="${s.tipoMadera + (s.dimension != null ? ' (' + s.dimension + ')' : '') + ' — Stock actual: ' + #numbers.formatDecimal(s.cantidadDisponible, 1, 2) + (s.stockCritico ? ' [CRÍTICO]' : '')}">
                   </option>
                 </select>
               </div>

@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title th:text="${titulo} + ' - MaderaCraft'">Pago Final</title>
+  <title th:text="${titulo} + ' - Carpintería'">Pago Final</title>
   <link rel="stylesheet" th:href="@{/css/estilo.css}">
 </head>
 <body>
@@ -12,7 +12,7 @@
   <div class="main-wrapper">
     <div class="topbar-mobile">
       <button class="hamburger" onclick="toggleSidebar()">☰</button>
-      <span class="mobile-brand">MaderaCraft</span>
+      <span class="mobile-brand">Carpintería</span>
     </div>
     <div th:if="${pasoActual != null}" th:replace="~{layout/stepper :: stepper(${pasoActual})}"></div>
     <div class="content-area">
@@ -28,7 +28,6 @@
       <div class="page-header">
         <div class="page-header-info">
           <h2 th:text="${titulo}">Pago Final</h2>
-          <span class="cu-tag">CU-19 — Registrar pago final del 50% restante</span>
         </div>
         <div class="page-header-actions">
           <a th:href="@{/pagos-final}" class="btn btn-secondary">← Volver</a>
