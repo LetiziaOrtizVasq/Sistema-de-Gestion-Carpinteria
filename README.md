@@ -1,4 +1,4 @@
-# Sistema de Gestión para Carpintería
+# Sistema de Gestión para Carpintería — MaderaCraft
 
 Sistema web para la gestión integral de una carpintería artesanal: clientes, solicitudes, cotizaciones, pedidos, producción, inventario y entregas.
 
@@ -9,14 +9,17 @@ Sistema web para la gestión integral de una carpintería artesanal: clientes, s
 
 ## Tecnologías utilizadas
 
-| Componente       | Tecnología                        |
-|------------------|-----------------------------------|
-| Backend          | Java 21 + Spring Boot 3.2.5       |
-| Vistas           | Thymeleaf (HTML server-side)      |
-| Persistencia     | Spring Data JPA + Hibernate       |
-| Base de datos    | MySQL 8.4                         |
-| Validaciones     | Jakarta Validation                |
-| Build            | Apache Maven 3.9 (multi-módulo)   |
+| Componente          | Tecnología                          |
+|---------------------|-------------------------------------|
+| Backend             | Java 21 + Spring Boot 3.2.5         |
+| Vistas              | Thymeleaf (HTML server-side)        |
+| Persistencia        | Spring Data JPA + Hibernate         |
+| Base de datos       | MySQL 8.4                           |
+| Validaciones        | Jakarta Validation                  |
+| Build               | Apache Maven 3.9 (multi-módulo)     |
+| Estilos             | CSS custom properties (design system propio) |
+| Tipografía          | Inter (Google Fonts)                |
+| Iconografía         | Lucide Icons (SVG inline)           |
 
 ---
 
@@ -30,7 +33,7 @@ Sistema web para la gestión integral de una carpintería artesanal: clientes, s
     ```sql
     CREATE DATABASE carpinteriadb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
     ```
-  - Las tablas se crean automáticamente al iniciar la aplicación por primera vez.
+  - Las tablas se crean automáticamente al iniciar la aplicación.
 
 ---
 
@@ -41,126 +44,112 @@ Sistema web para la gestión integral de una carpintería artesanal: clientes, s
 Doble clic en **`ejecutar.bat`** en la raíz del proyecto.  
 El script verifica si MySQL está activo, lo inicia si hace falta, y luego levanta la aplicación.
 
-### Opción 2 — Manual desde terminal
+### Opción 2 — Terminal / VS Code
 
 ```bash
-# Desde la raíz del proyecto:
 mvn -pl carpinteria-app -am spring-boot:run
 ```
 
 Una vez iniciado, abrir en el navegador: **http://localhost:8080**
 
+### Opción 3 — VS Code con Extension Pack for Java
+
+1. Abrir `carpinteria-app/src/main/java/com/carpinteria/CarpinteriaApplication.java`
+2. Clic en **▶ Run** sobre el método `main`
+3. Abrir: **http://localhost:8080**
+
 ---
 
-## Arquitectura modular (estilo SAP)
+## Interfaz — Walnut Workshop Design System
 
-El proyecto está organizado como un **proyecto Maven multi-módulo**, donde cada módulo es completamente independiente y puede exportarse e integrarse a otro sistema sin modificar el resto.
+La interfaz está diseñada con el sistema visual propio **Walnut Workshop**, inspirado en herramientas como Linear, Notion y Stripe Dashboard.
+
+- **Tipografía:** Inter (Google Fonts), jerarquía limpia en 4 tamaños
+- **Paleta:** Walnut oscuro `#0D0A09` (sidebar) · Parchment `#F7F4F0` (fondo) · Oak `#C4956A` (acento activo)
+- **Iconografía:** Iconos Lucide SVG inline — sin dependencia de CDN, sin emojis
+- **Componentes:** Sidebar colapsable con grupos, stepper de 8 pasos, badges de estado, empty states, tabla con headers neutros
+- **Responsive:** Sidebar mobile con hamburger CSS-only (sin JavaScript para el ícono)
+- **Sin emojis** en ninguna parte de la interfaz
+
+---
+
+## Arquitectura modular
 
 ```
 Sistema-de-Gestion-Carpinteria/
 │
-├── carpinteria-common/       → Recursos compartidos (navegación, estilos CSS)
-│                               Sin dependencias externas
+├── carpinteria-common/       → CSS (estilo.css), nav.html, stepper.html
 │
-├── carpinteria-clientes/     → Gestión de clientes y solicitudes
-│                               Requiere: common
+├── carpinteria-clientes/     → Clientes + Solicitudes
+├── carpinteria-ventas/       → Cotizaciones + Pedidos
+├── carpinteria-pagos/        → Pagos iniciales
+├── carpinteria-inventario/   → Stock + Movimientos + Proveedores
+├── carpinteria-produccion/   → Info técnica + Asignación + Avances
+├── carpinteria-calidad/      → Calidad + Embalaje + Entregas + Pago final
+├── carpinteria-reportes/     → Reportes del período
 │
-├── carpinteria-ventas/       → Cotizaciones y pedidos confirmados
-│                               Requiere: common, clientes
-│
-├── carpinteria-pagos/        → Pagos iniciales y pagos finales
-│                               Requiere: common, ventas
-│
-├── carpinteria-inventario/   → Stock de madera, proveedores y movimientos
-│                               Requiere: common, ventas
-│
-├── carpinteria-produccion/   → Especificaciones técnicas, asignación y avances
-│                               Requiere: common, clientes, ventas
-│
-├── carpinteria-calidad/      → Inspección de calidad, embalaje y entregas
-│                               Requiere: common, ventas, pagos
-│
-├── carpinteria-reportes/     → Reportes de gestión del período
-│                               Requiere: common, clientes, pagos, inventario
-│
-└── carpinteria-app/          → Módulo de arranque: integra todos los módulos
-                                Contiene: CarpinteriaApplication + application.properties
-```
-
-> **¿Cómo exportar un módulo?**  
-> Si otro proyecto necesita, por ejemplo, solo el módulo de inventario, basta con copiar la carpeta `carpinteria-inventario/` y agregar su dependencia en el `pom.xml` del proyecto destino junto con sus dependencias declaradas (`common` y `ventas`).
-
----
-
-## Funcionalidades implementadas
-
-### Clientes (`/clientes`)
-- Registrar, editar y eliminar clientes
-- Ver historial completo de solicitudes por cliente
-
-### Solicitudes (`/solicitudes`)
-- Registrar solicitudes con múltiples artículos por pedido (tipo, cantidad, material, dimensiones)
-- Editar y eliminar solicitudes
-
-### Cotizaciones (`/cotizaciones`)
-- Crear cotizaciones vinculadas a una solicitud
-- Calcular precio total (materiales + mano de obra)
-- Aprobar o rechazar cotizaciones
-
-### Pedidos (`/pedidos`)
-- Confirmar pedidos a partir de cotizaciones aceptadas
-- Duplicar, cancelar y cambiar estado de pedidos
-- Máquina de estados: `PENDIENTE_PAGO → PAGO_CONFIRMADO → EN_PRODUCCION → LISTO_ENTREGA → ENTREGADO → CERRADO`
-
-### Pagos Iniciales (`/pagos`)
-- Registrar el pago inicial al confirmar el pedido
-
-### Información Técnica (`/tecnica`)
-- Registrar especificaciones exactas del producto: tipo de madera, dimensiones, acabado, color
-
-### Producción (`/produccion`)
-- Asignar pedidos a operarios del taller
-- Registrar avances por etapa: Corte → Ensamble → Lijado → Pintura → Terminado
-
-### Inventario (`/inventario`)
-- Consultar stock de madera con alertas de mínimo
-- Registrar ingresos, consumos y reposiciones
-- Gestión de proveedores (`/proveedores`)
-
-### Calidad y Entrega
-- Inspección de calidad (`/calidad`)
-- Embalaje del pedido (`/embalaje`)
-- Confirmación de entrega al cliente (`/entregas`)
-- Registro de pago final (`/pagos-final`)
-
-### Reportes (`/reportes`)
-- Pedidos del período seleccionado
-- Consumo de madera por tipo
-- Clientes más frecuentes
-
----
-
-## Flujo principal del sistema
-
-```
-Solicitud del cliente
-    → Cotización (aprobada)
-        → Pedido Confirmado
-            → Pago Inicial (50%)
-                → Especificaciones Técnicas
-                    → Asignación a Producción
-                        → Avances por etapa
-                            → Inspección de Calidad
-                                → Embalaje
-                                    → Entrega
-                                        → Pago Final → CERRADO
+└── carpinteria-app/          → Módulo de arranque (main + application.properties)
 ```
 
 ---
 
-## Notas de diseño
+## Flujo principal
 
-- Las **fechas se generan automáticamente** en el servidor; no se muestran en los formularios.
-- Los **datos persisten** en MySQL entre reinicios (no es base de datos en memoria).
-- Cada módulo Maven incluye su propio código Java **y** sus propias vistas Thymeleaf, lo que permite distribuirlos de forma independiente.
-- Las APIs siguen convenciones REST: sin verbos en las URLs, con `DELETE /{id}` usando el filtro `HiddenHttpMethodFilter` de Spring.
+```
+Solicitud → Cotización → Pedido → Pago 50% → Producción → Calidad → Entrega → Pago Final
+```
+
+Estados del pedido: `PENDIENTE_PAGO → PAGO_CONFIRMADO → EN_PRODUCCION → LISTO_ENTREGA → ENTREGADO → CERRADO`
+
+---
+
+## Funcionalidades
+
+| Módulo              | Rutas principales                                    |
+|---------------------|------------------------------------------------------|
+| Dashboard           | `/`                                                  |
+| Clientes            | `/clientes`, `/clientes/nuevo`                       |
+| Solicitudes         | `/solicitudes`, `/solicitudes/nueva`                 |
+| Cotizaciones        | `/cotizaciones`, `/cotizaciones/nueva`               |
+| Pedidos             | `/pedidos`, `/pedidos/nuevo`                         |
+| Pagos iniciales     | `/pagos`, `/pagos/nuevo`                             |
+| Info técnica        | `/tecnica`, `/tecnica/nueva`                         |
+| Producción          | `/produccion`, `/produccion/nuevo`                   |
+| Inventario          | `/inventario`, `/inventario/ingreso`                 |
+| Movimientos         | `/inventario/movimientos`                            |
+| Proveedores         | `/proveedores`                                       |
+| Calidad             | `/calidad`, `/calidad/nueva`                         |
+| Embalaje            | `/embalaje`, `/embalaje/nuevo`                       |
+| Entregas            | `/entregas`, `/entregas/nueva`                       |
+| Pago final          | `/pagos-final`, `/pagos-final/nuevo`                 |
+| Reportes            | `/reportes`                                          |
+
+---
+
+## Ver la base de datos desde VS Code
+
+Con la extensión **Database Client** instalada en VS Code:
+
+1. Clic en el ícono de base de datos (cilindro) en la barra lateral
+2. Clic en **+** (New Connection) → tipo **MySQL**
+3. Completar:
+   - Host: `localhost` · Port: `3306`
+   - Username: `root` · Password: `Carpinteria2025!`
+   - Database: `carpinteriadb`
+4. Clic en **Connect**
+
+---
+
+## Repositorio
+
+**https://github.com/LetiziaOrtizVasq/Sistema-de-Gestion-Carpinteria**
+
+---
+
+## Notas
+
+- Las fechas se generan automáticamente en el servidor.
+- Los datos persisten en MySQL entre reinicios.
+- Hibernate crea las tablas automáticamente la primera vez (`ddl-auto=update`).
+- APIs siguen convenciones REST; `DELETE` usa `HiddenHttpMethodFilter` de Spring.
+- `spring.thymeleaf.cache=false` permite ver cambios en templates sin reiniciar.
