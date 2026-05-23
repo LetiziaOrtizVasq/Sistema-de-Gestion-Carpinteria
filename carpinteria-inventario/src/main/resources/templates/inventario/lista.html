@@ -47,7 +47,7 @@
           <a th:href="@{/inventario/movimientos}" class="btn btn-secondary btn-sm">Ver movimientos</a>
         </div>
         <div th:if="${stocks.isEmpty()}" class="empty-state">
-          <div class="es-icon">🪵</div>
+          <div class="es-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></div>
           <div class="es-title">Sin registros</div>
           <div class="es-text">Registrá los tipos de madera disponibles en el taller.</div>
           <a th:href="@{/inventario/nuevo}" class="btn btn-primary">+ Agregar madera</a>

@@ -40,7 +40,7 @@
           <span class="count" th:text="${proveedores.size()} + ' proveedor(es)'"></span>
         </div>
         <div th:if="${proveedores.isEmpty()}" class="empty-state">
-          <div class="es-icon">🏭</div>
+          <div class="es-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18z"/><path d="M6 12H4a2 2 0 0 0-2 2v8h4"/><path d="M18 9h2a2 2 0 0 1 2 2v11h-4"/><path d="M10 6h4M10 10h4M10 14h4M10 18h4"/></svg></div>
           <div class="es-title">Sin proveedores</div>
           <div class="es-text">Registrá los proveedores de madera del taller.</div>
           <a th:href="@{/proveedores/nuevo}" class="btn btn-primary">+ Nuevo Proveedor</a>

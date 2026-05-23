@@ -40,7 +40,7 @@
         </div>
 
         <div th:if="${cotizaciones.isEmpty()}" class="empty-state">
-          <div class="es-icon">💰</div>
+          <div class="es-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
           <div class="es-title">Sin cotizaciones</div>
           <div class="es-text">Usá el botón <strong>Cotizar →</strong> desde una Solicitud, o creá una nueva cotización aquí.</div>
           <a th:href="@{/cotizaciones/nueva}" class="btn btn-primary">+ Nueva cotización</a>

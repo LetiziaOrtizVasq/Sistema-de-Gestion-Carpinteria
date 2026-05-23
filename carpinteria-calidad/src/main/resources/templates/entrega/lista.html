@@ -39,7 +39,7 @@
           <span class="count" th:text="${entregas.size()} + ' entrega(s)'"></span>
         </div>
         <div th:if="${entregas.isEmpty()}" class="empty-state">
-          <div class="es-icon">🚚</div>
+          <div class="es-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
           <div class="es-title">Sin entregas</div>
           <div class="es-text">Registrá las entregas de productos una vez que pasen la inspección de calidad.</div>
           <a th:href="@{/entregas/nueva}" class="btn btn-primary">+ Registrar Entrega</a>
