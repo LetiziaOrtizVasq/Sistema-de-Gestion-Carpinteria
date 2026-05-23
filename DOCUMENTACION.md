@@ -1,409 +1,633 @@
-# Documentación del Sistema — MaderaCraft · Gestión para Carpintería
+# Documentación Técnica — Sistema de Gestión para Carpintería
 
 **Universidad Privada de Santa Cruz — UPSA**  
-**Materia:** Sistemas de Información / Programación  
 **Integrantes:** Letizia Camila Ortiz Vásquez · Mariana Toledo
 
 ---
 
-## 1. Descripción del Sistema
+## 1. Descripción General
 
-MaderaCraft es una aplicación web que permite administrar de forma integral los procesos de una carpintería artesanal. Cubre desde el primer contacto con el cliente hasta la entrega final del producto y el cobro completo.
+Sistema web que automatiza la gestión integral de una carpintería artesanal. Cubre desde el primer contacto con el cliente hasta el cierre del proceso con el cobro final.
 
-El sistema automatiza los siguientes procesos:
+Procesos que gestiona el sistema:
 - Registro de clientes y sus solicitudes de muebles
-- Generación y aprobación de cotizaciones
+- Generación y aprobación de cotizaciones (materiales + mano de obra)
 - Confirmación de pedidos y cobro de adelantos
-- Planificación y seguimiento de la producción
-- Control de stock de madera e insumos
-- Inspección de calidad, embalaje y entrega
-- Registro de pago final y cierre del proceso
-- Reportes de gestión por período
+- Planificación y seguimiento de la producción por etapas
+- Control de stock de madera con alertas de mínimo
+- Inspección de calidad, embalaje y entrega al cliente
+- Registro de pago final y cierre del pedido
+- Reportes de gestión por período de fechas
 
 ---
 
-## 2. Tecnologías Utilizadas
+## 2. Tecnologías
 
-| Componente           | Tecnología                           | Versión   |
-|----------------------|--------------------------------------|-----------|
-| Lenguaje             | Java                                 | 21        |
-| Framework backend    | Spring Boot                          | 3.2.5     |
-| Vistas (frontend)    | Thymeleaf (HTML dinámico)            | 3.x       |
-| Persistencia         | Spring Data JPA + Hibernate          | 6.4       |
-| Base de datos        | MySQL                                | 8.4       |
-| Validaciones         | Jakarta Validation (Bean Validation) | 3.x       |
-| Gestor de build      | Apache Maven (multi-módulo)          | 3.9.14    |
-| Servidor web         | Apache Tomcat (embebido)             | 10.1      |
-| Estilos              | CSS custom properties (design system propio) | — |
-| Tipografía           | Inter (Google Fonts)                 | Variable  |
-| Iconografía          | Lucide Icons (SVG inline)            | —         |
-| Control de versiones | Git + GitHub                         | —         |
+| Capa               | Tecnología                              | Versión |
+|--------------------|-----------------------------------------|---------|
+| Lenguaje           | Java                                    | 21      |
+| Framework backend  | Spring Boot                             | 3.2.5   |
+| Motor de vistas    | Thymeleaf                               | 3.x     |
+| ORM / Persistencia | Spring Data JPA + Hibernate             | 6.4     |
+| Base de datos      | MySQL                                   | 8.4     |
+| Validaciones       | Jakarta Bean Validation                 | 3.x     |
+| Gestor de build    | Apache Maven (multi-módulo)             | 3.9.14  |
+| Servidor web       | Apache Tomcat embebido                  | 10.1    |
+| Estilos            | CSS custom properties (design system)   | —       |
+| Tipografía         | Inter (Google Fonts)                    | —       |
+| Iconografía        | Lucide Icons (SVG inline)               | —       |
+| Control de versión | Git + GitHub                            | —       |
 
 ---
 
-## 3. Requisitos para Correr el Sistema
+## 3. Arquitectura del Sistema
 
-### En la computadora deben estar instalados:
+El sistema sigue la arquitectura **MVC (Model–View–Controller)** implementada con Spring Boot + Thymeleaf. El flujo de una petición HTTP es el siguiente:
 
-| Herramienta | Ubicación en esta PC                       |
-|-------------|--------------------------------------------|
-| Java 21 JDK | `C:\Users\ortiz\Java\jdk-21.0.10+7`       |
-| Maven 3.9   | `C:\Users\ortiz\Maven\apache-maven-3.9.14` |
-| MySQL 8.4   | `C:\Program Files\MySQL\MySQL Server 8.4`  |
-
-### Base de datos:
-
-- **Servidor:** localhost, puerto 3306
-- **Base de datos:** `carpinteriadb`
-- **Usuario:** `root`
-- **Contraseña:** `Carpinteria2025!`
-
-La primera vez, crear la base de datos con:
-```sql
-CREATE DATABASE carpinteriadb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+Navegador
+    │
+    │  HTTP Request (GET /pedidos)
+    ▼
+Spring DispatcherServlet
+    │
+    ▼
+Controller  ←── recibe la petición, llama al service
+    │
+    ▼
+Service     ←── contiene la lógica de negocio
+    │
+    ▼
+Repository  ←── accede a la base de datos mediante JPA
+    │
+    ▼
+MySQL       ←── almacena y devuelve los datos
+    │
+    ▼ (datos devueltos como objetos Java)
+Controller  ←── agrega datos al Model
+    │
+    ▼
+Thymeleaf   ←── renderiza el HTML con los datos
+    │
+    │  HTTP Response (HTML generado)
+    ▼
+Navegador   ←── muestra la página al usuario
 ```
 
-Las tablas se crean automáticamente al iniciar el sistema (Hibernate `ddl-auto=update`). No hay que ejecutar scripts SQL adicionales.
+### Capas de cada módulo
 
----
+Cada módulo del sistema sigue la misma estructura de capas:
 
-## 4. Cómo Correr el Sistema
-
-### Opción A — Script automático (recomendado)
-
-1. Abrir la carpeta del proyecto en el Explorador de Windows
-2. Hacer doble clic en **`ejecutar.bat`**
-3. El script:
-   - Verifica si MySQL está activo
-   - Lo inicia automáticamente si no está corriendo
-   - Compila y levanta la aplicación
-4. Cuando aparezca el mensaje `Started CarpinteriaApplication`, abrir el navegador en:
-
-   **http://localhost:8080**
-
----
-
-### Opción B — Desde la terminal de VS Code
-
-1. Abrir el proyecto en VS Code
-2. Abrir la terminal integrada: `` Ctrl + ` ``
-3. Asegurarse de que MySQL esté corriendo
-4. Ejecutar:
-
-```bash
-mvn -pl carpinteria-app -am spring-boot:run
+```
+com.carpinteria.MODULO/
+├── Entidad.java             @Entity — representa una tabla de la BD
+├── EntidadRepository.java   @Repository — métodos de acceso a datos (JPA)
+├── EntidadService.java      @Service — lógica de negocio
+└── EntidadController.java   @Controller — endpoints HTTP, conecta con Thymeleaf
 ```
 
-5. Esperar el mensaje `Started CarpinteriaApplication`
-6. Abrir en el navegador: **http://localhost:8080**
-
 ---
 
-### Opción C — Desde VS Code con extensión Java
+## 4. Backend — Spring Boot
 
-Si tenés instalado el **Extension Pack for Java** en VS Code:
+### ¿Qué es Spring Boot?
 
-1. Abrir el archivo `carpinteria-app/src/main/java/com/carpinteria/CarpinteriaApplication.java`
-2. Hacer clic en el botón **▶ Run** que aparece arriba del método `main`
-3. Abrir en el navegador: **http://localhost:8080**
+Spring Boot es un framework de Java que permite crear aplicaciones web sin configuración manual. Incluye un servidor Tomcat embebido (no hace falta instalar ningún servidor externo), gestión automática de dependencias y configuración mínima.
 
----
+### Módulos del proyecto
 
-## 5. Ver la Base de Datos desde VS Code
-
-Con la extensión **Database Client** instalada en VS Code:
-
-1. Hacer clic en el ícono de base de datos (cilindro) en la barra lateral izquierda
-2. Hacer clic en **+** (New Connection)
-3. Seleccionar tipo: **MySQL**
-4. Completar los campos:
-   - **Host:** `localhost`
-   - **Port:** `3306`
-   - **Username:** `root`
-   - **Password:** `Carpinteria2025!`
-   - **Database:** `carpinteriadb`
-5. Hacer clic en **Connect**
-6. Se mostrarán todas las tablas con sus datos
-
-### Tablas principales del sistema
-
-| Tabla                  | Descripción                                 |
-|------------------------|---------------------------------------------|
-| `cliente`              | Clientes registrados                        |
-| `solicitud`            | Solicitudes de muebles                      |
-| `item_solicitud`       | Artículos dentro de cada solicitud          |
-| `cotizacion`           | Cotizaciones vinculadas a solicitudes       |
-| `pedido_confirmado`    | Pedidos confirmados con estado              |
-| `pago_inicial`         | Pagos del 50% inicial                       |
-| `info_tecnica`         | Especificaciones técnicas del producto      |
-| `produccion`           | Asignaciones de producción                  |
-| `avance_produccion`    | Etapas de avance por pedido                 |
-| `inventario_madera`    | Stock actual de madera                      |
-| `movimiento_inventario`| Ingresos, consumos y reposiciones de stock  |
-| `proveedor`            | Proveedores de madera                       |
-| `inspeccion_calidad`   | Inspecciones de calidad                     |
-| `embalaje`             | Registros de embalaje                       |
-| `entrega`              | Entregas confirmadas al cliente             |
-| `pago_final`           | Pagos del 50% restante                      |
-
----
-
-## 6. Diseño de Interfaz — Walnut Workshop Design System
-
-La interfaz fue diseñada con un sistema visual propio llamado **Walnut Workshop**, inspirado en herramientas profesionales como Linear, Notion, Stripe Dashboard y Vercel. El objetivo es una estética minimalista, elegante y sobria.
-
-### Principios de diseño
-
-- **Menos es más:** sin gradientes excesivos, sin sombras exageradas, sin decoraciones superfluas
-- **Jerarquía clara:** tamaños tipográficos, pesos y colores bien definidos
-- **Consistencia total:** todos los módulos usan los mismos componentes y tokens de diseño
-- **Sin emojis:** toda la iconografía usa SVG de Lucide Icons para mayor profesionalismo
-
-### Paleta de colores
-
-| Token                  | Valor      | Uso                                  |
-|------------------------|------------|--------------------------------------|
-| `--sidebar-bg`         | `#0D0A09`  | Fondo del sidebar (casi negro cálido)|
-| `--bg`                 | `#F7F4F0`  | Fondo general (parchment cálido)     |
-| `--card`               | `#FFFFFF`  | Fondo de tarjetas                    |
-| `--border`             | `#E3D9D0`  | Bordes sutiles                       |
-| `--cafe-700`           | `#4A2C17`  | Walnut oscuro (botones primarios)    |
-| `--cafe-300`           | `#C4956A`  | Oak claro (acento sidebar activo)    |
-| `--text`               | `#1C1410`  | Texto principal                      |
-| `--text-3`             | `#9C8374`  | Texto secundario / placeholders      |
-
-### Tipografía
-
-**Inter** (Google Fonts) en cuatro pesos:
-- `800` — KPI values, números grandes
-- `700` — Títulos de página, sección
-- `600` — Labels, botones, cabeceras de tabla
-- `400/500` — Texto de cuerpo, formularios
-
-### Iconografía
-
-Todos los iconos son **Lucide Icons** embebidos como SVG inline en los templates HTML. No se usa ningún CDN de iconos — los SVGs están directamente en los archivos para máxima fiabilidad (funciona sin conexión a internet, ideal para demos).
-
-| Sección              | Ícono Lucide         |
-|----------------------|----------------------|
-| Dashboard            | `home`               |
-| Clientes             | `users`              |
-| Ventas               | `briefcase`          |
-| Producción           | `settings` (cog)     |
-| Inventario           | `layers`             |
-| Calidad y Entrega    | `truck`              |
-| Reportes             | `bar-chart-2`        |
-
-### Componentes principales (`estilo.css`)
-
-- **Sidebar** — 256px fijo, colapsable en mobile, grupos con toggle JS
-- **Stepper** — Barra de 8 pasos con estados: pendiente / activo / completado
-- **KPI cards** — 4 columnas en desktop, 2 en tablet, 1 en mobile
-- **Table card** — Headers neutros en fondo claro (no gradiente oscuro)
-- **Card con header** — Borde izquierdo de acento walnut, sin gradiente
-- **Badges** — 7 variantes de estado (pendiente, proceso, exitoso, peligro, etc.)
-- **Botones pill** — `border-radius: 9999px`, 5 variantes (primary, secondary, success, danger, warning)
-- **Empty states** — Ícono SVG centrado + título + texto descriptivo + CTA
-- **Hamburger mobile** — CSS-only: `font-size: 0` + `::before` con `box-shadow` (sin JS para el ícono)
-
----
-
-## 7. Arquitectura del Sistema (Estilo SAP Modular)
-
-El proyecto está organizado como un **proyecto Maven multi-módulo**. Cada módulo es independiente: tiene su propio código Java, sus vistas HTML y su archivo `pom.xml`. Si se necesita integrar solo una parte del sistema a otro proyecto, basta con copiar el módulo correspondiente.
+El proyecto es un **proyecto Maven multi-módulo**. Cada módulo tiene su propio `pom.xml` con sus dependencias y es independiente del resto.
 
 ```
 Sistema-de-Gestion-Carpinteria/
 │
-├── carpinteria-common/         Recursos compartidos
-│   ├── estilo.css              Design system completo (variables, componentes)
-│   ├── nav.html                Sidebar con fragmento Thymeleaf reutilizable
-│   └── stepper.html            Barra de progreso de 8 pasos
+├── pom.xml (pom padre — declara todos los módulos)
 │
-├── carpinteria-clientes/       Clientes y Solicitudes
-├── carpinteria-ventas/         Cotizaciones y Pedidos
-├── carpinteria-pagos/          Pagos iniciales
-├── carpinteria-inventario/     Stock, Movimientos y Proveedores
-├── carpinteria-produccion/     Info técnica, Asignación y Avances
-├── carpinteria-calidad/        Calidad, Embalaje, Entregas y Pago final
-├── carpinteria-reportes/       Reportes del período
+├── carpinteria-common/
+│   └── Recursos compartidos: CSS, nav.html, stepper.html
+│       Todos los demás módulos dependen de este.
 │
-└── carpinteria-app/            Módulo de arranque
-    ├── CarpinteriaApplication.java
-    └── application.properties
+├── carpinteria-clientes/
+│   └── Entidades: Cliente, SolicitudCliente, ItemSolicitud
+│
+├── carpinteria-ventas/
+│   └── Entidades: Cotizacion, PedidoConfirmado
+│
+├── carpinteria-pagos/
+│   └── Entidades: PagoInicial, PagoFinal
+│
+├── carpinteria-inventario/
+│   └── Entidades: StockMadera, MovimientoMadera, Proveedor
+│
+├── carpinteria-produccion/
+│   └── Entidades: InformacionTecnica, AsignacionProduccion, AvanceProduccion
+│
+├── carpinteria-calidad/
+│   └── Entidades: InspeccionCalidad, EmbalajePedido, EntregaPedido
+│
+├── carpinteria-reportes/
+│   └── Servicio de reportes (sin entidades propias, consulta a otras)
+│
+└── carpinteria-app/
+    ├── CarpinteriaApplication.java  (main — punto de arranque)
+    └── application.properties       (configuración de BD y servidor)
 ```
 
-### Dependencias entre módulos
+### Controladores (Controllers)
 
+Los controllers reciben las peticiones HTTP y devuelven vistas Thymeleaf o redirecciones.
+
+Ejemplo — `PedidoConfirmadoController`:
+
+```java
+@Controller
+@RequestMapping("/pedidos")
+public class PedidoConfirmadoController {
+
+    @GetMapping               // GET /pedidos → lista todos los pedidos
+    public String lista(Model model) {
+        model.addAttribute("pedidos", service.listarTodos());
+        return "pedido/lista";   // renderiza templates/pedido/lista.html
+    }
+
+    @PostMapping              // POST /pedidos → guarda un pedido nuevo
+    public String guardar(@ModelAttribute PedidoConfirmado pedido) {
+        service.guardar(pedido);
+        return "redirect:/pedidos";
+    }
+}
 ```
-common ← clientes ← ventas ← pagos
-                  ↑          ↑
-              produccion    calidad ← reportes
-              inventario
+
+### Servicios (Services)
+
+Los services contienen la lógica de negocio: validaciones, cálculos, cambios de estado del pedido.
+
+Ejemplo — cambio de estado automático al registrar un pago inicial:
+
+```java
+@Service
+public class PagoInicialService {
+    public void guardar(PagoInicial pago) {
+        // Registra el pago
+        pagoRepo.save(pago);
+        // Actualiza el estado del pedido automáticamente
+        PedidoConfirmado pedido = pago.getPedido();
+        pedido.setEstado("PAGO_CONFIRMADO");
+        pedidoRepo.save(pedido);
+    }
+}
 ```
 
-### Estructura interna de cada módulo (patrón MVC)
+### Repositorios (Repositories)
 
-```
-com.carpinteria.MODULO/
-├── Entidad.java              ← tabla en BD (@Entity)
-├── EntidadRepository.java    ← acceso a datos (JPA)
-├── EntidadService.java       ← lógica de negocio
-└── EntidadController.java    ← endpoints HTTP (@Controller)
+Los repositories son interfaces que heredan de `JpaRepository`. Spring genera automáticamente los métodos SQL sin que se escriba código SQL manual.
 
-resources/templates/MODULO/
-├── lista.html                ← vista de listado con tabla
-└── formulario.html           ← vista de crear / editar
+```java
+public interface PedidoConfirmadoRepository
+        extends JpaRepository<PedidoConfirmado, Long> {
+    // Spring genera automáticamente: findAll(), findById(), save(), deleteById()
+
+    // Método personalizado — Spring traduce el nombre a SQL:
+    List<PedidoConfirmado> findByEstado(String estado);
+}
 ```
 
 ---
 
-## 8. Funcionalidades del Sistema (Casos de Uso)
+## 5. Frontend — Thymeleaf
+
+### ¿Qué es Thymeleaf?
+
+Thymeleaf es un motor de plantillas para Java. Los archivos HTML se escriben normalmente pero con atributos especiales (`th:text`, `th:each`, `th:if`) que Thymeleaf reemplaza con datos reales del servidor antes de enviar el HTML al navegador.
+
+El usuario **nunca** ve el código Thymeleaf — solo recibe HTML puro ya procesado.
+
+### Atributos más usados
+
+```html
+<!-- Mostrar un valor -->
+<span th:text="${pedido.estado}">PENDIENTE</span>
+
+<!-- Iterar una lista -->
+<tr th:each="p : ${pedidos}">
+    <td th:text="${p.id}"></td>
+    <td th:text="${p.cotizacion.solicitud.nombreCliente}"></td>
+</tr>
+
+<!-- Condición -->
+<a th:if="${p.estado == 'PENDIENTE_PAGO'}" th:href="@{/pagos/nuevo}">
+    Registrar pago
+</a>
+
+<!-- Incluir un fragmento (nav, stepper) -->
+<div th:replace="~{layout/nav :: nav('ventas')}"></div>
+
+<!-- URL dinámica con parámetro -->
+<a th:href="@{/pedidos/editar/{id}(id=${p.id})}">Editar</a>
+```
+
+### Estructura de templates
+
+```
+src/main/resources/templates/
+├── layout/
+│   ├── nav.html          → sidebar (fragmento reutilizado en todos los módulos)
+│   └── stepper.html      → barra de 8 pasos
+├── dashboard.html         → página principal
+├── cliente/
+│   ├── lista.html
+│   └── formulario.html
+├── solicitud/
+│   ├── lista.html
+│   └── formulario.html
+├── cotizacion/
+│   ├── lista.html
+│   └── formulario.html
+├── pedido/
+│   ├── lista.html
+│   └── formulario.html
+├── pago/
+│   ├── lista.html
+│   └── formulario.html
+├── produccion/
+│   ├── lista.html
+│   ├── form.html
+│   ├── avances.html
+│   ├── tecnica-lista.html
+│   └── tecnica-form.html
+├── inventario/
+│   ├── lista.html
+│   ├── form.html
+│   ├── movimientos.html
+│   ├── mov-ingreso.html
+│   ├── mov-consumo.html
+│   ├── mov-reposicion.html
+│   ├── proveedores.html
+│   └── proveedor-form.html
+├── calidad/
+│   ├── lista.html
+│   ├── form.html
+│   ├── embalaje-lista.html
+│   └── embalaje-form.html
+├── entrega/
+│   ├── lista.html
+│   ├── form.html
+│   ├── pago-final-lista.html
+│   └── pago-final-form.html
+└── reporte/
+    └── index.html
+```
+
+### CSS — Design System
+
+Todos los estilos están en un único archivo:
+
+```
+carpinteria-common/src/main/resources/static/css/estilo.css
+```
+
+El CSS usa **custom properties** (variables CSS) para toda la paleta de colores y espaciados. Cambiar una variable afecta a toda la interfaz.
+
+#### Paleta de colores
+
+| Variable               | Valor      | Uso                                  |
+|------------------------|------------|--------------------------------------|
+| `--sidebar-bg`         | `#0A0A0A`  | Fondo del sidebar (negro puro)       |
+| `--bg`                 | `#F9FAFB`  | Fondo general (gris muy claro)       |
+| `--card`               | `#FFFFFF`  | Fondo de tarjetas                    |
+| `--border`             | `#E4E4E7`  | Bordes (zinc-200)                    |
+| `--accent`             | `#6366F1`  | Acento índigo (activo, focus)        |
+| `--cafe-800`           | `#18181B`  | Botones primarios (zinc-900)         |
+| `--text`               | `#09090B`  | Texto principal (zinc-950)           |
+| `--text-3`             | `#A1A1AA`  | Texto secundario (zinc-400)          |
+| `--verde`              | `#16A34A`  | Estado exitoso / entregado           |
+| `--rojo`               | `#DC2626`  | Estado peligro / cancelado           |
+| `--azul`               | `#2563EB`  | Estado en proceso                    |
+| `--amarillo`           | `#D97706`  | Estado pendiente                     |
+
+#### Componentes CSS principales
+
+- **Sidebar** — 256px fijo en desktop, colapsable en mobile con JavaScript
+- **Stepper** — barra de 8 pasos con estados: pendiente / activo / completado
+- **KPI cards** — grid de 4 columnas (2 en tablet, 1 en mobile)
+- **Table card** — tabla con headers en fondo neutro y hover en filas
+- **Badges de estado** — 7 variantes de color (pendiente, proceso, exitoso, peligro, etc.)
+- **Botones pill** — `border-radius: 9999px`, variantes: primary, secondary, success, danger, warning
+- **Empty states** — icono SVG + título + texto + botón de acción
+- **Hamburger CSS-only** — el ícono de menú mobile se dibuja con `::before` y `box-shadow` sin usar texto ni emoji
+
+#### Tipografía
+
+**Inter** (Google Fonts) en cuatro pesos:
+- `800` — números grandes de KPI
+- `700` — títulos de página y sección
+- `600` — labels, botones, cabeceras de tabla
+- `400/500` — texto de cuerpo y formularios
+
+---
+
+## 6. Base de Datos — MySQL
+
+### Conexión
+
+| Parámetro | Valor                  |
+|-----------|------------------------|
+| Host      | `localhost`            |
+| Puerto    | `3306`                 |
+| Base      | `carpinteriadb`        |
+| Usuario   | `root`                 |
+| Contraseña| `Carpinteria2025!`     |
+| Charset   | `utf8mb4_unicode_ci`   |
+
+### Cómo se conecta Spring Boot a MySQL
+
+La conexión está configurada en `application.properties`:
+
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/carpinteriadb?useSSL=false&serverTimezone=America/La_Paz
+spring.datasource.username=root
+spring.datasource.password=Carpinteria2025!
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+```
+
+Cuando la aplicación arranca, Spring Boot:
+1. Lee estas propiedades
+2. Crea un **connection pool** (HikariCP) — un conjunto de conexiones reutilizables a MySQL
+3. Hibernate escanea todas las clases `@Entity` y las sincroniza con las tablas de MySQL
+4. Si una tabla no existe, la crea. Si le falta una columna, la agrega.
+
+### Tablas del sistema
+
+| Tabla                    | Módulo           | Descripción                                      |
+|--------------------------|------------------|--------------------------------------------------|
+| `cliente`                | clientes         | Datos de clientes (nombre, CI, teléfono)         |
+| `solicitud_cliente`      | clientes         | Solicitudes de muebles vinculadas a un cliente   |
+| `item_solicitud`         | clientes         | Artículos dentro de cada solicitud               |
+| `cotizacion`             | ventas           | Cotizaciones (materiales + mano de obra = total) |
+| `pedido_confirmado`      | ventas           | Pedidos aceptados con su estado actual           |
+| `pago_inicial`           | pagos            | Pago del 50% al confirmar el pedido              |
+| `informacion_tecnica`    | produccion       | Especificaciones: madera, acabado, color, dim.   |
+| `asignacion_produccion`  | produccion       | Asignación de pedido a operario                  |
+| `avance_produccion`      | produccion       | Registro de avances por etapa                    |
+| `stock_madera`           | inventario       | Stock actual de cada tipo de madera              |
+| `movimiento_madera`      | inventario       | Historial de ingresos, consumos y reposiciones   |
+| `proveedor`              | inventario       | Proveedores de madera                            |
+| `inspeccion_calidad`     | calidad          | Inspección del producto terminado                |
+| `embalaje_pedido`        | calidad          | Registro de embalaje listo para entregar         |
+| `entrega_pedido`         | calidad          | Confirmación de entrega al cliente               |
+| `pago_final`             | calidad/pagos    | Pago del 50% restante al entregar               |
+
+### Relaciones entre tablas
+
+```
+cliente
+  └─< solicitud_cliente
+        └─< item_solicitud
+        └─── cotizacion
+                └─── pedido_confirmado
+                        ├─── pago_inicial
+                        ├─── informacion_tecnica
+                        ├─── asignacion_produccion
+                        │         └─< avance_produccion
+                        ├─── inspeccion_calidad
+                        ├─── embalaje_pedido
+                        ├─── entrega_pedido
+                        └─── pago_final
+
+stock_madera ──< movimiento_madera
+proveedor    ──< movimiento_madera
+```
+
+### Ejemplo de entidad JPA
+
+```java
+@Entity
+@Table(name = "pedido_confirmado")
+public class PedidoConfirmado {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne                          // Relación: muchos pedidos tienen una cotización
+    @JoinColumn(name = "cotizacion_id")
+    private Cotizacion cotizacion;
+
+    private String estado;              // PENDIENTE_PAGO, PAGO_CONFIRMADO, etc.
+
+    private LocalDate fechaEntregaEstimada;
+}
+```
+
+Hibernate traduce esto a SQL automáticamente:
+```sql
+CREATE TABLE pedido_confirmado (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    cotizacion_id BIGINT,
+    estado VARCHAR(255),
+    fecha_entrega_estimada DATE,
+    FOREIGN KEY (cotizacion_id) REFERENCES cotizacion(id)
+);
+```
+
+---
+
+## 7. Configuración Completa — application.properties
+
+```properties
+# ── Base de datos MySQL ──────────────────────────────────────────
+spring.datasource.url=jdbc:mysql://localhost:3306/carpinteriadb?useSSL=false&serverTimezone=America/La_Paz
+spring.datasource.username=root
+spring.datasource.password=Carpinteria2025!
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+# ── Hibernate / JPA ──────────────────────────────────────────────
+# update: crea tablas si no existen, agrega columnas si faltan
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=false
+spring.jpa.properties.hibernate.format_sql=false
+
+# ── Thymeleaf ────────────────────────────────────────────────────
+# false: los cambios en HTML se ven sin reiniciar el servidor
+spring.thymeleaf.cache=false
+
+# ── MVC ──────────────────────────────────────────────────────────
+# Permite enviar DELETE y PUT desde formularios HTML con _method
+spring.mvc.hiddenmethod.filter.enabled=true
+
+# ── Servidor ─────────────────────────────────────────────────────
+server.port=8080
+```
+
+---
+
+## 8. Flujo Completo del Sistema
+
+El sistema guía al usuario en un proceso de 8 pasos. Cada formulario muestra un **stepper** en la parte superior indicando el paso actual y los completados.
+
+```
+1. Solicitud → 2. Cotización → 3. Pedido → 4. Pago 50% →
+5. Producción → 6. Calidad → 7. Entrega → 8. Pago Final
+```
+
+**Paso 1 — Solicitud** (`/solicitudes/nueva`)  
+El cliente describe los muebles que necesita (tipo, cantidad, dimensiones, material).
+
+**Paso 2 — Cotización** (`/cotizaciones/nueva`)  
+Se calcula el precio: materiales + mano de obra = total. El cliente puede aceptar o rechazar. Si acepta → pasa al Paso 3.
+
+**Paso 3 — Pedido** (`/pedidos/nuevo`)  
+Se confirma el pedido con fecha de entrega estimada. Estado: `PENDIENTE_PAGO`.
+
+**Paso 4 — Pago Inicial** (`/pagos/nuevo`)  
+El cliente paga el 50% del total. El sistema cambia el estado automáticamente a `PAGO_CONFIRMADO`.
+
+**Paso 5 — Producción** (`/produccion/nuevo`)  
+Se asigna el pedido a un operario. Se registran avances por etapa: Corte → Ensamble → Lijado → Pintura/Acabado → Terminado. Estado: `EN_PRODUCCION`.
+
+**Paso 6 — Inspección de Calidad** (`/calidad/nueva`)  
+Se inspecciona el producto terminado. Si Aprobado → estado `LISTO_ENTREGA`. Si Retrabajo → vuelve a producción.
+
+**Paso 7 — Embalaje + Entrega**  
+Embalaje (`/embalaje/nuevo`) → Entrega al cliente (`/entregas/nueva`). El sistema registra quién recibió el producto. Estado: `ENTREGADO`.
+
+**Paso 8 — Pago Final** (`/pagos-final/nuevo`)  
+El cliente paga el 50% restante. El sistema cierra el pedido: estado → `CERRADO`.
+
+**Retomar el flujo:** desde `/pedidos`, cada fila muestra un botón de acción contextual según el estado actual del pedido.
+
+---
+
+## 9. API — Convenciones REST
+
+| Acción             | Método HTTP | Ruta de ejemplo            |
+|--------------------|-------------|----------------------------|
+| Listar todos       | GET         | `/clientes`                |
+| Ver formulario     | GET         | `/clientes/nuevo`          |
+| Guardar (crear)    | POST        | `/clientes`                |
+| Editar (formulario)| GET         | `/clientes/editar/{id}`    |
+| Guardar (editar)   | POST        | `/clientes` (con id oculto)|
+| Eliminar           | DELETE      | `/clientes/{id}`           |
+
+Como los formularios HTML solo soportan GET y POST, el método DELETE se envía con un campo oculto:
+
+```html
+<form th:action="@{/clientes/{id}(id=${c.id})}" method="post">
+    <input type="hidden" name="_method" value="DELETE">
+    <button type="submit">Eliminar</button>
+</form>
+```
+
+Spring Boot intercepta este campo y lo trata como un `DELETE` real gracias a `HiddenHttpMethodFilter` (habilitado con `spring.mvc.hiddenmethod.filter.enabled=true`).
+
+---
+
+## 10. Funcionalidades por Módulo
 
 ### Clientes — `/clientes`
-- Registrar nuevo cliente (nombre, CI, teléfono, dirección)
-- Editar y eliminar clientes
+- Registrar, editar y eliminar clientes (nombre, CI, teléfono, correo, dirección)
 - Ver historial completo de solicitudes por cliente
 
 ### Solicitudes — `/solicitudes`
-- Registrar solicitud con múltiples artículos (tipo de mueble, cantidad, material, dimensiones)
+- Registrar solicitudes con múltiples artículos (tipo, cantidad, material, dimensiones)
 - Estados: Pendiente / En Proceso / Cotizada / Cancelada
-- Editar y eliminar solicitudes
+- Botón "Cotizar →" para ir directamente al formulario de cotización
 
 ### Cotizaciones — `/cotizaciones`
-- Crear cotización vinculada a una solicitud
-- Ingresar precio de materiales y mano de obra (total calculado automáticamente)
-- Aprobar o rechazar cotización
+- Precio de materiales + mano de obra (total calculado automáticamente en la página)
+- Estados: Pendiente / Enviada / Aceptada / Rechazada
+- Aceptar o rechazar directamente desde la lista
 
 ### Pedidos — `/pedidos`
-- Confirmar pedido desde una cotización aprobada
-- Duplicar y cancelar pedidos
-- Seguimiento de estados:
-
-```
-PENDIENTE_PAGO → PAGO_CONFIRMADO → EN_PRODUCCION → LISTO_ENTREGA → ENTREGADO → CERRADO
-```
+- Confirmar pedido a partir de una cotización aceptada
+- Cancelar pedidos activos
+- Botón de acción contextual por estado (pagar, asignar, inspeccionar, entregar)
 
 ### Pagos Iniciales — `/pagos`
-- Registrar el pago del 50% al confirmar el pedido
-- El sistema actualiza automáticamente el estado del pedido a `PAGO_CONFIRMADO`
+- Registrar el anticipo del 50%
+- El sistema actualiza el estado del pedido automáticamente
 
 ### Información Técnica — `/tecnica`
-- Registrar especificaciones exactas: tipo de madera, acabado, dimensiones, color
+- Especificaciones exactas: tipo de madera, acabado, dimensiones, color
 - Vinculado a la solicitud del cliente
 
 ### Producción — `/produccion`
 - Asignar pedido a un operario del taller
-- Registrar avances por etapa: Corte → Ensamble → Lijado → Pintura/Acabado → Terminado
-- Indicar porcentaje de avance y si la etapa está completada
+- Avances: Corte / Ensamble / Lijado / Pintura / Terminado
+- Registrar porcentaje de avance y observaciones
 
 ### Inventario — `/inventario`
-- Consultar stock actual de madera con alertas de stock mínimo
-- Registrar ingresos, consumos y reposiciones
-- Movimientos con historial completo (`/inventario/movimientos`)
+- Stock actual con alertas visuales de stock mínimo
+- Registrar ingresos de madera (desde proveedor)
+- Registrar consumos (vinculados a pedido)
+- Registrar reposiciones
+- Historial completo de movimientos
 
 ### Proveedores — `/proveedores`
-- Registrar y gestionar proveedores de madera
+- Registrar y editar proveedores de madera
 
 ### Calidad — `/calidad`
-- Registrar inspección de calidad del producto terminado
 - Resultado: Aprobado / Retrabajo / Rechazado
+- Observaciones detalladas
 
 ### Embalaje — `/embalaje`
-- Registrar el embalaje del pedido listo para entregar
+- Registrar embalaje del pedido listo para despachar
 
 ### Entregas — `/entregas`
-- Confirmar la entrega al cliente (recibido por, CI del receptor, observaciones)
-- El sistema cambia el estado del pedido a `ENTREGADO`
+- Confirmar entrega: nombre del receptor, CI, fecha, observaciones
+- El pedido pasa a estado `ENTREGADO`
 
 ### Pago Final — `/pagos-final`
-- Registrar el 50% restante del pago
-- El sistema cierra el pedido: estado → `CERRADO`
+- Registrar el 50% restante
+- El pedido pasa a estado `CERRADO`
 
 ### Reportes — `/reportes`
-- Pedidos del período (filtro por fecha desde / hasta)
-- Consumo de madera por tipo
+- Filtrar por período (fecha desde / hasta)
+- Pedidos del período con estado y total
+- Consumo de madera agrupado por tipo
 - Clientes con más solicitudes
 
 ---
 
-## 9. Flujo Completo del Sistema — Paso a Paso
+## 11. Cómo Ver la Base de Datos
 
-El sistema guía al usuario a través de un flujo de 8 pasos. Cada formulario muestra un stepper en la parte superior indicando el paso actual. El flujo es **no obligatorio**: se puede abandonar en cualquier momento y retomar desde la lista de pedidos.
+### MySQL Workbench
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│  1          2           3        4         5          6     7      8    │
-│  Solicitud→ Cotización→ Pedido→ Pago 50%→ Producción→ Calidad→ Entrega→ Pago Final │
-└─────────────────────────────────────────────────────────────────────────┘
-```
+1. Abrir MySQL Workbench
+2. Conectar a `localhost:3306` con usuario `root` y contraseña `Carpinteria2025!`
+3. Seleccionar la base `carpinteriadb`
+4. Las tablas aparecen en el panel izquierdo
 
-**Paso 1 — Solicitud** (`/solicitudes/nueva`)
-El cliente describe los muebles que necesita. Al guardar, el sistema redirige al Paso 2.
+### VS Code con Database Client
 
-**Paso 2 — Cotización** (`/cotizaciones/nueva`)
-Se calculan materiales + mano de obra. Al **Aceptar** → pasa al Paso 3. Si se rechaza → proceso termina.
+1. Instalar la extensión **Database Client** en VS Code
+2. Ícono de cilindro en la barra lateral → **+** New Connection → MySQL
+3. Completar:
+   - Host: `localhost` · Port: `3306`
+   - Username: `root` · Password: `Carpinteria2025!`
+   - Database: `carpinteriadb`
+4. Clic en **Connect** → ver tablas y ejecutar consultas
 
-**Paso 3 — Pedido** (`/pedidos/nuevo`)
-Se confirma el pedido con fecha de entrega estimada. Al guardar → pasa al Paso 4.
+### Consultas SQL útiles
 
-**Paso 4 — Pago Inicial** (`/pagos/nuevo`)
-El cliente paga el 50% del total. El sistema actualiza el estado a `PAGO_CONFIRMADO` → pasa al Paso 5.
+```sql
+-- Ver todos los pedidos con su estado actual
+SELECT p.id, s.nombre_cliente, p.estado
+FROM pedido_confirmado p
+JOIN cotizacion c ON p.cotizacion_id = c.id
+JOIN solicitud_cliente s ON c.solicitud_id = s.id;
 
-**Paso 5 — Producción** (`/produccion/nuevo`)
-Se asigna el pedido a un operario. Se registran avances por etapa hasta `Terminado`.
+-- Ver stock de madera con alertas
+SELECT tipo_madera, cantidad_disponible, stock_minimo,
+       CASE WHEN cantidad_disponible <= stock_minimo THEN 'CRÍTICO' ELSE 'OK' END AS alerta
+FROM stock_madera;
 
-**Paso 6 — Inspección de Calidad** (`/calidad/nueva`)
-Se inspecciona el producto. Si **Aprobado** → pasa al Paso 7. Si **Retrabajo** → vuelve a producción.
-
-**Paso 7 — Embalaje + Entrega**
-Embalaje (`/embalaje/nuevo`) → Entrega (`/entregas/nueva`). El sistema registra quién recibió el producto.
-
-**Paso 8 — Pago Final** (`/pagos-final/nuevo`)
-El cliente paga el 50% restante. El sistema cierra el pedido: estado → `CERRADO`.
-
-**Retomar el flujo:** desde `/pedidos`, cada fila muestra un botón de acción contextual según el estado actual.
-
----
-
-## 10. Convenciones de la API (REST)
-
-El sistema sigue convenciones REST:
-
-| Acción         | Método HTTP | Ejemplo                  |
-|----------------|-------------|--------------------------|
-| Ver listado    | GET         | `/clientes`              |
-| Ver formulario | GET         | `/clientes/nuevo`        |
-| Guardar        | POST        | `/clientes`              |
-| Editar         | GET         | `/clientes/editar/{id}`  |
-| Eliminar       | DELETE      | `/clientes/{id}`         |
-
-Como los formularios HTML solo soportan GET y POST, el método DELETE se envía con `<input name="_method" value="DELETE">` y el filtro `HiddenHttpMethodFilter` de Spring lo convierte automáticamente.
-
----
-
-## 11. Configuración de la Aplicación
-
-Archivo: `carpinteria-app/src/main/resources/application.properties`
-
-```properties
-# Base de datos
-spring.datasource.url=jdbc:mysql://localhost:3306/carpinteriadb?useSSL=false&serverTimezone=America/La_Paz
-spring.datasource.username=root
-spring.datasource.password=Carpinteria2025!
-
-# JPA — tablas automáticas, sin log de SQL
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=false
-
-# Soporte para DELETE/PUT desde formularios HTML
-spring.mvc.hiddenmethod.filter.enabled=true
-
-# Puerto del servidor
-server.port=8080
-
-# Sin caché de templates — los cambios en HTML se ven sin reiniciar
-spring.thymeleaf.cache=false
+-- Pedidos del mes actual
+SELECT p.id, s.nombre_cliente, p.estado, c.precio_total
+FROM pedido_confirmado p
+JOIN cotizacion c ON p.cotizacion_id = c.id
+JOIN solicitud_cliente s ON c.solicitud_id = s.id
+WHERE MONTH(p.fecha_pedido) = MONTH(NOW());
 ```
 
 ---
@@ -414,11 +638,12 @@ spring.thymeleaf.cache=false
 
 ---
 
-## 13. Notas Finales
+## 13. Notas Técnicas
 
-- Las **fechas** se generan automáticamente en el servidor. No las ingresa el usuario.
-- Los **datos persisten** en MySQL entre reinicios (no se pierden al apagar la PC).
-- La primera vez que se inicia, Hibernate crea todas las tablas automáticamente.
-- `spring.thymeleaf.cache=false` permite editar templates HTML y ver los cambios recargando el navegador sin reiniciar el servidor.
-- Cada módulo Maven tiene su propio `pom.xml` con sus dependencias declaradas, lo que permite exportarlo e integrarlo a otro proyecto de forma independiente.
-- La interfaz funciona sin conexión a internet: Inter se carga desde Google Fonts (requiere internet), pero los íconos SVG están embebidos directamente en el HTML.
+- Las **fechas** se generan automáticamente en el servidor (no las ingresa el usuario).
+- Los **datos persisten** en MySQL entre reinicios — no se pierden al apagar la PC.
+- La **primera vez** que se inicia la app, Hibernate crea todas las tablas automáticamente.
+- Con `spring.thymeleaf.cache=false` se pueden editar templates HTML y ver los cambios recargando el navegador sin reiniciar el servidor.
+- Los **iconos SVG** están embebidos directamente en los archivos HTML — la interfaz funciona sin conexión a internet (excepto la fuente Inter que carga desde Google Fonts).
+- El proyecto usa **HikariCP** como pool de conexiones a MySQL (incluido por defecto en Spring Boot).
+- Cada módulo Maven tiene su propio `pom.xml` y puede integrarse de forma independiente a otro proyecto.

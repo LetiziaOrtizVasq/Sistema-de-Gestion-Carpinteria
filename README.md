@@ -1,6 +1,6 @@
-# Sistema de Gestión para Carpintería — MaderaCraft
+# Sistema de Gestión para Carpintería
 
-Sistema web para la gestión integral de una carpintería artesanal: clientes, solicitudes, cotizaciones, pedidos, producción, inventario y entregas.
+Sistema web para la gestión integral de una carpintería artesanal: clientes, solicitudes, cotizaciones, pedidos, producción, inventario, calidad y entregas.
 
 **Proyecto académico — Universidad Privada de Santa Cruz (UPSA)**  
 **Integrantes:** Letizia Camila Ortiz Vásquez · Mariana Toledo
@@ -9,67 +9,73 @@ Sistema web para la gestión integral de una carpintería artesanal: clientes, s
 
 ## Tecnologías utilizadas
 
-| Componente          | Tecnología                          |
-|---------------------|-------------------------------------|
-| Backend             | Java 21 + Spring Boot 3.2.5         |
-| Vistas              | Thymeleaf (HTML server-side)        |
-| Persistencia        | Spring Data JPA + Hibernate         |
-| Base de datos       | MySQL 8.4                           |
-| Validaciones        | Jakarta Validation                  |
-| Build               | Apache Maven 3.9 (multi-módulo)     |
-| Estilos             | CSS custom properties (design system propio) |
-| Tipografía          | Inter (Google Fonts)                |
-| Iconografía         | Lucide Icons (SVG inline)           |
+| Componente          | Tecnología                                      |
+|---------------------|-------------------------------------------------|
+| Backend             | Java 21 + Spring Boot 3.2.5                     |
+| Vistas              | Thymeleaf (HTML renderizado en servidor)        |
+| Persistencia        | Spring Data JPA + Hibernate 6                   |
+| Base de datos       | MySQL 8.4                                       |
+| Validaciones        | Jakarta Bean Validation                         |
+| Build               | Apache Maven 3.9 (proyecto multi-módulo)        |
+| Servidor embebido   | Apache Tomcat 10.1 (incluido en Spring Boot)    |
+| Estilos             | CSS custom properties (design system propio)    |
+| Tipografía          | Inter (Google Fonts)                            |
+| Iconografía         | Lucide Icons (SVG inline — sin CDN)             |
+| Control de versiones| Git + GitHub                                    |
 
 ---
 
 ## Requisitos previos
 
-- Java 21 (ubicado en `C:\Users\ortiz\Java\jdk-21.0.10+7`)
-- Maven 3.9 (ubicado en `C:\Users\ortiz\Maven\apache-maven-3.9.14`)
-- MySQL 8.4 corriendo en el puerto 3306
-  - Usuario: `root` · Contraseña: `Carpinteria2025!`
-  - Crear la base de datos antes de correr el proyecto (solo la primera vez):
-    ```sql
-    CREATE DATABASE carpinteriadb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-    ```
-  - Las tablas se crean automáticamente al iniciar la aplicación.
+| Herramienta | Versión | Ubicación en esta PC                        |
+|-------------|---------|---------------------------------------------|
+| Java JDK    | 21      | `C:\Users\ortiz\Java\jdk-21.0.10+7`        |
+| Maven       | 3.9.14  | `C:\Users\ortiz\Maven\apache-maven-3.9.14`  |
+| MySQL       | 8.4     | `C:\Program Files\MySQL\MySQL Server 8.4`   |
+
+### Configurar la base de datos (solo la primera vez)
+
+Abrir MySQL Workbench o la terminal MySQL y ejecutar:
+
+```sql
+CREATE DATABASE carpinteriadb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+Las tablas se crean **automáticamente** al iniciar la aplicación por primera vez (Hibernate `ddl-auto=update`). No hay scripts SQL adicionales que ejecutar.
 
 ---
 
 ## Cómo ejecutar el proyecto
 
-### Opción 1 — Script automático (recomendado, Windows)
+### Opción 1 — Script automático (Windows)
 
-Doble clic en **`ejecutar.bat`** en la raíz del proyecto.  
-El script verifica si MySQL está activo, lo inicia si hace falta, y luego levanta la aplicación.
+Doble clic en **`ejecutar.bat`** en la raíz del proyecto.
 
-### Opción 2 — Terminal / VS Code
+### Opción 2 — Terminal
 
 ```bash
 mvn -pl carpinteria-app -am spring-boot:run
 ```
 
-Una vez iniciado, abrir en el navegador: **http://localhost:8080**
-
 ### Opción 3 — VS Code con Extension Pack for Java
 
 1. Abrir `carpinteria-app/src/main/java/com/carpinteria/CarpinteriaApplication.java`
 2. Clic en **▶ Run** sobre el método `main`
-3. Abrir: **http://localhost:8080**
+
+Una vez iniciado → **http://localhost:8080**
 
 ---
 
-## Interfaz — Walnut Workshop Design System
+## Conexión a la base de datos (VS Code)
 
-La interfaz está diseñada con el sistema visual propio **Walnut Workshop**, inspirado en herramientas como Linear, Notion y Stripe Dashboard.
+Con la extensión **Database Client** instalada:
 
-- **Tipografía:** Inter (Google Fonts), jerarquía limpia en 4 tamaños
-- **Paleta:** Walnut oscuro `#0D0A09` (sidebar) · Parchment `#F7F4F0` (fondo) · Oak `#C4956A` (acento activo)
-- **Iconografía:** Iconos Lucide SVG inline — sin dependencia de CDN, sin emojis
-- **Componentes:** Sidebar colapsable con grupos, stepper de 8 pasos, badges de estado, empty states, tabla con headers neutros
-- **Responsive:** Sidebar mobile con hamburger CSS-only (sin JavaScript para el ícono)
-- **Sin emojis** en ninguna parte de la interfaz
+1. Ícono de base de datos en la barra lateral → **+** New Connection → MySQL
+2. Completar:
+   - Host: `localhost` · Port: `3306`
+   - Username: `root` · Password: `Carpinteria2025!`
+   - Database: `carpinteriadb`
+3. Clic en **Connect**
 
 ---
 
@@ -77,9 +83,7 @@ La interfaz está diseñada con el sistema visual propio **Walnut Workshop**, in
 
 ```
 Sistema-de-Gestion-Carpinteria/
-│
 ├── carpinteria-common/       → CSS (estilo.css), nav.html, stepper.html
-│
 ├── carpinteria-clientes/     → Clientes + Solicitudes
 ├── carpinteria-ventas/       → Cotizaciones + Pedidos
 ├── carpinteria-pagos/        → Pagos iniciales
@@ -87,69 +91,46 @@ Sistema-de-Gestion-Carpinteria/
 ├── carpinteria-produccion/   → Info técnica + Asignación + Avances
 ├── carpinteria-calidad/      → Calidad + Embalaje + Entregas + Pago final
 ├── carpinteria-reportes/     → Reportes del período
-│
 └── carpinteria-app/          → Módulo de arranque (main + application.properties)
 ```
 
 ---
 
-## Flujo principal
+## Flujo de trabajo
 
 ```
 Solicitud → Cotización → Pedido → Pago 50% → Producción → Calidad → Entrega → Pago Final
 ```
 
-Estados del pedido: `PENDIENTE_PAGO → PAGO_CONFIRMADO → EN_PRODUCCION → LISTO_ENTREGA → ENTREGADO → CERRADO`
+Estados del pedido:
+```
+PENDIENTE_PAGO → PAGO_CONFIRMADO → EN_PRODUCCION → LISTO_ENTREGA → ENTREGADO → CERRADO
+```
 
 ---
 
-## Funcionalidades
+## Rutas principales
 
-| Módulo              | Rutas principales                                    |
-|---------------------|------------------------------------------------------|
-| Dashboard           | `/`                                                  |
-| Clientes            | `/clientes`, `/clientes/nuevo`                       |
-| Solicitudes         | `/solicitudes`, `/solicitudes/nueva`                 |
-| Cotizaciones        | `/cotizaciones`, `/cotizaciones/nueva`               |
-| Pedidos             | `/pedidos`, `/pedidos/nuevo`                         |
-| Pagos iniciales     | `/pagos`, `/pagos/nuevo`                             |
-| Info técnica        | `/tecnica`, `/tecnica/nueva`                         |
-| Producción          | `/produccion`, `/produccion/nuevo`                   |
-| Inventario          | `/inventario`, `/inventario/ingreso`                 |
-| Movimientos         | `/inventario/movimientos`                            |
-| Proveedores         | `/proveedores`                                       |
-| Calidad             | `/calidad`, `/calidad/nueva`                         |
-| Embalaje            | `/embalaje`, `/embalaje/nuevo`                       |
-| Entregas            | `/entregas`, `/entregas/nueva`                       |
-| Pago final          | `/pagos-final`, `/pagos-final/nuevo`                 |
-| Reportes            | `/reportes`                                          |
-
----
-
-## Ver la base de datos desde VS Code
-
-Con la extensión **Database Client** instalada en VS Code:
-
-1. Clic en el ícono de base de datos (cilindro) en la barra lateral
-2. Clic en **+** (New Connection) → tipo **MySQL**
-3. Completar:
-   - Host: `localhost` · Port: `3306`
-   - Username: `root` · Password: `Carpinteria2025!`
-   - Database: `carpinteriadb`
-4. Clic en **Connect**
+| Módulo          | Listado          | Nuevo / Formulario          |
+|-----------------|------------------|-----------------------------|
+| Dashboard       | `/`              | —                           |
+| Clientes        | `/clientes`      | `/clientes/nuevo`           |
+| Solicitudes     | `/solicitudes`   | `/solicitudes/nueva`        |
+| Cotizaciones    | `/cotizaciones`  | `/cotizaciones/nueva`       |
+| Pedidos         | `/pedidos`       | `/pedidos/nuevo`            |
+| Pagos iniciales | `/pagos`         | `/pagos/nuevo`              |
+| Info técnica    | `/tecnica`       | `/tecnica/nueva`            |
+| Producción      | `/produccion`    | `/produccion/nuevo`         |
+| Inventario      | `/inventario`    | `/inventario/ingreso`       |
+| Proveedores     | `/proveedores`   | `/proveedores/nuevo`        |
+| Calidad         | `/calidad`       | `/calidad/nueva`            |
+| Embalaje        | `/embalaje`      | `/embalaje/nuevo`           |
+| Entregas        | `/entregas`      | `/entregas/nueva`           |
+| Pago final      | `/pagos-final`   | `/pagos-final/nuevo`        |
+| Reportes        | `/reportes`      | —                           |
 
 ---
 
 ## Repositorio
 
 **https://github.com/LetiziaOrtizVasq/Sistema-de-Gestion-Carpinteria**
-
----
-
-## Notas
-
-- Las fechas se generan automáticamente en el servidor.
-- Los datos persisten en MySQL entre reinicios.
-- Hibernate crea las tablas automáticamente la primera vez (`ddl-auto=update`).
-- APIs siguen convenciones REST; `DELETE` usa `HiddenHttpMethodFilter` de Spring.
-- `spring.thymeleaf.cache=false` permite ver cambios en templates sin reiniciar.
