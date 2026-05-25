@@ -38,3 +38,6 @@ Thumbs.db
 *.db
 *.mv.db
 *.trace.db
+
+### Configuración sensible ###
+carpinteria-app/src/main/resources/application.properties
