@@ -135,7 +135,8 @@ Sistema-de-Gestion-Carpinteria/
     └── ai/
         ├── ClaudeService.java           (cliente HTTP a la API de Gemini)
         ├── CotizacionAiController.java  (endpoint: sugerir precios)
-        └── InventarioAiController.java  (endpoint: predicción de stock)
+        ├── InventarioAiController.java  (endpoint: predicción de stock)
+        └── ReporteAiController.java     (endpoint: resumen ejecutivo)
 ```
 
 ### Controladores (Controllers)
@@ -598,6 +599,7 @@ Spring Boot intercepta este campo y lo trata como un `DELETE` real gracias a `Hi
 - **KPI facturación:** suma de `montoPagado` de los pagos finales del período (calculada en el controller)
 - Consumo de madera agrupado por tipo
 - Clientes con más solicitudes
+- **Resumen IA:** botón "✦ Resumen con IA" — llama a `GET /api/ai/reporte/resumen?desde={date}&hasta={date}`, que envía los KPIs del período a Gemini y devuelve un análisis ejecutivo en lenguaje natural con tendencias, fortalezas y una recomendación de negocio
 
 ---
 
@@ -707,6 +709,25 @@ Respuesta JSON:
   "justificacion": "Cedro es madera de alto valor..."
 }
 ```
+
+### Endpoint: resumen ejecutivo de reportes
+
+`GET /api/ai/reporte/resumen?desde={date}&hasta={date}`
+
+El prompt incluye:
+- Pedidos completados y cobrados en el período
+- Facturación total (suma de `montoPagado`)
+- Consumo de madera por tipo
+- Top 3 clientes más frecuentes
+
+Respuesta JSON:
+```json
+{
+  "resumen": "Durante el período... [análisis, tendencias y recomendación]"
+}
+```
+
+---
 
 ### Endpoint: predicción de stock
 

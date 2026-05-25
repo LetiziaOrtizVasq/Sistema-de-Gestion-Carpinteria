@@ -131,6 +131,7 @@ PENDIENTE_PAGO → PAGO_CONFIRMADO → EN_PRODUCCION → LISTO_ENTREGA → ENTRE
 | Reportes        | `/reportes`      | —                           |
 | IA — Cotización | —                | `/api/ai/cotizacion/sugerir?solicitudId={id}` |
 | IA — Inventario | —                | `/api/ai/inventario/prediccion`               |
+| IA — Reportes   | —                | `/api/ai/reporte/resumen?desde={date}&hasta={date}` |
 
 ---
 
@@ -143,6 +144,9 @@ En el formulario de nueva cotización (`/cotizaciones/nueva`), al seleccionar un
 
 ### Predicción de agotamiento de stock
 En el listado de inventario (`/inventario`), el botón **"✦ Analizar stock"** envía el stock actual y el historial de consumos de los últimos 90 días a Gemini, que estima en cuántos días se agotará cada tipo de madera y asigna un nivel: **Urgente / Pronto / Estable / Sin datos**.
+
+### Resumen ejecutivo en reportes
+En `/reportes`, luego de aplicar un filtro de fechas, el botón **"✦ Resumen con IA"** genera un análisis ejecutivo en lenguaje natural con la facturación del período, tendencias de consumo de madera, clientes destacados y una recomendación de negocio.
 
 ### Configuración
 Agregar la API key de Google AI Studio en `application.properties`:
