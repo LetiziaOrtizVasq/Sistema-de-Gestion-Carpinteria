@@ -36,6 +36,7 @@ Procesos que gestiona el sistema:
 | Estilos            | CSS custom properties (design system)   | —       |
 | Tipografía         | Inter (Google Fonts)                    | —       |
 | Iconografía        | Lucide Icons (SVG inline)               | —       |
+| IA Generativa      | Google Gemini API (gemini-2.5-flash)    | —       |
 | Control de versión | Git + GitHub                            | —       |
 
 ---
@@ -130,7 +131,11 @@ Sistema-de-Gestion-Carpinteria/
 │
 └── carpinteria-app/
     ├── CarpinteriaApplication.java  (main — punto de arranque)
-    └── application.properties       (configuración de BD y servidor)
+    ├── application.properties       (configuración de BD, servidor y IA)
+    └── ai/
+        ├── ClaudeService.java           (cliente HTTP a la API de Gemini)
+        ├── CotizacionAiController.java  (endpoint: sugerir precios)
+        └── InventarioAiController.java  (endpoint: predicción de stock)
 ```
 
 ### Controladores (Controllers)
@@ -457,6 +462,10 @@ spring.mvc.hiddenmethod.filter.enabled=true
 
 # ── Servidor ─────────────────────────────────────────────────────
 server.port=8080
+
+# ── IA — Google Gemini API ───────────────────────────────────────
+# Obtener key gratuita en: https://aistudio.google.com
+gemini.api.key=TU_KEY_AQUI
 ```
 
 ---
@@ -535,6 +544,7 @@ Spring Boot intercepta este campo y lo trata como un `DELETE` real gracias a `Hi
 
 ### Cotizaciones — `/cotizaciones`
 - Precio de materiales + mano de obra (total calculado automáticamente en la página)
+- **Sugerencia IA:** botón "✦ Sugerir precios con IA" en el formulario — llama a `GET /api/ai/cotizacion/sugerir?solicitudId={id}`, que envía los artículos de la solicitud y el historial de cotizaciones aceptadas a Gemini y devuelve precios sugeridos con justificación
 - Estados: Pendiente / Enviada / Aceptada / Rechazada
 - Aceptar o rechazar directamente desde la lista
 
@@ -562,6 +572,7 @@ Spring Boot intercepta este campo y lo trata como un `DELETE` real gracias a `Hi
 - Registrar consumos (vinculados a pedido)
 - Registrar reposiciones
 - Historial completo de movimientos
+- **Predicción IA:** botón "✦ Analizar stock" — llama a `GET /api/ai/inventario/prediccion`, que envía el stock actual y los consumos de los últimos 90 días a Gemini y devuelve para cada tipo de madera los días estimados hasta agotarse y un nivel: **Urgente** (≤7 días), **Pronto** (8–30 días), **Estable** (>30 días) o **Sin datos**
 
 ### Proveedores — `/proveedores`
 - Registrar y editar proveedores de madera
@@ -584,6 +595,7 @@ Spring Boot intercepta este campo y lo trata como un `DELETE` real gracias a `Hi
 ### Reportes — `/reportes`
 - Filtrar por período (fecha desde / hasta)
 - Pedidos del período con estado y total
+- **KPI facturación:** suma de `montoPagado` de los pagos finales del período (calculada en el controller)
 - Consumo de madera agrupado por tipo
 - Clientes con más solicitudes
 
@@ -638,7 +650,90 @@ WHERE MONTH(p.fecha_pedido) = MONTH(NOW());
 
 ---
 
-## 13. Notas Técnicas
+## 13. Integración con Inteligencia Artificial
+
+El sistema integra **Google Gemini API** (modelo `gemini-2.5-flash`) para dos funciones de asistencia. La integración está en el paquete `com.carpinteria.ai` dentro de `carpinteria-app`.
+
+### Arquitectura de la integración
+
+```
+Navegador
+    │  fetch('/api/ai/cotizacion/sugerir?solicitudId=X')
+    ▼
+CotizacionAiController  (o InventarioAiController)
+    │  construye el prompt con datos de la BD
+    ▼
+ClaudeService.preguntar(prompt)
+    │  POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+    ▼
+Google Gemini API
+    │  responde con JSON
+    ▼
+Controller  →  devuelve JSON al navegador
+    ▼
+JavaScript en el template  →  rellena los campos del formulario
+```
+
+### ClaudeService
+
+Cliente HTTP que llama a la API de Gemini usando `RestClient` (Spring 6). Configura un `SSLContext` permisivo para compatibilidad con el JDK local.
+
+```java
+@Service
+public class ClaudeService {
+    @Value("${gemini.api.key}")
+    private String apiKey;
+
+    public String preguntar(String prompt) {
+        // POST a Gemini con el prompt
+        // Devuelve el texto de la respuesta
+    }
+}
+```
+
+### Endpoint: sugerencia de cotización
+
+`GET /api/ai/cotizacion/sugerir?solicitudId={id}`
+
+El prompt incluye:
+- Artículos de la solicitud (tipo, cantidad, material, dimensiones)
+- Últimas 15 cotizaciones aceptadas como referencia de precios
+
+Respuesta JSON:
+```json
+{
+  "precioMateriales": 1250.00,
+  "precioManoObra": 800.00,
+  "justificacion": "Cedro es madera de alto valor..."
+}
+```
+
+### Endpoint: predicción de stock
+
+`GET /api/ai/inventario/prediccion`
+
+El prompt incluye:
+- Stock actual de cada tipo de madera (disponible, mínimo, unidad)
+- Historial de consumos de los últimos 90 días
+
+Respuesta JSON (array):
+```json
+[
+  {
+    "stockId": 1,
+    "tipoMadera": "Cedro",
+    "diasEstimados": 302,
+    "nivel": "ESTABLE",
+    "recomendacion": "Stock adecuado para consumo actual."
+  }
+]
+```
+
+Niveles posibles: `URGENTE` (≤7 días o ya crítico), `PRONTO` (8–30 días), `ESTABLE` (>30 días), `SIN_DATOS` (sin consumos registrados).
+
+---
+
+## 14. Notas Técnicas
 
 - Las **fechas** se generan automáticamente en el servidor (no las ingresa el usuario).
 - Los **datos persisten** en MySQL entre reinicios — no se pierden al apagar la PC.

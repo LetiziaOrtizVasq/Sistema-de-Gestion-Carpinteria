@@ -106,7 +106,7 @@
           </div>
           <div class="kpi-body">
             <div class="kpi-value"
-                 th:text="'Bs. ' + ${#numbers.formatDecimal(pedidosPeriodo.isEmpty() ? 0 : pedidosPeriodo.![pedido.cotizacion.precioTotal].stream().mapToDouble(v -> v.doubleValue()).sum(), 1, 0)}">Bs. 0</div>
+                 th:text="'Bs. ' + ${#numbers.formatDecimal(facturacionPeriodo, 1, 0)}">Bs. 0</div>
             <div class="kpi-label">Facturación</div>
             <div class="kpi-sub">Total del período</div>
           </div>

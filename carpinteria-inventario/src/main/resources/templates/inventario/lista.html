@@ -45,6 +45,24 @@
         <span><strong th:text="${alertas.size()} + ' tipo(s)'">0</strong> de madera con stock crítico. Revisar urgente.</span>
       </div>
 
+      <!-- Panel IA de predicción -->
+      <div class="card mb-4">
+        <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+          <div>
+            <h3 style="margin:0">Predicción de agotamiento — IA</h3>
+            <p style="margin:4px 0 0;font-size:.8rem;color:var(--texto-secundario)">
+              Estima en cuántos días se agotará cada madera según el historial de consumos
+            </p>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm" onclick="analizarStockIA()" id="btnPredic">
+            ✦ Analizar stock
+          </button>
+        </div>
+        <div id="prediccionResultados" style="display:none" class="card-body">
+          <div id="prediccionLista"></div>
+        </div>
+      </div>
+
       <div class="table-card">
         <div class="table-toolbar">
           <span class="count" th:text="${stocks.size()} + ' tipo(s) de madera'">0</span>
@@ -112,5 +130,37 @@
   </div>
 </div>
 <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+<script>
+  const nivelColor = { URGENTE: 'badge-peligro', PRONTO: 'badge-advertencia', ESTABLE: 'badge-exitoso', SIN_DATOS: 'badge-gris' };
+  const nivelLabel = { URGENTE: 'Urgente', PRONTO: 'Pronto', ESTABLE: 'Estable', SIN_DATOS: 'Sin datos' };
+
+  async function analizarStockIA() {
+    const btn = document.getElementById('btnPredic');
+    btn.disabled = true;
+    btn.textContent = 'Analizando...';
+    try {
+      const res = await fetch('/api/ai/inventario/prediccion');
+      const data = await res.json();
+      if (data.error) { alert('Error IA: ' + data.error); return; }
+      const lista = document.getElementById('prediccionLista');
+      lista.innerHTML = data.map(item => {
+        const badge = nivelColor[item.nivel] || 'badge-neutral';
+        const dias  = item.diasEstimados != null ? item.diasEstimados + ' días' : '—';
+        return `<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--borde)">
+          <span style="font-weight:600;min-width:130px">${item.tipoMadera}</span>
+          <span class="badge ${badge}">${nivelLabel[item.nivel] || item.nivel}</span>
+          <span style="font-size:.85rem;color:var(--texto-secundario)">${dias}</span>
+          <span style="font-size:.82rem;color:var(--texto-secundario)">${item.recomendacion || ''}</span>
+        </div>`;
+      }).join('');
+      document.getElementById('prediccionResultados').style.display = '';
+    } catch(e) {
+      alert('No se pudo conectar con la IA.');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '✦ Analizar stock';
+    }
+  }
+</script>
 </body>
 </html>

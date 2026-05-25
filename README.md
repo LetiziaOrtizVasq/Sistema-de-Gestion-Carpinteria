@@ -21,6 +21,7 @@ Sistema web para la gestión integral de una carpintería artesanal: clientes, s
 | Estilos             | CSS custom properties (design system propio)    |
 | Tipografía          | Inter (Google Fonts)                            |
 | Iconografía         | Lucide Icons (SVG inline — sin CDN)             |
+| IA Generativa       | Google Gemini API (gemini-2.5-flash)            |
 | Control de versiones| Git + GitHub                                    |
 
 ---
@@ -128,6 +129,27 @@ PENDIENTE_PAGO → PAGO_CONFIRMADO → EN_PRODUCCION → LISTO_ENTREGA → ENTRE
 | Entregas        | `/entregas`      | `/entregas/nueva`           |
 | Pago final      | `/pagos-final`   | `/pagos-final/nuevo`        |
 | Reportes        | `/reportes`      | —                           |
+| IA — Cotización | —                | `/api/ai/cotizacion/sugerir?solicitudId={id}` |
+| IA — Inventario | —                | `/api/ai/inventario/prediccion`               |
+
+---
+
+## Funciones de Inteligencia Artificial
+
+El sistema incluye dos funciones IA impulsadas por **Google Gemini API** (capa gratuita):
+
+### Sugerencia de precios en cotizaciones
+En el formulario de nueva cotización (`/cotizaciones/nueva`), al seleccionar una solicitud y hacer clic en **"✦ Sugerir precios con IA"**, Gemini analiza los artículos solicitados (tipo de mueble, material, dimensiones) y el historial de cotizaciones aceptadas para sugerir automáticamente el precio de materiales y mano de obra.
+
+### Predicción de agotamiento de stock
+En el listado de inventario (`/inventario`), el botón **"✦ Analizar stock"** envía el stock actual y el historial de consumos de los últimos 90 días a Gemini, que estima en cuántos días se agotará cada tipo de madera y asigna un nivel: **Urgente / Pronto / Estable / Sin datos**.
+
+### Configuración
+Agregar la API key de Google AI Studio en `application.properties`:
+```properties
+gemini.api.key=TU_KEY_DE_AISTUDIO
+```
+Obtener key gratuita en: https://aistudio.google.com
 
 ---
 

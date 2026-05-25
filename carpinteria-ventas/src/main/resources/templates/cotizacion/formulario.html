@@ -31,6 +31,9 @@
           <p class="page-subtitle">El total se calcula automáticamente — materiales + mano de obra</p>
         </div>
         <div class="page-header-actions">
+          <button type="button" class="btn btn-primary" onclick="sugerirConIA()" id="btnIA">
+            ✦ Sugerir precios con IA
+          </button>
           <a th:href="@{/cotizaciones}" class="btn btn-secondary">← Volver</a>
         </div>
       </div>
@@ -56,6 +59,21 @@
                   </option>
                 </select>
               </div>
+              <!-- Sugerencia IA -->
+              <div class="field full-width" id="aiBox" style="display:none">
+                <div class="info-panel" style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2"
+                       stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                  <div>
+                    <div style="font-size:.8rem;color:var(--texto-secundario);margin-bottom:4px">Sugerencia IA</div>
+                    <div id="aiJustificacion" style="font-size:.85rem"></div>
+                  </div>
+                </div>
+              </div>
+
               <div class="field">
                 <label>Precio Materiales (Bs.) <span class="req">*</span></label>
                 <input type="number" step="0.01" min="0"
@@ -128,6 +146,33 @@
     document.querySelector('#totalDisplay .total-value').textContent = 'Bs. ' + total;
   }
   calcularTotal();
+
+  async function sugerirConIA() {
+    const solicitudSelect = document.querySelector('select[name="solicitudId"]');
+    const solicitudId = solicitudSelect ? solicitudSelect.value : '';
+    if (!solicitudId) {
+      alert('Selecciona una solicitud primero.');
+      return;
+    }
+    const btn = document.getElementById('btnIA');
+    btn.disabled = true;
+    btn.textContent = 'Consultando IA...';
+    try {
+      const res = await fetch('/api/ai/cotizacion/sugerir?solicitudId=' + solicitudId);
+      const data = await res.json();
+      if (data.error) { alert('Error IA: ' + data.error); return; }
+      document.getElementById('inpMateriales').value = data.precioMateriales;
+      document.getElementById('inpManoObra').value   = data.precioManoObra;
+      calcularTotal();
+      document.getElementById('aiJustificacion').textContent = data.justificacion || '';
+      document.getElementById('aiBox').style.display = '';
+    } catch(e) {
+      alert('No se pudo conectar con la IA.');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '✦ Sugerir precios con IA';
+    }
+  }
 </script>
 </body>
 </html>
