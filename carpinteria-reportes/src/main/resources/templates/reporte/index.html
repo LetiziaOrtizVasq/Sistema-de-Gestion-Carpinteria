@@ -50,6 +50,26 @@
           <h2>Reportes y Análisis</h2>
           <p class="page-subtitle">Visión operativa y financiera del negocio</p>
         </div>
+        <div class="page-header-actions">
+          <button type="button" class="btn btn-primary" onclick="generarResumenIA()" id="btnResumen">
+            ✦ Resumen con IA
+          </button>
+        </div>
+      </div>
+
+      <!-- Panel resumen IA -->
+      <div id="resumenBox" style="display:none" class="card mb-4">
+        <div class="card-header" style="display:flex;align-items:center;gap:10px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <h3 style="margin:0">Resumen ejecutivo — IA</h3>
+        </div>
+        <div class="card-body">
+          <div id="resumenTexto" style="font-size:.88rem;line-height:1.7;white-space:pre-line"></div>
+        </div>
       </div>
 
       <!-- Filtro de período -->
@@ -227,6 +247,27 @@
 <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
 <script>
+  async function generarResumenIA() {
+    const desde = document.querySelector('input[name="desde"]').value;
+    const hasta = document.querySelector('input[name="hasta"]').value;
+    if (!desde || !hasta) { alert('Aplicá un filtro de fechas primero.'); return; }
+    const btn = document.getElementById('btnResumen');
+    btn.disabled = true;
+    btn.textContent = 'Analizando...';
+    try {
+      const res = await fetch('/api/ai/reporte/resumen?desde=' + desde + '&hasta=' + hasta);
+      const data = await res.json();
+      if (data.error) { alert('Error IA: ' + data.error); return; }
+      document.getElementById('resumenTexto').textContent = data.resumen || '';
+      document.getElementById('resumenBox').style.display = '';
+    } catch(e) {
+      alert('No se pudo conectar con la IA.');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '✦ Resumen con IA';
+    }
+  }
+
 (function() {
   var rows = document.querySelectorAll('#clientesChart .bar-row');
   if (!rows.length) return;
