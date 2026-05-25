@@ -1,10 +1,31 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reportes - Carpintería</title>
+  <title>Reportes — Carpintería</title>
   <link rel="stylesheet" th:href="@{/css/estilo.css}">
+  <style>
+    .kpi-reporte-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; }
+    @media(max-width:1024px) { .kpi-reporte-grid { grid-template-columns:repeat(2,1fr); } }
+    @media(max-width:480px) { .kpi-reporte-grid { grid-template-columns:1fr; } }
+
+    .bar-chart { display:flex; flex-direction:column; gap:8px; }
+    .bar-row { display:flex; align-items:center; gap:10px; }
+    .bar-label { font-size:.78rem; font-weight:500; color:var(--text-2); min-width:130px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .bar-track { flex:1; background:var(--bg2); border-radius:999px; height:10px; overflow:hidden; }
+    .bar-fill { height:100%; border-radius:999px; background:linear-gradient(90deg, var(--accent), var(--accent-l)); transition:width .6s cubic-bezier(.4,0,.2,1); }
+    .bar-value { font-size:.78rem; font-weight:700; color:var(--accent); min-width:28px; text-align:right; }
+
+    .estado-row { display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid var(--bg2); }
+    .estado-row:last-child { border-bottom:none; }
+    .estado-name { flex:1; font-size:.82rem; font-weight:500; color:var(--text); }
+    .estado-bar-wrap { width:120px; }
+    .estado-count { font-size:.82rem; font-weight:700; color:var(--text-2); min-width:32px; text-align:right; }
+
+    .filter-card { background:var(--card); border:1px solid var(--border); border-radius:var(--r); padding:16px 20px; margin-bottom:22px; box-shadow:var(--shadow-s); }
+    .filter-row { display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap; }
+  </style>
 </head>
 <body>
 <div class="app-shell">
@@ -12,7 +33,7 @@
   <div class="main-wrapper">
     <div class="topbar-mobile">
       <button class="hamburger" onclick="toggleSidebar()">☰</button>
-      <span class="mobile-brand">Carpintería</span>
+      <span class="mobile-brand">Reportes</span>
     </div>
     <div class="content-area">
 
@@ -26,91 +47,198 @@
 
       <div class="page-header">
         <div class="page-header-info">
-          <h2>Reportes</h2>
+          <h2>Reportes y Análisis</h2>
+          <p class="page-subtitle">Visión operativa y financiera del negocio</p>
         </div>
       </div>
 
-      <div class="card" style="margin-bottom:1.5rem">
-        <div class="card-body">
-          <form th:action="@{/reportes}" method="get"
-                style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap">
-            <div class="field" style="margin:0">
-              <label>Desde</label>
-              <input type="date" name="desde" th:value="${desde}" class="form-control">
+      <!-- Filtro de período -->
+      <div class="filter-card">
+        <form th:action="@{/reportes}" method="get" class="filter-row">
+          <div class="field" style="margin:0">
+            <label>Desde</label>
+            <input type="date" name="desde" th:value="${desde}" class="form-control">
+          </div>
+          <div class="field" style="margin:0">
+            <label>Hasta</label>
+            <input type="date" name="hasta" th:value="${hasta}" class="form-control">
+          </div>
+          <button type="submit" class="btn btn-primary">Aplicar filtro</button>
+          <a th:href="@{/reportes}" class="btn btn-secondary">Limpiar</a>
+        </form>
+      </div>
+
+      <!-- KPIs del período -->
+      <div class="kpi-reporte-grid">
+        <div class="kpi-card kpi-cafe">
+          <div class="kpi-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/></svg>
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-value" th:text="${pedidosPeriodo.size()}">0</div>
+            <div class="kpi-label">Pedidos</div>
+            <div class="kpi-sub">En el período</div>
+          </div>
+        </div>
+        <div class="kpi-card kpi-verde">
+          <div class="kpi-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-value" th:text="${clientesFrecuentes.size()}">0</div>
+            <div class="kpi-label">Clientes activos</div>
+            <div class="kpi-sub">Con pedidos</div>
+          </div>
+        </div>
+        <div class="kpi-card kpi-dorado">
+          <div class="kpi-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-value" th:text="${consumoPorTipo.size()}">0</div>
+            <div class="kpi-label">Tipos de madera</div>
+            <div class="kpi-sub">Consumidos</div>
+          </div>
+        </div>
+        <div class="kpi-card kpi-cafe">
+          <div class="kpi-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-value"
+                 th:text="'Bs. ' + ${#numbers.formatDecimal(pedidosPeriodo.isEmpty() ? 0 : pedidosPeriodo.![pedido.cotizacion.precioTotal].stream().mapToDouble(v -> v.doubleValue()).sum(), 1, 0)}">Bs. 0</div>
+            <div class="kpi-label">Facturación</div>
+            <div class="kpi-sub">Total del período</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reporte-grid">
+
+        <!-- Pedidos del período -->
+        <div>
+          <div class="reporte-titulo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:6px"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            Pedidos del período
+          </div>
+          <div class="table-card">
+            <div th:if="${pedidosPeriodo.isEmpty()}" class="empty-state" style="padding:32px">
+              <div class="es-title">Sin pedidos en este período</div>
+              <div class="es-text">Ajusta el rango de fechas.</div>
             </div>
-            <div class="field" style="margin:0">
-              <label>Hasta</label>
-              <input type="date" name="hasta" th:value="${hasta}" class="form-control">
+            <table th:unless="${pedidosPeriodo.isEmpty()}">
+              <thead>
+                <tr><th>#</th><th>Cliente</th><th>Total</th><th>Estado</th></tr>
+              </thead>
+              <tbody>
+                <tr th:each="p : ${pedidosPeriodo}">
+                  <td class="td-id" th:text="${p.id}"></td>
+                  <td class="td-bold" th:text="${p.pedido.cotizacion.solicitud.nombreCliente}"></td>
+                  <td class="td-total" th:text="'Bs. ' + ${#numbers.formatDecimal(p.pedido.cotizacion.precioTotal,1,2)}"></td>
+                  <td>
+                    <span class="badge"
+                          th:classappend="${p.estado == 'PENDIENTE'} ? 'badge-pendiente' :
+                                         (${p.estado == 'CONFIRMADO'} ? 'badge-exitoso' : 'badge-proceso')"
+                          th:text="${p.estado}"></span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Clientes frecuentes -->
+        <div>
+          <div class="reporte-titulo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:6px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            Clientes con más solicitudes
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <div th:if="${clientesFrecuentes.isEmpty()}" class="text-muted">Sin datos aún</div>
+              <div th:unless="${clientesFrecuentes.isEmpty()}" class="bar-chart" id="clientesChart">
+                <div th:each="entry : ${clientesFrecuentes}" class="bar-row"
+                     th:attr="data-value=${entry.value}">
+                  <span class="bar-label" th:text="${entry.key}"></span>
+                  <div class="bar-track">
+                    <div class="bar-fill" style="width:0%"></div>
+                  </div>
+                  <span class="bar-value" th:text="${entry.value}"></span>
+                </div>
+              </div>
             </div>
-            <button type="submit" class="btn btn-primary">Aplicar Filtro</button>
-          </form>
+          </div>
         </div>
-      </div>
 
-      <div class="table-card" style="margin-bottom:1.5rem">
-        <div class="table-toolbar">
-          <span class="count">Pedidos del período</span>
-          <span class="badge badge-proceso" th:text="${pedidosPeriodo.size()} + ' pedido(s)'"></span>
+        <!-- Consumo de madera -->
+        <div>
+          <div class="reporte-titulo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:6px"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>
+            Consumo de madera por tipo
+          </div>
+          <div class="table-card">
+            <div th:if="${consumoPorTipo.isEmpty()}" class="empty-state" style="padding:32px">
+              <div class="es-title">Sin consumos registrados</div>
+            </div>
+            <table th:unless="${consumoPorTipo.isEmpty()}">
+              <thead><tr><th>Tipo de madera</th><th>Cantidad consumida</th></tr></thead>
+              <tbody>
+                <tr th:each="entry : ${consumoPorTipo}">
+                  <td class="td-bold" th:text="${entry.key}"></td>
+                  <td class="td-total" th:text="${#numbers.formatDecimal(entry.value,1,2)} + ' u.'"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div th:if="${pedidosPeriodo.isEmpty()}" class="empty-state">
-          <div class="es-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
-          <div class="es-title">Sin pedidos en este período</div>
-          <div class="es-text">Ajustá el rango de fechas para ver resultados.</div>
-        </div>
-        <table th:unless="${pedidosPeriodo.isEmpty()}">
-          <thead>
-            <tr>
-              <th>#</th><th>Cliente</th><th>Producto</th><th>Total (Bs.)</th><th>Estado</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr th:each="p : ${pedidosPeriodo}">
-              <td class="td-id" th:text="${p.id}"></td>
-              <td class="td-bold" th:text="${p.pedido.cotizacion.solicitud.nombreCliente}"></td>
-              <td th:text="${p.pedido.cotizacion.solicitud.resumenProductos}"></td>
-              <td class="td-total" th:text="'Bs. ' + ${#numbers.formatDecimal(p.pedido.cotizacion.precioTotal,1,2)}"></td>
-              <td>
-                <span class="badge"
-                      th:classappend="${p.estado == 'PENDIENTE'} ? 'badge-pendiente' : 'badge-exitoso'"
-                      th:text="${p.estado}"></span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
 
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-title">Consumo de Madera por Tipo</div>
-          <div th:if="${consumoPorTipo.isEmpty()}" style="color:var(--text-muted);font-size:.85rem">Sin consumos en el período</div>
-          <table th:unless="${consumoPorTipo.isEmpty()}" style="width:100%">
-            <thead><tr><th>Tipo</th><th>Cantidad</th></tr></thead>
-            <tbody>
-              <tr th:each="entry : ${consumoPorTipo}">
-                <td th:text="${entry.key}"></td>
-                <td class="td-total" th:text="${#numbers.formatDecimal(entry.value,1,2)}"></td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- Accesos rápidos de reportes -->
+        <div>
+          <div class="reporte-titulo">Acciones</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <a th:href="@{/pedidos}" class="quick-action" style="padding:12px 16px">
+              <div class="qa-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+              <div class="qa-body"><div class="qa-title">Ver todos los pedidos</div></div>
+              <span class="qa-arrow">›</span>
+            </a>
+            <a th:href="@{/clientes}" class="quick-action" style="padding:12px 16px">
+              <div class="qa-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+              <div class="qa-body"><div class="qa-title">Ver clientes</div></div>
+              <span class="qa-arrow">›</span>
+            </a>
+            <a th:href="@{/inventario/movimientos}" class="quick-action" style="padding:12px 16px">
+              <div class="qa-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg></div>
+              <div class="qa-body"><div class="qa-title">Movimientos de inventario</div></div>
+              <span class="qa-arrow">›</span>
+            </a>
+            <a th:href="@{/produccion}" class="quick-action" style="padding:12px 16px">
+              <div class="qa-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+              <div class="qa-body"><div class="qa-title">Estado de producción</div></div>
+              <span class="qa-arrow">›</span>
+            </a>
+          </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-title">Clientes con más Solicitudes</div>
-          <div th:if="${clientesFrecuentes.isEmpty()}" style="color:var(--text-muted);font-size:.85rem">Sin datos aún</div>
-          <table th:unless="${clientesFrecuentes.isEmpty()}" style="width:100%">
-            <thead><tr><th>Cliente</th><th>Solicitudes</th></tr></thead>
-            <tbody>
-              <tr th:each="entry : ${clientesFrecuentes}">
-                <td class="td-bold" th:text="${entry.key}"></td>
-                <td><span class="badge badge-proceso" th:text="${entry.value}"></span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+
       </div>
 
     </div>
   </div>
 </div>
 <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<script>
+(function() {
+  var rows = document.querySelectorAll('#clientesChart .bar-row');
+  if (!rows.length) return;
+  var max = 0;
+  rows.forEach(function(r) { max = Math.max(max, parseInt(r.getAttribute('data-value') || 0)); });
+  rows.forEach(function(r) {
+    var val = parseInt(r.getAttribute('data-value') || 0);
+    var pct = max > 0 ? (val / max * 100) : 0;
+    var fill = r.querySelector('.bar-fill');
+    if (fill) setTimeout(function() { fill.style.width = pct + '%'; }, 100);
+  });
+})();
+</script>
 </body>
 </html>

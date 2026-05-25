@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Operario — Carpintería</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+<div class="app-shell">
+  <div th:replace="~{layout/nav :: nav('produccion')}"></div>
+  <div class="main-wrapper">
+    <div class="topbar-mobile">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <span class="mobile-brand">Operario</span>
+    </div>
+    <div class="content-area">
+
+      <nav class="breadcrumb">
+        <a th:href="@{/}">Inicio</a>
+        <span class="bc-sep">›</span>
+        <a th:href="@{/operarios}">Operarios</a>
+        <span class="bc-sep">›</span>
+        <span class="bc-current" th:text="${titulo}">Operario</span>
+      </nav>
+
+      <div class="page-header">
+        <div class="page-header-info">
+          <h2 th:text="${titulo}">Operario</h2>
+          <p class="page-subtitle">Miembro del equipo de producción</p>
+        </div>
+      </div>
+
+      <div class="card" style="max-width:600px">
+        <div class="card-header">
+          <h3 th:text="${titulo}">Datos del operario</h3>
+        </div>
+        <form th:action="@{/operarios}" th:object="${operario}" method="post">
+          <input type="hidden" th:field="*{id}">
+          <div class="card-body">
+            <div class="form-grid">
+
+              <div class="field span-2">
+                <label>Nombre completo <span class="req">*</span></label>
+                <input type="text" th:field="*{nombre}"
+                       th:classappend="${#fields.hasErrors('nombre')} ? 'input-error'"
+                       placeholder="Ej: Juan Carlos Mamani" class="form-control">
+                <span class="field-error" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
+              </div>
+
+              <div class="field">
+                <label>Cargo <span class="req">*</span></label>
+                <select th:field="*{cargo}" class="form-control">
+                  <option value="CARPINTERO">Carpintero</option>
+                  <option value="EBANISTA">Ebanista</option>
+                  <option value="LIJADOR">Lijador</option>
+                  <option value="TORNERO">Tornero</option>
+                  <option value="BARNIZADOR">Barnizador</option>
+                  <option value="ARMADOR">Armador</option>
+                  <option value="PULIDOR">Pulidor</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Teléfono</label>
+                <input type="text" th:field="*{telefono}"
+                       placeholder="Ej: 70012345" class="form-control">
+              </div>
+
+              <div class="field">
+                <label>Estado</label>
+                <select th:field="*{activo}" class="form-control">
+                  <option value="true">Activo</option>
+                  <option value="false">Inactivo</option>
+                </select>
+              </div>
+
+            </div>
+          </div>
+          <div class="card-footer">
+            <button type="submit" class="btn btn-primary">Guardar operario</button>
+            <a th:href="@{/operarios}" class="btn btn-secondary">Cancelar</a>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+</body>
+</html>

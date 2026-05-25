@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Year;
 import java.util.List;
 
 @Service
@@ -33,10 +34,13 @@ public class PagoInicialService {
 
     // CU-09: Confirmar pago inicial del 50%
     public PagoInicial guardar(PagoInicial pago) {
-        // Calcular el 50% requerido desde la cotización vinculada
         BigDecimal total = pago.getPedido().getCotizacion().getPrecioTotal();
         BigDecimal mitad = total.divide(BigDecimal.valueOf(2), 2, RoundingMode.HALF_UP);
         pago.setMontoRequerido(mitad);
+        // Auto-generar número de recibo REC-YYYY-NNNN
+        long count = pagoRepository.count() + 1;
+        String recibo = String.format("REC-%d-%04d", Year.now().getValue(), count);
+        pago.setNumeroRecibo(recibo);
         PagoInicial saved = pagoRepository.save(pago);
         // Transición de estado: pedido pasa a PAGO_CONFIRMADO
         PedidoConfirmado pedido = saved.getPedido();

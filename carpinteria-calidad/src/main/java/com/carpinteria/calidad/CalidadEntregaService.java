@@ -7,6 +7,7 @@ import com.carpinteria.pagos.PagoFinalRepository;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Year;
 import java.util.List;
 
 /**
@@ -119,6 +120,8 @@ public class CalidadEntregaService {
         BigDecimal total = pf.getPedido().getCotizacion().getPrecioTotal();
         BigDecimal mitad = total.divide(BigDecimal.valueOf(2), 2, RoundingMode.HALF_UP);
         pf.setMontoRequerido(total.subtract(mitad)); // 50% restante
+        long count = pagoFinalRepo.count() + 1;
+        pf.setNumeroRecibo(String.format("NV-%d-%04d", Year.now().getValue(), count));
         PagoFinal saved = pagoFinalRepo.save(pf);
         PedidoConfirmado pedido = saved.getPedido();
         pedido.setEstado("CERRADO");

@@ -28,6 +28,7 @@
       <div class="page-header">
         <div class="page-header-info">
           <h2 th:text="${titulo}">Embalaje</h2>
+          <p class="page-subtitle">Preparación del producto terminado para su transporte y entrega</p>
         </div>
         <div class="page-header-actions">
           <a th:href="@{/embalaje}" class="btn btn-secondary">← Volver</a>
@@ -56,8 +57,15 @@
               </div>
               <div class="field">
                 <label>Tipo de Embalaje</label>
-                <input type="text" th:field="*{tipoEmbalaje}"
-                       placeholder="Ej: Cartón, Stretch film, Madera..." class="form-control">
+                <select th:field="*{tipoEmbalaje}" class="form-control">
+                  <option value="">— Seleccionar tipo —</option>
+                  <option value="Cartón corrugado">Cartón corrugado</option>
+                  <option value="Stretch film">Stretch film</option>
+                  <option value="Espuma protectora">Espuma protectora</option>
+                  <option value="Madera">Caja de madera</option>
+                  <option value="Plástico burbuja">Plástico burbuja</option>
+                  <option value="Sin embalaje">Sin embalaje</option>
+                </select>
               </div>
               <div class="field">
                 <label>Responsable</label>

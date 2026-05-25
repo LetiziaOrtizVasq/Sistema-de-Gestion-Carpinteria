@@ -31,6 +31,10 @@ public class SolicitudCliente {
     @Column(nullable = false)
     private String estado;
 
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "cliente_id")
+    private Cliente cliente;
+
     @OneToMany(mappedBy = "solicitud", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ItemSolicitud> items = new ArrayList<>();
 
@@ -73,4 +77,7 @@ public class SolicitudCliente {
 
     public List<ItemSolicitud> getItems() { return items; }
     public void setItems(List<ItemSolicitud> items) { this.items = items; }
+
+    public Cliente getCliente() { return cliente; }
+    public void setCliente(Cliente cliente) { this.cliente = cliente; }
 }

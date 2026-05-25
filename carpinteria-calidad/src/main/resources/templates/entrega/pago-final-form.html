@@ -1,10 +1,36 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title th:text="${titulo} + ' - Carpintería'">Pago Final</title>
+  <title th:text="${titulo} + ' — Carpintería'">Pago Final</title>
   <link rel="stylesheet" th:href="@{/css/estilo.css}">
+  <style>
+    .metodo-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:6px; }
+    .metodo-option { position:relative; }
+    .metodo-option input[type=radio] { position:absolute; opacity:0; width:0; height:0; }
+    .metodo-label {
+      display:flex; flex-direction:column; align-items:center; gap:8px;
+      padding:14px 10px; border:2px solid var(--border); border-radius:var(--r);
+      cursor:pointer; transition:var(--t); background:var(--card); text-align:center;
+    }
+    .metodo-label:hover { border-color:var(--border-d); background:var(--bg); }
+    .metodo-option input[type=radio]:checked + .metodo-label {
+      border-color:var(--accent); background:var(--accent-bg);
+      box-shadow:0 0 0 3px var(--accent-bg2);
+    }
+    .metodo-icon { font-size:1.4rem; }
+    .metodo-nombre { font-size:.79rem; font-weight:600; color:var(--text-2); }
+    .metodo-desc { font-size:.67rem; color:var(--text-3); }
+
+    .nv-badge {
+      display:inline-flex; align-items:center; gap:8px;
+      background:linear-gradient(135deg,#14532d,#052e16); color:#86efac;
+      padding:10px 18px; border-radius:var(--r-sm); font-size:.9rem;
+      font-weight:700; letter-spacing:.5px; border:1px solid rgba(22,163,74,.3);
+      font-family:'Plus Jakarta Sans',sans-serif;
+    }
+  </style>
 </head>
 <body>
 <div class="app-shell">
@@ -12,7 +38,7 @@
   <div class="main-wrapper">
     <div class="topbar-mobile">
       <button class="hamburger" onclick="toggleSidebar()">☰</button>
-      <span class="mobile-brand">Carpintería</span>
+      <span class="mobile-brand">Pago Final</span>
     </div>
     <div th:if="${pasoActual != null}" th:replace="~{layout/stepper :: stepper(${pasoActual})}"></div>
     <div class="content-area">
@@ -28,72 +54,118 @@
       <div class="page-header">
         <div class="page-header-info">
           <h2 th:text="${titulo}">Pago Final</h2>
+          <p class="page-subtitle">Cobro del 50% restante — la nota de venta se genera automáticamente</p>
         </div>
         <div class="page-header-actions">
           <a th:href="@{/pagos-final}" class="btn btn-secondary">← Volver</a>
         </div>
       </div>
 
-      <div class="card">
+      <div class="card" style="max-width:680px">
         <div class="card-header">
-          <h3 th:text="${titulo}">Pago Final</h3>
-          <p>El sistema calcula automáticamente el 50% restante del total</p>
+          <h3>Registrar pago final</h3>
+          <p>El sistema calcula automáticamente el 50% restante del total del pedido</p>
         </div>
         <form th:action="@{/pagos-final}" th:object="${pagoFinal}" method="post">
           <input type="hidden" th:field="*{id}">
+          <input type="hidden" th:field="*{fechaPago}">
           <div class="card-body">
             <div class="form-grid">
-              <div class="field full-width">
+
+              <div class="field span-2">
                 <label>Pedido <span class="req">*</span></label>
                 <select name="pedidoId" class="form-control" required>
-                  <option value="">-- Seleccione un pedido --</option>
+                  <option value="">— Seleccionar pedido —</option>
                   <option th:each="p : ${pedidos}"
                           th:value="${p.id}"
-                          th:text="${'#' + p.id + ' — ' + p.cotizacion.solicitud.nombreCliente + ' / ' + p.cotizacion.solicitud.resumenProductos + ' — Total: Bs. ' + #numbers.formatDecimal(p.cotizacion.precioTotal, 1, 2)}"
-                          th:selected="${pagoFinal.pedido != null and pagoFinal.pedido.id == p.id}">
-                  </option>
+                          th:text="${'#' + p.id + ' — ' + p.cotizacion.solicitud.nombreCliente + ' / ' + p.cotizacion.solicitud.resumenProductos + ' → Bs. ' + #numbers.formatDecimal(p.cotizacion.precioTotal, 1, 2)}"
+                          th:selected="${pagoFinal.pedido != null and pagoFinal.pedido.id == p.id}"></option>
                 </select>
               </div>
+
               <div class="field">
-                <label>Monto Pagado (Bs.) <span class="req">*</span></label>
+                <label>Monto pagado (Bs.) <span class="req">*</span></label>
                 <input type="number" step="0.01" min="0"
                        th:field="*{montoPagado}"
                        th:classappend="${#fields.hasErrors('montoPagado')} ? 'input-error'"
                        placeholder="0.00" class="form-control">
-                <span class="field-error" th:if="${#fields.hasErrors('montoPagado')}"
-                      th:errors="*{montoPagado}"></span>
+                <span class="field-error" th:if="${#fields.hasErrors('montoPagado')}" th:errors="*{montoPagado}"></span>
+                <span class="field-hint">El 50% restante se calcula automáticamente</span>
               </div>
+
               <div class="field">
-                <label>Método de Pago <span class="req">*</span></label>
-                <select th:field="*{metodoPago}"
-                        th:classappend="${#fields.hasErrors('metodoPago')} ? 'input-error'"
-                        class="form-control">
-                  <option value="">-- Seleccione --</option>
-                  <option value="Efectivo">Efectivo</option>
-                  <option value="Transferencia">Transferencia Bancaria</option>
-                  <option value="QR">Pago QR</option>
-                  <option value="Cheque">Cheque</option>
-                </select>
-                <span class="field-error" th:if="${#fields.hasErrors('metodoPago')}"
-                      th:errors="*{metodoPago}"></span>
-              </div>
-              <input type="hidden" th:field="*{fechaPago}">
-              <div class="field">
-                <label>Número de Comprobante</label>
+                <label>N° comprobante</label>
                 <input type="text" th:field="*{comprobante}"
                        placeholder="Ej: TRX-20240415-002" class="form-control">
               </div>
+
+              <!-- Métodos de pago -->
+              <div class="field span-2">
+                <label>Método de pago <span class="req">*</span></label>
+                <input type="hidden" th:field="*{metodoPago}" id="metodoPagoInput">
+                <div class="metodo-grid">
+                  <div class="metodo-option">
+                    <input type="radio" name="metodoPagoRadio" id="m-efectivo" value="Efectivo"
+                           th:checked="${pagoFinal.metodoPago == 'Efectivo'}"
+                           onchange="document.getElementById('metodoPagoInput').value=this.value">
+                    <label for="m-efectivo" class="metodo-label">
+                      <span class="metodo-icon">💵</span>
+                      <span class="metodo-nombre">Efectivo</span>
+                      <span class="metodo-desc">Pago en mano</span>
+                    </label>
+                  </div>
+                  <div class="metodo-option">
+                    <input type="radio" name="metodoPagoRadio" id="m-qr" value="QR"
+                           th:checked="${pagoFinal.metodoPago == 'QR'}"
+                           onchange="document.getElementById('metodoPagoInput').value=this.value">
+                    <label for="m-qr" class="metodo-label">
+                      <span class="metodo-icon">📱</span>
+                      <span class="metodo-nombre">Pago QR</span>
+                      <span class="metodo-desc">Código QR</span>
+                    </label>
+                  </div>
+                  <div class="metodo-option">
+                    <input type="radio" name="metodoPagoRadio" id="m-transferencia" value="Transferencia"
+                           th:checked="${pagoFinal.metodoPago == 'Transferencia'}"
+                           onchange="document.getElementById('metodoPagoInput').value=this.value">
+                    <label for="m-transferencia" class="metodo-label">
+                      <span class="metodo-icon">🏦</span>
+                      <span class="metodo-nombre">Transferencia</span>
+                      <span class="metodo-desc">Banco</span>
+                    </label>
+                  </div>
+                </div>
+                <span class="field-error" th:if="${#fields.hasErrors('metodoPago')}" th:errors="*{metodoPago}"></span>
+              </div>
+
               <div class="field">
                 <label>Estado</label>
                 <select th:field="*{estado}" class="form-control">
-                  <option value="PENDIENTE">Pendiente</option>
+                  <option value="PENDIENTE">Pendiente de verificación</option>
                   <option value="CONFIRMADO">Confirmado</option>
                 </select>
               </div>
+
             </div>
+
+            <!-- Nota de venta preview -->
+            <div class="divider"></div>
+            <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+              <div>
+                <div class="field-hint" style="margin-bottom:6px">Nota de venta (generada automáticamente)</div>
+                <div class="nv-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  NV-2026-XXXX
+                </div>
+              </div>
+            </div>
+
           </div>
           <div class="card-footer">
-            <button type="submit" class="btn btn-primary">Confirmar Pago Final</button>
+            <button type="submit" class="btn btn-primary">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Confirmar pago final
+            </button>
             <a th:href="@{/pagos-final}" class="btn btn-secondary">Cancelar</a>
           </div>
         </form>

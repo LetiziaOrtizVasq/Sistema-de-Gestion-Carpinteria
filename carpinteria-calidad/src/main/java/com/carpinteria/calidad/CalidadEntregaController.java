@@ -1,6 +1,7 @@
 package com.carpinteria.calidad;
 
 import com.carpinteria.pagos.PagoFinal;
+import com.carpinteria.produccion.OperarioService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,8 +12,12 @@ import org.springframework.web.bind.annotation.*;
 public class CalidadEntregaController {
 
     private final CalidadEntregaService service;
+    private final OperarioService operarioService;
 
-    public CalidadEntregaController(CalidadEntregaService service) { this.service = service; }
+    public CalidadEntregaController(CalidadEntregaService service, OperarioService operarioService) {
+        this.service = service;
+        this.operarioService = operarioService;
+    }
 
     // ---- CU-16: Inspección de calidad ----
     @GetMapping("/calidad")
@@ -27,6 +32,7 @@ public class CalidadEntregaController {
         if (pedidoId != null) i.setPedido(service.buscarPedidoPorId(pedidoId));
         model.addAttribute("inspeccion", i);
         model.addAttribute("pedidos", service.pedidosSinInspeccion());
+        model.addAttribute("operarios", operarioService.listarActivos());
         model.addAttribute("titulo", "Registrar Inspección de Calidad");
         model.addAttribute("pasoActual", 6);
         return "calidad/form";
@@ -37,7 +43,7 @@ public class CalidadEntregaController {
                                     BindingResult r,
                                     @RequestParam(value = "pedidoId", required = false) Long pedidoId, Model model) {
         if (pedidoId == null) r.rejectValue("pedido", "required", "El pedido es obligatorio");
-        if (r.hasErrors()) { model.addAttribute("pedidos", service.pedidosSinInspeccion()); model.addAttribute("titulo", "Registrar Inspección"); model.addAttribute("pasoActual", 6); return "calidad/form"; }
+        if (r.hasErrors()) { model.addAttribute("pedidos", service.pedidosSinInspeccion()); model.addAttribute("operarios", operarioService.listarActivos()); model.addAttribute("titulo", "Registrar Inspección"); model.addAttribute("pasoActual", 6); return "calidad/form"; }
         i.setPedido(service.buscarPedidoPorId(pedidoId));
         InspeccionCalidad savedI = service.guardarInspeccion(i);
         if ("APROBADO".equals(savedI.getResultado())) {
@@ -140,6 +146,12 @@ public class CalidadEntregaController {
         pf.setPedido(service.buscarPedidoPorId(pedidoId));
         service.guardarPagoFinal(pf);
         return "redirect:/pagos-final";
+    }
+
+    @GetMapping("/pagos-final/{id}/nota-venta")
+    public String verNotaVenta(@PathVariable Long id, Model model) {
+        model.addAttribute("pago", service.buscarPagoFinalPorId(id));
+        return "entrega/nota-venta";
     }
 
     @DeleteMapping("/pagos-final/{id}")

@@ -35,6 +35,8 @@ public class PagoFinal {
 
     private String comprobante;
 
+    private String numeroRecibo;
+
     @Column(nullable = false)
     private LocalDate fechaPago;
 
@@ -65,6 +67,9 @@ public class PagoFinal {
 
     public String getComprobante() { return comprobante; }
     public void setComprobante(String comprobante) { this.comprobante = comprobante; }
+
+    public String getNumeroRecibo() { return numeroRecibo; }
+    public void setNumeroRecibo(String numeroRecibo) { this.numeroRecibo = numeroRecibo; }
 
     public LocalDate getFechaPago() { return fechaPago; }
     public void setFechaPago(LocalDate fechaPago) { this.fechaPago = fechaPago; }

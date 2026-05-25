@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Operarios — Carpintería</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+<div class="app-shell">
+  <div th:replace="~{layout/nav :: nav('produccion')}"></div>
+  <div class="main-wrapper">
+    <div class="topbar-mobile">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <span class="mobile-brand">Operarios</span>
+    </div>
+    <div class="content-area">
+
+      <nav class="breadcrumb">
+        <a th:href="@{/}">Inicio</a>
+        <span class="bc-sep">›</span>
+        <a th:href="@{/produccion}">Producción</a>
+        <span class="bc-sep">›</span>
+        <span class="bc-current">Operarios</span>
+      </nav>
+
+      <div class="page-header">
+        <div class="page-header-info">
+          <h2>Operarios del Taller</h2>
+          <p class="page-subtitle">Gestiona el equipo de producción — carpinteros, ebanistas y especialistas</p>
+        </div>
+        <div class="page-header-actions">
+          <a th:href="@{/operarios/nuevo}" class="btn btn-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Registrar operario
+          </a>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-toolbar">
+          <span class="count" th:text="${operarios.size()} + ' operario(s)'">0</span>
+        </div>
+
+        <div th:if="${operarios.isEmpty()}" class="empty-state">
+          <div class="es-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+            </svg>
+          </div>
+          <div class="es-title">Sin operarios registrados</div>
+          <div class="es-text">Registra el equipo del taller para poder asignarlos a etapas de producción.</div>
+          <a th:href="@{/operarios/nuevo}" class="btn btn-primary">Registrar primer operario</a>
+        </div>
+
+        <table th:unless="${operarios.isEmpty()}">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nombre</th>
+              <th>Cargo</th>
+              <th>Teléfono</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="o : ${operarios}">
+              <td class="td-id" th:text="${o.id}"></td>
+              <td class="td-bold" th:text="${o.nombre}"></td>
+              <td>
+                <span class="badge badge-dorado" th:text="${o.cargo}"></span>
+              </td>
+              <td th:text="${o.telefono != null and o.telefono != '' ? o.telefono : '—'}"></td>
+              <td>
+                <span class="badge" th:classappend="${o.activo} ? 'badge-exitoso' : 'badge-gris'"
+                      th:text="${o.activo ? 'Activo' : 'Inactivo'}"></span>
+              </td>
+              <td class="td-actions">
+                <a th:href="@{/operarios/editar/{id}(id=${o.id})}" class="btn btn-secondary btn-xs">Editar</a>
+                <form th:action="@{/operarios/{id}(id=${o.id})}" method="post" style="display:inline"
+                      onsubmit="return confirm('¿Eliminar este operario?')">
+                  <input type="hidden" name="_method" value="DELETE">
+                  <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
+                </form>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+</body>
+</html>

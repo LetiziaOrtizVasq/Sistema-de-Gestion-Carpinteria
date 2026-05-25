@@ -56,9 +56,14 @@
               </div>
               <div class="field">
                 <label>Operario Asignado <span class="req">*</span></label>
-                <input type="text" th:field="*{operario}"
-                       th:classappend="${#fields.hasErrors('operario')} ? 'input-error'"
-                       placeholder="Ej: Juan Mamani" class="form-control">
+                <select th:field="*{operario}"
+                        th:classappend="${#fields.hasErrors('operario')} ? 'input-error'"
+                        class="form-control">
+                  <option value="">— Seleccionar operario —</option>
+                  <option th:each="op : ${operarios}"
+                          th:value="${op.nombre}"
+                          th:text="${op.nombre + ' — ' + op.cargo}"></option>
+                </select>
                 <span class="field-error" th:if="${#fields.hasErrors('operario')}"
                       th:errors="*{operario}"></span>
               </div>

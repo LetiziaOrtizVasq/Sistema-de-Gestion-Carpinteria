@@ -1,16 +1,10 @@
 package com.carpinteria.produccion;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
-/**
- * CU-13: Registrar avance de producción por etapa.
- * CU-14: Registrar finalización (avance al 100% en etapa TERMINADO).
- */
 @Entity
 @Table(name = "avance_produccion")
 public class AvanceProduccion {
@@ -24,18 +18,26 @@ public class AvanceProduccion {
     @JoinColumn(name = "asignacion_id", nullable = false)
     private AsignacionProduccion asignacion;
 
-    // CORTE | ENSAMBLE | LIJADO | PINTURA | TERMINADO
+    // CORTE | GROSADO | CEPILLADO | LIJADO | ARMADO | BARNIZADO | EMBALAJE
     @NotBlank(message = "La etapa es obligatoria")
     @Column(nullable = false)
     private String etapa;
 
-    @NotBlank(message = "La descripción es obligatoria")
-    @Column(nullable = false, length = 500)
+    @Column(length = 600)
     private String descripcion;
 
-    @Min(0) @Max(100)
-    @Column(nullable = false)
-    private Integer porcentaje;
+    @Column(length = 500)
+    private String observaciones;
+
+    @Column
+    private String operario;
+
+    @Column(length = 500)
+    private String insumos;
+
+    private String horaInicio;
+
+    private String horaFin;
 
     @Column(nullable = false)
     private LocalDate fecha;
@@ -44,12 +46,10 @@ public class AvanceProduccion {
     private Boolean completado;
 
     public AvanceProduccion() {
-        this.fecha = LocalDate.now();
+        this.fecha      = LocalDate.now();
         this.completado = false;
-        this.porcentaje = 0;
     }
 
-    // Getters y Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -62,8 +62,20 @@ public class AvanceProduccion {
     public String getDescripcion() { return descripcion; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
 
-    public Integer getPorcentaje() { return porcentaje; }
-    public void setPorcentaje(Integer porcentaje) { this.porcentaje = porcentaje; }
+    public String getObservaciones() { return observaciones; }
+    public void setObservaciones(String observaciones) { this.observaciones = observaciones; }
+
+    public String getOperario() { return operario; }
+    public void setOperario(String operario) { this.operario = operario; }
+
+    public String getInsumos() { return insumos; }
+    public void setInsumos(String insumos) { this.insumos = insumos; }
+
+    public String getHoraInicio() { return horaInicio; }
+    public void setHoraInicio(String horaInicio) { this.horaInicio = horaInicio; }
+
+    public String getHoraFin() { return horaFin; }
+    public void setHoraFin(String horaFin) { this.horaFin = horaFin; }
 
     public LocalDate getFecha() { return fecha; }
     public void setFecha(LocalDate fecha) { this.fecha = fecha; }

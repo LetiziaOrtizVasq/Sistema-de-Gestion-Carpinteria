@@ -3,6 +3,7 @@ package com.carpinteria.produccion;
 import com.carpinteria.produccion.AsignacionProduccion;
 import com.carpinteria.produccion.AvanceProduccion;
 import com.carpinteria.produccion.ProduccionService;
+import com.carpinteria.produccion.OperarioService;
 import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
@@ -15,10 +16,13 @@ import org.springframework.web.bind.annotation.*;
 public class ProduccionController {
 
     private final ProduccionService service;
+    private final OperarioService operarioService;
 
-    public ProduccionController(ProduccionService service) { this.service = service; }
+    public ProduccionController(ProduccionService service, OperarioService operarioService) {
+        this.service = service;
+        this.operarioService = operarioService;
+    }
 
-    // CU-12: Listar asignaciones a producción
     @GetMapping
     public String listar(Model model) {
         model.addAttribute("asignaciones", service.listarAsignaciones());
@@ -31,6 +35,7 @@ public class ProduccionController {
         if (pedidoId != null) a.setPedido(service.buscarPedidoPorId(pedidoId));
         model.addAttribute("asignacion", a);
         model.addAttribute("pedidos", service.pedidosSinAsignacion());
+        model.addAttribute("operarios", operarioService.listarActivos());
         model.addAttribute("titulo", "Asignar Pedido a Producción");
         model.addAttribute("pasoActual", 5);
         return "produccion/form";
@@ -64,6 +69,7 @@ public class ProduccionController {
     public String editar(@PathVariable Long id, Model model) {
         model.addAttribute("asignacion", service.buscarAsignacionPorId(id));
         model.addAttribute("pedidos", service.pedidosSinAsignacion());
+        model.addAttribute("operarios", operarioService.listarActivos());
         model.addAttribute("titulo", "Editar Asignación");
         return "produccion/form";
     }
@@ -80,6 +86,7 @@ public class ProduccionController {
         model.addAttribute("asignacion", service.buscarAsignacionPorId(id));
         model.addAttribute("avances", service.listarAvancesDe(id));
         model.addAttribute("avance", new AvanceProduccion());
+        model.addAttribute("operarios", operarioService.listarActivos());
         return "produccion/avances";
     }
 

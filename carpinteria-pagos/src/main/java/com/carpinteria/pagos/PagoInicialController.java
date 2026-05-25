@@ -58,6 +58,12 @@ public class PagoInicialController {
         return "redirect:/produccion/nuevo?pedidoId=" + pedidoId;
     }
 
+    @GetMapping("/{id}/recibo")
+    public String verRecibo(@PathVariable Long id, Model model) {
+        model.addAttribute("pago", service.buscarPorId(id));
+        return "pago/recibo";
+    }
+
     @DeleteMapping("/{id}")
     public String eliminar(@PathVariable Long id) {
         service.eliminar(id);

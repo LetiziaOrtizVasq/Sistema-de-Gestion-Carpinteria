@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - Carpintería</title>
+  <title>Dashboard — Carpintería</title>
   <link rel="stylesheet" th:href="@{/css/estilo.css}">
 </head>
 <body>
@@ -20,21 +20,28 @@
     <div class="content-area">
 
       <!-- Welcome Banner -->
-      <div class="welcome-banner">
+      <div class="welcome-banner animate-fade-up">
         <div class="welcome-content">
           <div class="welcome-greeting">
-            Bienvenido a <span class="accent">Carpintería</span>
+            Bienvenida, <span class="accent">Carpintería</span>
           </div>
-          <div class="welcome-subtitle" th:text="${fechaHoy}">hoy</div>
+          <div class="welcome-subtitle" th:text="${fechaHoy}">Hoy es un buen día para trabajar</div>
         </div>
         <div class="welcome-actions">
-          <a th:href="@{/solicitudes/nueva}" class="btn-welcome-primary">+ Nueva solicitud</a>
-          <a th:href="@{/reportes}" class="btn-welcome-secondary">Ver reportes</a>
+          <a th:href="@{/solicitudes/nueva}" class="btn-welcome-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nueva solicitud
+          </a>
+          <a th:href="@{/reportes}" class="btn-welcome-secondary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Ver reportes
+          </a>
         </div>
       </div>
 
       <!-- KPI Grid -->
       <div class="kpi-grid">
+
         <div class="kpi-card kpi-cafe">
           <div class="kpi-icon-wrap">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -46,14 +53,14 @@
           </div>
           <div class="kpi-body">
             <div class="kpi-value" th:text="${totalClientes}">0</div>
-            <div class="kpi-label">Clientes registrados</div>
-            <div class="kpi-sub">Total en el sistema</div>
+            <div class="kpi-label">Clientes</div>
+            <div class="kpi-sub">Total registrados</div>
           </div>
         </div>
+
         <div class="kpi-card kpi-verde">
           <div class="kpi-icon-wrap">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/>
               <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
               <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
               <line x1="12" y1="22.08" x2="12" y2="12"/>
@@ -62,14 +69,14 @@
           <div class="kpi-body">
             <div class="kpi-value" th:text="${pedidosActivos}">0</div>
             <div class="kpi-label">Pedidos activos</div>
-            <div class="kpi-sub" th:text="${pendientesPago} + ' en espera de pago'">0 en espera</div>
+            <div class="kpi-sub" th:text="${pendientesPago} + ' esperando pago'">0 esperando</div>
           </div>
         </div>
+
         <div class="kpi-card kpi-dorado">
           <div class="kpi-icon-wrap">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
-              <circle cx="12" cy="12" r="3"/>
+              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
             </svg>
           </div>
           <div class="kpi-body">
@@ -78,12 +85,12 @@
             <div class="kpi-sub" th:text="${listoEntrega} + ' listo(s) para entregar'">0 listos</div>
           </div>
         </div>
+
         <div class="kpi-card" th:classappend="${alertasStock > 0} ? 'kpi-rojo' : 'kpi-cafe'">
           <div class="kpi-icon-wrap">
             <svg th:if="${alertasStock > 0}" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-              <line x1="12" y1="9" x2="12" y2="13"/>
-              <line x1="12" y1="17" x2="12.01" y2="17"/>
+              <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
             </svg>
             <svg th:unless="${alertasStock > 0}" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
@@ -92,33 +99,27 @@
           </div>
           <div class="kpi-body">
             <div class="kpi-value" th:text="${alertasStock}">0</div>
-            <div class="kpi-label">Alertas de stock</div>
-            <div class="kpi-sub"
-                 th:text="${alertasStock > 0} ? 'Stock crítico — revisar inventario' : 'Inventario en orden'">OK</div>
+            <div class="kpi-label">Stock</div>
+            <div class="kpi-sub" th:text="${alertasStock > 0} ? 'Alertas críticas' : 'Inventario en orden'">OK</div>
           </div>
         </div>
+
       </div>
 
-      <!-- Dashboard grid -->
+      <!-- Main grid -->
       <div class="dashboard-grid">
 
-        <!-- Acciones rápidas -->
+        <!-- Acciones rápidas + alertas -->
         <div>
           <div class="section-title">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-            </svg>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
             Acciones rápidas
           </div>
           <div class="quick-actions-grid">
+
             <a th:href="@{/solicitudes/nueva}" class="quick-action">
               <div class="qa-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                  <polyline points="14 2 14 8 20 8"/>
-                  <line x1="12" y1="18" x2="12" y2="12"/>
-                  <line x1="9" y1="15" x2="15" y2="15"/>
-                </svg>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
               </div>
               <div class="qa-body">
                 <div class="qa-title">Nueva solicitud</div>
@@ -126,14 +127,10 @@
               </div>
               <span class="qa-arrow">›</span>
             </a>
+
             <a th:href="@{/clientes/nuevo}" class="quick-action">
               <div class="qa-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                  <circle cx="8.5" cy="7" r="4"/>
-                  <line x1="20" y1="8" x2="20" y2="14"/>
-                  <line x1="23" y1="11" x2="17" y2="11"/>
-                </svg>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
               </div>
               <div class="qa-body">
                 <div class="qa-title">Registrar cliente</div>
@@ -141,13 +138,10 @@
               </div>
               <span class="qa-arrow">›</span>
             </a>
+
             <a th:href="@{/inventario}" class="quick-action">
               <div class="qa-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-                  <polyline points="2 17 12 22 22 17"/>
-                  <polyline points="2 12 12 17 22 12"/>
-                </svg>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
               </div>
               <div class="qa-body">
                 <div class="qa-title">Ver inventario</div>
@@ -155,14 +149,10 @@
               </div>
               <span class="qa-arrow">›</span>
             </a>
+
             <a th:href="@{/pedidos}" class="quick-action">
               <div class="qa-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/>
-                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                  <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-                  <line x1="12" y1="22.08" x2="12" y2="12"/>
-                </svg>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
               </div>
               <div class="qa-body">
                 <div class="qa-title">Ver pedidos</div>
@@ -170,24 +160,20 @@
               </div>
               <span class="qa-arrow">›</span>
             </a>
+
           </div>
 
-          <!-- Alertas de stock crítico -->
-          <div th:if="${!stockCritico.isEmpty()}" style="margin-top: 20px">
+          <!-- Stock crítico -->
+          <div th:if="${!stockCritico.isEmpty()}" style="margin-top:20px">
             <div class="section-title">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                <line x1="12" y1="9" x2="12" y2="13"/>
-                <line x1="12" y1="17" x2="12.01" y2="17"/>
-              </svg>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
               Stock crítico
             </div>
-            <div class="alerta-stock" th:each="s : ${stockCritico}">
+            <div th:each="s : ${stockCritico}" class="alerta-stock">
               <strong th:text="${s.tipoMadera}">Madera</strong>
               — disponible:
               <strong th:text="${#numbers.formatDecimal(s.cantidadDisponible,1,2)} + ' ' + (${s.unidad != null} ? s.unidad : '')">0</strong>
-              / mín:
-              <span th:text="${#numbers.formatDecimal(s.stockMinimo,1,2)}">0</span>
+              / mín: <span th:text="${#numbers.formatDecimal(s.stockMinimo,1,2)}">0</span>
             </div>
           </div>
         </div>
@@ -201,88 +187,60 @@
           <div class="workflow-steps">
             <a th:href="@{/solicitudes}" class="wf-step">
               <div class="wf-num">1</div>
-              <div class="wf-info">
-                <div class="wf-name">Solicitud del cliente</div>
-                <div class="wf-detail">Registra lo que necesita</div>
-              </div>
+              <div class="wf-info"><div class="wf-name">Solicitud del cliente</div><div class="wf-detail">Registra lo que necesita</div></div>
               <span class="wf-arrow">›</span>
             </a>
             <a th:href="@{/cotizaciones}" class="wf-step">
               <div class="wf-num">2</div>
-              <div class="wf-info">
-                <div class="wf-name">Cotización</div>
-                <div class="wf-detail">Calcula materiales y mano de obra</div>
-              </div>
+              <div class="wf-info"><div class="wf-name">Cotización</div><div class="wf-detail">Materiales y mano de obra</div></div>
               <span class="wf-arrow">›</span>
             </a>
             <a th:href="@{/pedidos}" class="wf-step">
               <div class="wf-num">3</div>
-              <div class="wf-info">
-                <div class="wf-name">Pedido confirmado</div>
-                <div class="wf-detail">El cliente acepta la cotización</div>
-              </div>
+              <div class="wf-info"><div class="wf-name">Pedido confirmado</div><div class="wf-detail">El cliente acepta la cotización</div></div>
               <span class="wf-arrow">›</span>
             </a>
             <a th:href="@{/pagos}" class="wf-step">
               <div class="wf-num">4</div>
-              <div class="wf-info">
-                <div class="wf-name">Pago inicial 50%</div>
-                <div class="wf-detail">Confirma el anticipo</div>
-              </div>
+              <div class="wf-info"><div class="wf-name">Pago inicial 50%</div><div class="wf-detail">Confirma el anticipo</div></div>
               <span class="wf-arrow">›</span>
             </a>
             <a th:href="@{/produccion}" class="wf-step">
               <div class="wf-num">5</div>
-              <div class="wf-info">
-                <div class="wf-name">Producción</div>
-                <div class="wf-detail">Asigna operarios, registra avances</div>
-              </div>
+              <div class="wf-info"><div class="wf-name">Producción por etapas</div><div class="wf-detail">Corte → Armado → Barnizado</div></div>
               <span class="wf-arrow">›</span>
             </a>
             <a th:href="@{/calidad}" class="wf-step">
               <div class="wf-num">6</div>
-              <div class="wf-info">
-                <div class="wf-name">Inspección de calidad</div>
-                <div class="wf-detail">Verifica el producto terminado</div>
-              </div>
+              <div class="wf-info"><div class="wf-name">Inspección de calidad</div><div class="wf-detail">Verifica el producto terminado</div></div>
               <span class="wf-arrow">›</span>
             </a>
             <a th:href="@{/entregas}" class="wf-step">
               <div class="wf-num">7</div>
-              <div class="wf-info">
-                <div class="wf-name">Entrega al cliente</div>
-                <div class="wf-detail">Embalaje y despacho</div>
-              </div>
+              <div class="wf-info"><div class="wf-name">Embalaje y entrega</div><div class="wf-detail">Despacho al cliente</div></div>
               <span class="wf-arrow">›</span>
             </a>
             <a th:href="@{/pagos-final}" class="wf-step">
               <div class="wf-num">8</div>
-              <div class="wf-info">
-                <div class="wf-name">Pago final 50%</div>
-                <div class="wf-detail">Cierra el proceso</div>
-              </div>
+              <div class="wf-info"><div class="wf-name">Pago final 50%</div><div class="wf-detail">Cierra el proceso</div></div>
               <span class="wf-arrow">›</span>
             </a>
           </div>
         </div>
+
       </div>
 
       <!-- Pedidos recientes -->
       <div class="section-title">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/>
-          <polyline points="12 6 12 12 16 14"/>
-        </svg>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         Pedidos recientes
       </div>
       <div class="table-card">
         <div th:if="${ultimosPedidos.isEmpty()}" class="empty-state">
           <div class="es-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/>
               <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
               <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-              <line x1="12" y1="22.08" x2="12" y2="12"/>
             </svg>
           </div>
           <div class="es-title">Sin pedidos aún</div>
@@ -295,38 +253,31 @@
               <th>Pedido</th>
               <th>Cliente</th>
               <th>Producto</th>
-              <th>Total (Bs.)</th>
+              <th>Total</th>
               <th>Estado</th>
-              <th>Siguiente paso</th>
+              <th>Acción</th>
             </tr>
           </thead>
           <tbody>
-            <tr th:each="p : ${ultimosPedidos}">
-              <td class="td-bold" th:text="'#' + ${p.id}">#1</td>
-              <td th:text="${p.cotizacion.solicitud.nombreCliente}">Cliente</td>
-              <td th:text="${p.cotizacion.solicitud.resumenProductos}">Producto</td>
+            <tr th:each="p : ${ultimosPedidos}" class="animate-fade-up">
+              <td class="td-id" th:text="'#' + ${p.id}">#1</td>
+              <td class="td-bold" th:text="${p.cotizacion.solicitud.nombreCliente}">Cliente</td>
+              <td class="td-muted" th:text="${p.cotizacion.solicitud.resumenProductos}">Producto</td>
               <td class="td-total" th:text="'Bs. ' + ${#numbers.formatDecimal(p.cotizacion.precioTotal,1,2)}">Bs. 0</td>
               <td>
                 <span class="badge"
-                      th:classappend="${p.estado == 'PENDIENTE_PAGO'} ? 'badge-pendiente' :
-                                     (${p.estado == 'PAGO_CONFIRMADO'} ? 'badge-advertencia' :
-                                     (${p.estado == 'EN_PRODUCCION'} ? 'badge-proceso' :
-                                     (${p.estado == 'LISTO_ENTREGA' or p.estado == 'ENTREGADO' or p.estado == 'CERRADO'} ? 'badge-exitoso' : 'badge-peligro')))"
-                      th:text="${p.estado}">Estado</span>
+                  th:classappend="${p.estado == 'PENDIENTE_PAGO'} ? 'badge-pendiente' :
+                                 (${p.estado == 'PAGO_CONFIRMADO'} ? 'badge-advertencia' :
+                                 (${p.estado == 'EN_PRODUCCION'} ? 'badge-proceso' :
+                                 (${p.estado == 'LISTO_ENTREGA'} ? 'badge-dorado' :
+                                 (${p.estado == 'ENTREGADO' or p.estado == 'CERRADO'} ? 'badge-exitoso' : 'badge-peligro'))))"
+                  th:text="${p.estado}">Estado</span>
               </td>
               <td>
-                <a th:href="@{/pagos/nuevo(pedidoId=${p.id})}"
-                   th:if="${p.estado == 'PENDIENTE_PAGO'}"
-                   class="btn btn-warning btn-xs">Registrar pago</a>
-                <a th:href="@{/produccion/nuevo(pedidoId=${p.id})}"
-                   th:if="${p.estado == 'PAGO_CONFIRMADO'}"
-                   class="btn btn-primary btn-xs">Asignar prod.</a>
-                <a th:href="@{/calidad/nueva(pedidoId=${p.id})}"
-                   th:if="${p.estado == 'EN_PRODUCCION'}"
-                   class="btn btn-primary btn-xs">Inspección</a>
-                <a th:href="@{/entregas/nueva(pedidoId=${p.id})}"
-                   th:if="${p.estado == 'LISTO_ENTREGA'}"
-                   class="btn btn-success btn-xs">Registrar entrega</a>
+                <a th:href="@{/pagos/nuevo(pedidoId=${p.id})}"      th:if="${p.estado == 'PENDIENTE_PAGO'}"   class="btn btn-warning btn-xs">Registrar pago</a>
+                <a th:href="@{/produccion/nuevo(pedidoId=${p.id})}" th:if="${p.estado == 'PAGO_CONFIRMADO'}"  class="btn btn-primary btn-xs">Asignar prod.</a>
+                <a th:href="@{/calidad/nueva(pedidoId=${p.id})}"    th:if="${p.estado == 'EN_PRODUCCION'}"    class="btn btn-info btn-xs">Inspección</a>
+                <a th:href="@{/entregas/nueva(pedidoId=${p.id})}"   th:if="${p.estado == 'LISTO_ENTREGA'}"    class="btn btn-success btn-xs">Registrar entrega</a>
                 <a th:href="@{/pedidos}"
                    th:if="${p.estado == 'ENTREGADO' or p.estado == 'CERRADO' or p.estado == 'CANCELADO'}"
                    class="btn btn-secondary btn-xs">Ver detalle</a>

@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inventario - Carpintería</title>
+  <title>Inventario — Carpintería</title>
   <link rel="stylesheet" th:href="@{/css/estilo.css}">
 </head>
 <body>
@@ -12,7 +12,7 @@
   <div class="main-wrapper">
     <div class="topbar-mobile">
       <button class="hamburger" onclick="toggleSidebar()">☰</button>
-      <span class="mobile-brand">Carpintería</span>
+      <span class="mobile-brand">Inventario</span>
     </div>
     <div class="content-area">
 
@@ -27,35 +27,55 @@
       <div class="page-header">
         <div class="page-header-info">
           <h2>Stock de Madera</h2>
+          <p class="page-subtitle">Control de materiales disponibles en el taller</p>
         </div>
         <div class="page-header-actions">
-          <a th:href="@{/inventario/ingreso}" class="btn btn-success btn-sm">Ingreso</a>
-          <a th:href="@{/inventario/consumo}" class="btn btn-warning btn-sm">Consumo</a>
+          <a th:href="@{/inventario/ingreso}"    class="btn btn-success btn-sm">+ Ingreso</a>
+          <a th:href="@{/inventario/consumo}"    class="btn btn-warning btn-sm">Consumo</a>
           <a th:href="@{/inventario/reposicion}" class="btn btn-secondary btn-sm">Reposición</a>
-          <a th:href="@{/inventario/nuevo}" class="btn btn-primary">+ Nueva Madera</a>
+          <a th:href="@{/inventario/nuevo}"      class="btn btn-primary">+ Nueva madera</a>
         </div>
       </div>
 
-      <div th:if="${!alertas.isEmpty()}" class="alerta-stock">
-        <strong th:text="${alertas.size()} + ' tipo(s) de madera'"></strong> con stock crítico. Revisá el inventario urgente.
+      <!-- Alerta stock crítico -->
+      <div th:if="${!alertas.isEmpty()}"
+           class="alert alert-danger mb-4"
+           style="display:flex;align-items:center;gap:10px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span><strong th:text="${alertas.size()} + ' tipo(s)'">0</strong> de madera con stock crítico. Revisar urgente.</span>
       </div>
 
       <div class="table-card">
         <div class="table-toolbar">
-          <span class="count" th:text="${stocks.size()} + ' registro(s)'"></span>
+          <span class="count" th:text="${stocks.size()} + ' tipo(s) de madera'">0</span>
           <a th:href="@{/inventario/movimientos}" class="btn btn-secondary btn-sm">Ver movimientos</a>
         </div>
+
         <div th:if="${stocks.isEmpty()}" class="empty-state">
-          <div class="es-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></div>
-          <div class="es-title">Sin registros</div>
-          <div class="es-text">Registrá los tipos de madera disponibles en el taller.</div>
+          <div class="es-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+              <polyline points="2 17 12 22 22 17"/>
+              <polyline points="2 12 12 17 22 12"/>
+            </svg>
+          </div>
+          <div class="es-title">Sin stock registrado</div>
+          <div class="es-text">Registra los tipos de madera disponibles en el taller.</div>
           <a th:href="@{/inventario/nuevo}" class="btn btn-primary">+ Agregar madera</a>
         </div>
+
         <table th:unless="${stocks.isEmpty()}">
           <thead>
             <tr>
-              <th>#</th><th>Tipo</th><th>Dimensión</th><th>Disponible</th>
-              <th>Stock mín.</th><th>Unidad</th><th>Precio/U</th><th>Estado</th><th>Acciones</th>
+              <th>#</th>
+              <th>Tipo de madera</th>
+              <th>Dimensión</th>
+              <th>Disponible</th>
+              <th>Stock mín.</th>
+              <th>Unidad</th>
+              <th>Precio/U</th>
+              <th>Estado</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -63,18 +83,21 @@
               <td class="td-id" th:text="${s.id}"></td>
               <td class="td-bold" th:text="${s.tipoMadera}"></td>
               <td th:text="${s.dimension != null ? s.dimension : '—'}"></td>
-              <td th:text="${#numbers.formatDecimal(s.cantidadDisponible,1,2)}"></td>
+              <td>
+                <span th:text="${#numbers.formatDecimal(s.cantidadDisponible,1,2)}"
+                      th:classappend="${s.stockCritico} ? 'fw-bold' : ''"
+                      th:style="${s.stockCritico} ? 'color:var(--rojo)' : ''"></span>
+              </td>
               <td th:text="${#numbers.formatDecimal(s.stockMinimo,1,2)}"></td>
               <td th:text="${s.unidad != null ? s.unidad : '—'}"></td>
               <td th:text="${s.precioPorUnidad != null ? 'Bs. ' + #numbers.formatDecimal(s.precioPorUnidad,1,2) : '—'}"></td>
               <td>
-                <span th:if="${s.stockCritico}" class="badge badge-peligro">Crítico</span>
+                <span th:if="${s.stockCritico}"  class="badge badge-peligro">Crítico</span>
                 <span th:unless="${s.stockCritico}" class="badge badge-exitoso">OK</span>
               </td>
               <td class="td-actions">
                 <a th:href="@{/inventario/editar/{id}(id=${s.id})}" class="btn btn-secondary btn-xs">Editar</a>
-                <form th:action="@{/inventario/{id}(id=${s.id})}" method="post"
-                      style="display:inline"
+                <form th:action="@{/inventario/{id}(id=${s.id})}" method="post" style="display:inline"
                       onsubmit="return confirm('¿Eliminar este registro?')">
                   <input type="hidden" name="_method" value="DELETE">
                   <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>

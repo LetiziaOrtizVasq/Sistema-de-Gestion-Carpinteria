@@ -33,5 +33,9 @@
             <groupId>com.carpinteria</groupId>
             <artifactId>carpinteria-pagos</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.carpinteria</groupId>
+            <artifactId>carpinteria-produccion</artifactId>
+        </dependency>
     </dependencies>
 </project>

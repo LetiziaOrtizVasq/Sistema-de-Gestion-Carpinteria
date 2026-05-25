@@ -38,6 +38,8 @@ public class PagoInicial {
 
     private String comprobante;
 
+    private String numeroRecibo;
+
     // PENDIENTE → CONFIRMADO
     @Column(nullable = false)
     private String estado;
@@ -68,6 +70,9 @@ public class PagoInicial {
 
     public String getComprobante() { return comprobante; }
     public void setComprobante(String comprobante) { this.comprobante = comprobante; }
+
+    public String getNumeroRecibo() { return numeroRecibo; }
+    public void setNumeroRecibo(String numeroRecibo) { this.numeroRecibo = numeroRecibo; }
 
     public String getEstado() { return estado; }
     public void setEstado(String estado) { this.estado = estado; }

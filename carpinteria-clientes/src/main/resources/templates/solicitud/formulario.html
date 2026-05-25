@@ -33,6 +33,7 @@
       <div class="page-header">
         <div class="page-header-info">
           <h2 th:text="${titulo}">Solicitud</h2>
+          <p class="page-subtitle">Registrá los datos del cliente y los artículos que necesita</p>
         </div>
         <div class="page-header-actions">
           <a th:href="@{/solicitudes}" class="btn btn-secondary">← Volver</a>
@@ -49,18 +50,26 @@
           <div class="card-body">
             <div class="form-grid">
               <div class="field">
-                <label>Nombre del Cliente <span class="req">*</span></label>
-                <input type="text" th:field="*{nombreCliente}"
-                       th:classappend="${#fields.hasErrors('nombreCliente')} ? 'input-error'"
-                       placeholder="Ej: Juan Pérez" class="form-control">
+                <label>Cliente <span class="req">*</span></label>
+                <select id="clienteSelect" name="clienteId" class="form-control"
+                        th:classappend="${#fields.hasErrors('nombreCliente')} ? 'input-error'"
+                        onchange="rellenarCliente(this)">
+                  <option value="">— Seleccioná un cliente —</option>
+                  <option th:each="c : ${clientes}"
+                          th:value="${c.id}"
+                          th:text="${c.nombreCompleto}"
+                          th:attr="data-tel=${c.telefono}"
+                          th:selected="${solicitud.cliente != null and solicitud.cliente.id == c.id}">
+                  </option>
+                </select>
                 <span class="field-error" th:if="${#fields.hasErrors('nombreCliente')}" th:errors="*{nombreCliente}"></span>
+                <a th:href="@{/clientes/nuevo}" style="font-size:.75rem;margin-top:4px;display:inline-block">+ Registrar nuevo cliente</a>
+                <input type="hidden" th:field="*{nombreCliente}" id="nombreClienteHidden">
               </div>
               <div class="field">
-                <label>Teléfono <span class="req">*</span></label>
-                <input type="text" th:field="*{telefono}"
-                       th:classappend="${#fields.hasErrors('telefono')} ? 'input-error'"
-                       placeholder="Ej: 70012345" class="form-control">
-                <span class="field-error" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></span>
+                <label>Teléfono</label>
+                <input type="text" th:field="*{telefono}" id="telefonoField"
+                       class="form-control" readonly placeholder="Se completa al seleccionar cliente">
               </div>
               <div class="field">
                 <label>Estado</label>
@@ -87,7 +96,7 @@
                 <div id="items-container">
                   <div th:each="item : ${solicitud.items}" class="item-row">
                     <select name="iTipo" class="form-control">
-                      <option value="">-- Tipo --</option>
+                      <option value="">— Tipo —</option>
                       <option value="Mesa"       th:selected="${item.tipoProducto == 'Mesa'}">Mesa</option>
                       <option value="Silla"      th:selected="${item.tipoProducto == 'Silla'}">Silla</option>
                       <option value="Armario"    th:selected="${item.tipoProducto == 'Armario'}">Armario</option>
@@ -96,12 +105,24 @@
                       <option value="Escritorio" th:selected="${item.tipoProducto == 'Escritorio'}">Escritorio</option>
                       <option value="Puerta"     th:selected="${item.tipoProducto == 'Puerta'}">Puerta</option>
                       <option value="Ventana"    th:selected="${item.tipoProducto == 'Ventana'}">Ventana</option>
+                      <option value="Mueble de cocina" th:selected="${item.tipoProducto == 'Mueble de cocina'}">Mueble de cocina</option>
                       <option value="Otro"       th:selected="${item.tipoProducto == 'Otro'}">Otro</option>
                     </select>
                     <input type="number" name="iCant" class="form-control" th:value="${item.cantidad}" min="1" placeholder="1">
                     <input type="text" name="iDesc" class="form-control" th:value="${item.descripcion}" placeholder="Descripción">
-                    <input type="text" name="iDim"  class="form-control" th:value="${item.dimensionesAproximadas}" placeholder="1.20m x 0.80m">
-                    <input type="text" name="iMat"  class="form-control" th:value="${item.materialPreferido}" placeholder="Cedro, Pino...">
+                    <input type="text" name="iDim"  class="form-control" th:value="${item.dimensionesAproximadas}" placeholder="1.20m × 0.80m">
+                    <select name="iMat" class="form-control">
+                      <option value="">— Madera —</option>
+                      <option value="Cedro"        th:selected="${item.materialPreferido == 'Cedro'}">Cedro</option>
+                      <option value="Roble"        th:selected="${item.materialPreferido == 'Roble'}">Roble</option>
+                      <option value="Pino"         th:selected="${item.materialPreferido == 'Pino'}">Pino</option>
+                      <option value="Nogal"        th:selected="${item.materialPreferido == 'Nogal'}">Nogal</option>
+                      <option value="Caoba"        th:selected="${item.materialPreferido == 'Caoba'}">Caoba</option>
+                      <option value="Teca"         th:selected="${item.materialPreferido == 'Teca'}">Teca</option>
+                      <option value="MDF"          th:selected="${item.materialPreferido == 'MDF'}">MDF</option>
+                      <option value="Melamínico"   th:selected="${item.materialPreferido == 'Melamínico'}">Melamínico</option>
+                      <option value="Sin preferencia" th:selected="${item.materialPreferido == 'Sin preferencia'}">Sin preferencia</option>
+                    </select>
                     <button type="button" class="btn btn-danger btn-xs" onclick="eliminarFila(this)" title="Eliminar">×</button>
                   </div>
                 </div>
@@ -120,11 +141,12 @@
 </div>
 <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 <script th:inline="javascript">
-  const tiposOpciones = `<option value="">-- Tipo --</option><option value="Mesa">Mesa</option><option value="Silla">Silla</option><option value="Armario">Armario</option><option value="Cama">Cama</option><option value="Estante">Estante</option><option value="Escritorio">Escritorio</option><option value="Puerta">Puerta</option><option value="Ventana">Ventana</option><option value="Otro">Otro</option>`;
+  const tiposOpciones = `<option value="">— Tipo —</option><option value="Mesa">Mesa</option><option value="Silla">Silla</option><option value="Armario">Armario</option><option value="Cama">Cama</option><option value="Estante">Estante</option><option value="Escritorio">Escritorio</option><option value="Puerta">Puerta</option><option value="Ventana">Ventana</option><option value="Mueble de cocina">Mueble de cocina</option><option value="Otro">Otro</option>`;
+  const matOpciones = `<option value="">— Madera —</option><option value="Cedro">Cedro</option><option value="Roble">Roble</option><option value="Pino">Pino</option><option value="Nogal">Nogal</option><option value="Caoba">Caoba</option><option value="Teca">Teca</option><option value="MDF">MDF</option><option value="Melamínico">Melamínico</option><option value="Sin preferencia">Sin preferencia</option>`;
   function agregarFila() {
     const div = document.createElement('div');
     div.className = 'item-row';
-    div.innerHTML = `<select name="iTipo" class="form-control">${tiposOpciones}</select><input type="number" name="iCant" class="form-control" value="1" min="1"><input type="text" name="iDesc" class="form-control" placeholder="Descripción"><input type="text" name="iDim" class="form-control" placeholder="1.20m x 0.80m"><input type="text" name="iMat" class="form-control" placeholder="Cedro, Pino..."><button type="button" class="btn btn-danger btn-xs" onclick="eliminarFila(this)">×</button>`;
+    div.innerHTML = `<select name="iTipo" class="form-control">${tiposOpciones}</select><input type="number" name="iCant" class="form-control" value="1" min="1"><input type="text" name="iDesc" class="form-control" placeholder="Descripción"><input type="text" name="iDim" class="form-control" placeholder="1.20m × 0.80m"><select name="iMat" class="form-control">${matOpciones}</select><button type="button" class="btn btn-danger btn-xs" onclick="eliminarFila(this)">×</button>`;
     document.getElementById('items-container').appendChild(div);
   }
   function eliminarFila(btn) {
@@ -132,6 +154,14 @@
     if (c.children.length <= 1) { alert('Debe haber al menos un artículo.'); return; }
     btn.closest('.item-row').remove();
   }
+  function rellenarCliente(sel) {
+    const opt = sel.options[sel.selectedIndex];
+    document.getElementById('telefonoField').value = opt.dataset.tel || '';
+    document.getElementById('nombreClienteHidden').value = opt.text !== '— Seleccioná un cliente —' ? opt.text : '';
+  }
+  // Pre-fill on page load if editing
+  (function(){ const s = document.getElementById('clienteSelect'); if(s && s.value) rellenarCliente(s); })();
+
   const existentes = /*[[${solicitud.items != null ? solicitud.items.size() : 0}]]*/ 0;
   if (existentes === 0) agregarFila();
 </script>

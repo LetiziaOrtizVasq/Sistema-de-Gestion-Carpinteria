@@ -5,10 +5,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDate;
 
-/**
- * CU-06: Registrar información técnica del pedido.
- * Relacionado 1:1 con SolicitudCliente.
- */
 @Entity
 @Table(name = "informacion_tecnica")
 public class InformacionTecnica {
@@ -33,6 +29,15 @@ public class InformacionTecnica {
 
     private String color;
 
+    private String disenio;
+
+    private String estiloMueble;
+
+    private Boolean plegable;
+
+    @Column(length = 600)
+    private String requerimientosEspeciales;
+
     @Column(length = 400)
     private String notasAdicionales;
 
@@ -41,9 +46,9 @@ public class InformacionTecnica {
 
     public InformacionTecnica() {
         this.fechaRegistro = LocalDate.now();
+        this.plegable = false;
     }
 
-    // Getters y Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -64,6 +69,18 @@ public class InformacionTecnica {
 
     public String getColor() { return color; }
     public void setColor(String color) { this.color = color; }
+
+    public String getDisenio() { return disenio; }
+    public void setDisenio(String disenio) { this.disenio = disenio; }
+
+    public String getEstiloMueble() { return estiloMueble; }
+    public void setEstiloMueble(String estiloMueble) { this.estiloMueble = estiloMueble; }
+
+    public Boolean getPlegable() { return plegable; }
+    public void setPlegable(Boolean plegable) { this.plegable = plegable; }
+
+    public String getRequerimientosEspeciales() { return requerimientosEspeciales; }
+    public void setRequerimientosEspeciales(String requerimientosEspeciales) { this.requerimientosEspeciales = requerimientosEspeciales; }
 
     public String getNotasAdicionales() { return notasAdicionales; }
     public void setNotasAdicionales(String notasAdicionales) { this.notasAdicionales = notasAdicionales; }

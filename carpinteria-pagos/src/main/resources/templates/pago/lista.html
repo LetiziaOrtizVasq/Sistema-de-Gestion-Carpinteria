@@ -27,6 +27,7 @@
       <div class="page-header">
         <div class="page-header-info">
           <h2>Pagos Iniciales</h2>
+          <p class="page-subtitle">Anticipo del 50% requerido para confirmar cada pedido</p>
         </div>
         <div class="page-header-actions">
           <a th:href="@{/pagos/nuevo}" class="btn btn-primary">+ Registrar Pago</a>
@@ -46,13 +47,17 @@
         <table th:unless="${pagos.isEmpty()}">
           <thead>
             <tr>
-              <th>#</th><th>Cliente</th><th>Producto</th><th>50% Requerido</th>
+              <th>#</th><th>N° Recibo</th><th>Cliente</th><th>Producto</th><th>50% Requerido</th>
               <th>Monto Pagado</th><th>Método</th><th>Estado</th><th>Acciones</th>
             </tr>
           </thead>
           <tbody>
             <tr th:each="p : ${pagos}">
               <td class="td-id" th:text="${p.id}"></td>
+              <td>
+                <span class="badge badge-dorado" th:if="${p.numeroRecibo != null}" th:text="${p.numeroRecibo}"></span>
+                <span class="td-muted" th:unless="${p.numeroRecibo != null}">—</span>
+              </td>
               <td class="td-bold" th:text="${p.pedido.cotizacion.solicitud.nombreCliente}"></td>
               <td th:text="${p.pedido.cotizacion.solicitud.resumenProductos}"></td>
               <td th:text="'Bs. ' + ${#numbers.formatDecimal(p.montoRequerido, 1, 2)}"></td>
@@ -64,6 +69,7 @@
                       th:text="${p.estado}"></span>
               </td>
               <td class="td-actions">
+                <a th:href="@{/pagos/{id}/recibo(id=${p.id})}" class="btn btn-secondary btn-xs" target="_blank">🖨 Recibo</a>
                 <form th:action="@{/pagos/{id}(id=${p.id})}" method="post"
                       style="display:inline"
                       onsubmit="return confirm('¿Eliminar este pago?')">

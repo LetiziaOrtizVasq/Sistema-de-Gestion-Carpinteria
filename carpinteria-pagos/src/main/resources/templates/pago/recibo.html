@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="'Recibo ' + ${pago.numeroRecibo} + ' — Carpintería'">Recibo</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      .app-shell { display: block !important; }
+      .main-wrapper { margin: 0 !important; padding: 0 !important; }
+      .content-area { padding: 0 !important; }
+      body { background: white !important; }
+      .recibo-wrap { box-shadow: none !important; border: none !important; }
+    }
+    .recibo-wrap {
+      max-width: 600px; margin: 0 auto; background: var(--card);
+      border: 1px solid var(--border); border-radius: var(--r);
+      overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,.06);
+    }
+    .recibo-header {
+      background: linear-gradient(135deg, #1C1412, #0C0A09);
+      color: white; padding: 28px 32px; text-align: center;
+    }
+    .recibo-logo { font-size: 1.3rem; font-weight: 800; color: #FCD34D;
+      font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: 1px; }
+    .recibo-sub { font-size: .78rem; color: rgba(255,255,255,.6); margin-top: 4px; }
+    .recibo-num {
+      display: inline-block; margin-top: 16px; background: rgba(180,83,9,.3);
+      border: 1px solid rgba(180,83,9,.5); color: #FCD34D;
+      padding: 8px 24px; border-radius: 99px; font-size: 1rem;
+      font-weight: 700; letter-spacing: 1px;
+    }
+    .recibo-body { padding: 28px 32px; }
+    .recibo-section { margin-bottom: 20px; }
+    .recibo-section-title {
+      font-size: .68rem; font-weight: 700; color: var(--text-3); text-transform: uppercase;
+      letter-spacing: .8px; border-bottom: 1px solid var(--border); padding-bottom: 6px;
+      margin-bottom: 12px;
+    }
+    .recibo-row { display: flex; justify-content: space-between; align-items: baseline;
+      padding: 5px 0; font-size: .85rem; }
+    .recibo-row-label { color: var(--text-2); }
+    .recibo-row-value { font-weight: 600; color: var(--text-1); text-align: right; max-width: 60%; }
+    .recibo-total-row {
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--accent-bg); border: 1px solid rgba(180,83,9,.15);
+      border-radius: var(--r-sm); padding: 12px 16px; margin-top: 8px;
+    }
+    .recibo-total-label { font-size: .85rem; font-weight: 700; color: var(--accent); }
+    .recibo-total-value { font-size: 1.2rem; font-weight: 800; color: var(--accent); }
+    .recibo-badge-estado {
+      display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px;
+      border-radius: 99px; font-size: .75rem; font-weight: 700;
+    }
+    .estado-confirmado { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+    .estado-pendiente { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+    .recibo-footer {
+      background: var(--bg2); border-top: 1px solid var(--border);
+      padding: 16px 32px; display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 10px;
+    }
+    .recibo-firma { font-size: .72rem; color: var(--text-3); }
+    .recibo-firma strong { color: var(--text-2); display: block; margin-top: 20px;
+      border-top: 1px solid var(--border-d); padding-top: 6px; min-width: 160px; }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <div th:replace="~{layout/nav :: nav('ventas')}" class="no-print"></div>
+  <div class="main-wrapper">
+    <div class="content-area">
+
+      <div class="no-print" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <nav class="breadcrumb" style="margin:0">
+          <a th:href="@{/pagos}">← Pagos Iniciales</a>
+        </nav>
+        <button onclick="window.print()" class="btn btn-primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Imprimir recibo
+        </button>
+      </div>
+
+      <div class="recibo-wrap">
+        <!-- Header -->
+        <div class="recibo-header">
+          <div class="recibo-logo">CARPINTERÍA</div>
+          <div class="recibo-sub">Taller de muebles y carpintería fina</div>
+          <div class="recibo-num" th:text="${pago.numeroRecibo}">REC-2026-0001</div>
+        </div>
+
+        <!-- Body -->
+        <div class="recibo-body">
+
+          <!-- Datos del cliente -->
+          <div class="recibo-section">
+            <div class="recibo-section-title">Datos del cliente</div>
+            <div class="recibo-row">
+              <span class="recibo-row-label">Nombre</span>
+              <span class="recibo-row-value" th:text="${pago.pedido.cotizacion.solicitud.nombreCliente}"></span>
+            </div>
+            <div class="recibo-row">
+              <span class="recibo-row-label">Teléfono</span>
+              <span class="recibo-row-value" th:text="${pago.pedido.cotizacion.solicitud.telefono}"></span>
+            </div>
+          </div>
+
+          <!-- Descripción del pedido -->
+          <div class="recibo-section">
+            <div class="recibo-section-title">Detalle del pedido</div>
+            <div class="recibo-row">
+              <span class="recibo-row-label">N° Pedido</span>
+              <span class="recibo-row-value" th:text="'#' + ${pago.pedido.id}"></span>
+            </div>
+            <div class="recibo-row">
+              <span class="recibo-row-label">Productos</span>
+              <span class="recibo-row-value" th:text="${pago.pedido.cotizacion.solicitud.resumenProductos}"></span>
+            </div>
+            <div class="recibo-row">
+              <span class="recibo-row-label">Total cotizado</span>
+              <span class="recibo-row-value" th:text="'Bs. ' + ${#numbers.formatDecimal(pago.pedido.cotizacion.precioTotal,1,2)}"></span>
+            </div>
+            <div class="recibo-row">
+              <span class="recibo-row-label">50% requerido</span>
+              <span class="recibo-row-value" th:text="'Bs. ' + ${#numbers.formatDecimal(pago.montoRequerido,1,2)}"></span>
+            </div>
+          </div>
+
+          <!-- Datos del pago -->
+          <div class="recibo-section">
+            <div class="recibo-section-title">Datos del pago</div>
+            <div class="recibo-row">
+              <span class="recibo-row-label">Fecha</span>
+              <span class="recibo-row-value" th:text="${#temporals.format(pago.fechaPago,'dd/MM/yyyy')}"></span>
+            </div>
+            <div class="recibo-row">
+              <span class="recibo-row-label">Método</span>
+              <span class="recibo-row-value" th:text="${pago.metodoPago}"></span>
+            </div>
+            <div th:if="${pago.comprobante != null and !pago.comprobante.isEmpty()}" class="recibo-row">
+              <span class="recibo-row-label">Comprobante</span>
+              <span class="recibo-row-value" th:text="${pago.comprobante}"></span>
+            </div>
+            <div class="recibo-row">
+              <span class="recibo-row-label">Estado</span>
+              <span class="recibo-badge-estado"
+                    th:classappend="${pago.estado == 'CONFIRMADO'} ? 'estado-confirmado' : 'estado-pendiente'"
+                    th:text="${pago.estado}"></span>
+            </div>
+          </div>
+
+          <!-- Total pagado -->
+          <div class="recibo-total-row">
+            <span class="recibo-total-label">MONTO PAGADO</span>
+            <span class="recibo-total-value" th:text="'Bs. ' + ${#numbers.formatDecimal(pago.montoPagado,1,2)}"></span>
+          </div>
+
+        </div>
+
+        <!-- Footer con firma -->
+        <div class="recibo-footer">
+          <div class="recibo-firma">
+            Emitido el <span th:text="${#temporals.format(pago.fechaPago,'dd/MM/yyyy')}"></span>
+            <strong>Firma y sello del taller</strong>
+          </div>
+          <div class="recibo-firma" style="text-align:right">
+            Recibí conforme
+            <strong>Firma del cliente</strong>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

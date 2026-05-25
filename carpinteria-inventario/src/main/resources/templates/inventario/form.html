@@ -27,6 +27,7 @@
       <div class="page-header">
         <div class="page-header-info">
           <h2 th:text="${titulo}">Registrar Madera</h2>
+          <p class="page-subtitle">Define el tipo, dimensión y niveles de stock mínimo para las alertas</p>
         </div>
         <div class="page-header-actions">
           <a th:href="@{/inventario}" class="btn btn-secondary">← Volver</a>
@@ -44,9 +45,22 @@
             <div class="form-grid">
               <div class="field">
                 <label>Tipo de Madera <span class="req">*</span></label>
-                <input type="text" th:field="*{tipoMadera}"
-                       th:classappend="${#fields.hasErrors('tipoMadera')} ? 'input-error'"
-                       placeholder="Ej: Cedro, Pino, Nogal..." class="form-control">
+                <select th:field="*{tipoMadera}"
+                        th:classappend="${#fields.hasErrors('tipoMadera')} ? 'input-error'"
+                        class="form-control">
+                  <option value="">— Seleccionar tipo —</option>
+                  <option value="Cedro">Cedro</option>
+                  <option value="Roble">Roble</option>
+                  <option value="Pino">Pino</option>
+                  <option value="Nogal">Nogal</option>
+                  <option value="Caoba">Caoba</option>
+                  <option value="Teca">Teca</option>
+                  <option value="Eucalipto">Eucalipto</option>
+                  <option value="MDF">MDF</option>
+                  <option value="Triplay">Triplay</option>
+                  <option value="Melamínico">Melamínico</option>
+                  <option value="Otro">Otro</option>
+                </select>
                 <span class="field-error" th:if="${#fields.hasErrors('tipoMadera')}"
                       th:errors="*{tipoMadera}"></span>
               </div>

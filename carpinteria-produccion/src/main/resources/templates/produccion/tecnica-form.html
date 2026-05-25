@@ -1,10 +1,23 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title th:text="${titulo} + ' - Carpintería'">Info Técnica</title>
+  <title th:text="${titulo} + ' — Carpintería'">Info Técnica</title>
   <link rel="stylesheet" th:href="@{/css/estilo.css}">
+  <style>
+    .color-section-title { font-size:.79rem; font-weight:600; color:var(--text-2); margin-bottom:10px; }
+    .color-group { margin-bottom:14px; }
+    .color-group-label { font-size:.68rem; font-weight:600; color:var(--text-3); text-transform:uppercase; letter-spacing:.6px; margin-bottom:8px; }
+    .swatch-row { display:flex; flex-wrap:wrap; gap:7px; }
+    .color-swatch { width:30px; height:30px; border-radius:6px; cursor:pointer; transition:all .15s; border:2.5px solid transparent; position:relative; box-shadow:0 1px 3px rgba(0,0,0,.12); }
+    .color-swatch:hover { transform:scale(1.15); box-shadow:0 3px 8px rgba(0,0,0,.2); }
+    .color-swatch.selected { border-color:#B45309; box-shadow:0 0 0 3px rgba(180,83,9,.2); transform:scale(1.12); }
+    .color-swatch.selected::after { content:'✓'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:.6rem; font-weight:800; color:rgba(255,255,255,.95); text-shadow:0 1px 2px rgba(0,0,0,.6); }
+    .selected-color-preview { display:flex; align-items:center; gap:10px; padding:10px 14px; background:var(--bg); border:1.5px solid var(--border); border-radius:var(--r-sm); margin-top:10px; }
+    .preview-swatch { width:22px; height:22px; border-radius:4px; border:1.5px solid rgba(0,0,0,.1); flex-shrink:0; }
+    .preview-label { font-size:.82rem; font-weight:500; color:var(--text-2); }
+  </style>
 </head>
 <body>
 <div class="app-shell">
@@ -12,7 +25,7 @@
   <div class="main-wrapper">
     <div class="topbar-mobile">
       <button class="hamburger" onclick="toggleSidebar()">☰</button>
-      <span class="mobile-brand">Carpintería</span>
+      <span class="mobile-brand">Info Técnica</span>
     </div>
     <div class="content-area">
 
@@ -27,80 +40,273 @@
       <div class="page-header">
         <div class="page-header-info">
           <h2 th:text="${titulo}">Info Técnica</h2>
+          <p class="page-subtitle">Especificaciones exactas para la fabricación del mueble</p>
         </div>
         <div class="page-header-actions">
           <a th:href="@{/tecnica}" class="btn btn-secondary">← Volver</a>
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-header">
-          <h3 th:text="${titulo}">Info Técnica</h3>
-          <p>Especificaciones exactas para fabricación del producto</p>
-        </div>
-        <form th:action="@{/tecnica}" th:object="${info}" method="post">
-          <input type="hidden" th:field="*{id}">
+      <form th:action="@{/tecnica}" th:object="${info}" method="post">
+        <input type="hidden" th:field="*{id}">
+        <input type="hidden" th:field="*{fechaRegistro}">
+
+        <!-- Sección 1: Solicitud y especificaciones -->
+        <div class="card mb-6">
+          <div class="card-header">
+            <h3>Identificación y especificaciones</h3>
+          </div>
           <div class="card-body">
             <div class="form-grid">
-              <div class="field full-width">
-                <label>Solicitud <span class="req">*</span></label>
+
+              <div class="field span-2">
+                <label>Solicitud asociada <span class="req">*</span></label>
                 <select name="solicitudId" class="form-control" required>
-                  <option value="">-- Seleccione una solicitud --</option>
+                  <option value="">— Seleccionar solicitud —</option>
                   <option th:each="s : ${solicitudes}"
                           th:value="${s.id}"
-                          th:text="${'#' + s.id + ' — ' + s.nombreCliente + ' (' + s.resumenProductos + ')'}"
-                          th:selected="${info.solicitud != null and info.solicitud.id == s.id}">
-                  </option>
+                          th:text="${'#' + s.id + ' — ' + s.nombreCliente + ' / ' + s.resumenProductos}"
+                          th:selected="${info.solicitud != null and info.solicitud.id == s.id}"></option>
                 </select>
               </div>
-              <div class="field full-width">
-                <label>Especificaciones Generales <span class="req">*</span></label>
+
+              <div class="field span-2">
+                <label>Especificaciones generales <span class="req">*</span></label>
                 <textarea th:field="*{especificaciones}"
                           th:classappend="${#fields.hasErrors('especificaciones')} ? 'input-error'"
-                          placeholder="Describe las especificaciones técnicas generales del producto..."
-                          rows="3" class="form-control"></textarea>
-                <span class="field-error" th:if="${#fields.hasErrors('especificaciones')}"
-                      th:errors="*{especificaciones}"></span>
+                          placeholder="Describe las especificaciones técnicas del producto: materiales, acabados, características especiales..."
+                          class="form-control"></textarea>
+                <span class="field-error" th:if="${#fields.hasErrors('especificaciones')}" th:errors="*{especificaciones}"></span>
               </div>
-              <div class="field">
-                <label>Tipos de Madera Requeridos</label>
-                <input type="text" th:field="*{tiposMadera}"
-                       placeholder="Ej: Cedro, Pino..." class="form-control">
-              </div>
-              <div class="field">
-                <label>Acabado</label>
-                <input type="text" th:field="*{acabado}"
-                       placeholder="Ej: Barniz, Pintura, Natural..." class="form-control">
-              </div>
-              <div class="field">
-                <label>Dimensiones Exactas</label>
-                <input type="text" th:field="*{dimensionesExactas}"
-                       placeholder="Ej: 1.20m x 0.80m x 0.75m" class="form-control">
-              </div>
-              <div class="field">
-                <label>Color</label>
-                <input type="text" th:field="*{color}"
-                       placeholder="Ej: Roble oscuro, Caoba..." class="form-control">
-              </div>
-              <div class="field full-width">
-                <label>Notas Adicionales</label>
-                <textarea th:field="*{notasAdicionales}"
-                          placeholder="Instrucciones especiales para el operario..."
-                          rows="2" class="form-control"></textarea>
-              </div>
-              <input type="hidden" th:field="*{fechaRegistro}">
+
             </div>
           </div>
-          <div class="card-footer">
-            <button type="submit" class="btn btn-primary">Guardar</button>
-            <a th:href="@{/tecnica}" class="btn btn-secondary">Cancelar</a>
+        </div>
+
+        <!-- Sección 2: Diseño y medidas -->
+        <div class="card mb-6">
+          <div class="card-header">
+            <h3>Diseño y medidas</h3>
           </div>
-        </form>
-      </div>
+          <div class="card-body">
+            <div class="form-grid">
+
+              <div class="field">
+                <label>Tipo de madera</label>
+                <select th:field="*{tiposMadera}" class="form-control">
+                  <option value="">— Seleccionar madera —</option>
+                  <option value="Cedro">Cedro</option>
+                  <option value="Roble">Roble</option>
+                  <option value="Pino">Pino</option>
+                  <option value="Nogal">Nogal</option>
+                  <option value="Caoba">Caoba</option>
+                  <option value="Teca">Teca</option>
+                  <option value="Eucalipto">Eucalipto</option>
+                  <option value="MDF">MDF</option>
+                  <option value="Triplay">Triplay</option>
+                  <option value="Melaminico">Melamínico</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Estilo del mueble</label>
+                <select th:field="*{estiloMueble}" class="form-control">
+                  <option value="">— Seleccionar estilo —</option>
+                  <option value="Moderno">Moderno</option>
+                  <option value="Clásico">Clásico</option>
+                  <option value="Rústico">Rústico</option>
+                  <option value="Minimalista">Minimalista</option>
+                  <option value="Industrial">Industrial</option>
+                  <option value="Escandinavo">Escandinavo</option>
+                  <option value="Colonial">Colonial</option>
+                  <option value="Contemporáneo">Contemporáneo</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Dimensiones exactas</label>
+                <input type="text" th:field="*{dimensionesExactas}"
+                       placeholder="Ej: 1.20m largo × 0.80m ancho × 0.75m alto"
+                       class="form-control">
+                <span class="field-hint">Largo × Ancho × Alto en metros o centímetros</span>
+              </div>
+
+              <div class="field">
+                <label>Diseño/Modelo</label>
+                <input type="text" th:field="*{disenio}"
+                       placeholder="Ej: Mesa con cajones laterales, silla tapizada..."
+                       class="form-control">
+              </div>
+
+              <div class="field">
+                <label>¿Mueble plegable?</label>
+                <select th:field="*{plegable}" class="form-control">
+                  <option value="false">No</option>
+                  <option value="true">Sí — es plegable</option>
+                </select>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección 3: Color y acabado -->
+        <div class="card mb-6">
+          <div class="card-header">
+            <h3>Color y acabado</h3>
+            <p>Selecciona el tono o escribe el nombre exacto del acabado</p>
+          </div>
+          <div class="card-body">
+
+            <div class="color-section-title">Paleta de acabados de madera</div>
+
+            <div class="color-group">
+              <div class="color-group-label">Naturales y maderas claras</div>
+              <div class="swatch-row">
+                <div class="color-swatch" style="background:#F5DEB3" data-color="Trigo natural"     title="Trigo natural"></div>
+                <div class="color-swatch" style="background:#DEB887" data-color="Madera natural"    title="Madera natural"></div>
+                <div class="color-swatch" style="background:#D2B48C" data-color="Tostado claro"     title="Tostado claro"></div>
+                <div class="color-swatch" style="background:#C8A882" data-color="Roble claro"       title="Roble claro"></div>
+                <div class="color-swatch" style="background:#C19A6B" data-color="Roble medio"       title="Roble medio"></div>
+                <div class="color-swatch" style="background:#BDA37A" data-color="Pino barnizado"    title="Pino barnizado"></div>
+                <div class="color-swatch" style="background:#E8D5B5" data-color="Arce claro"        title="Arce claro"></div>
+                <div class="color-swatch" style="background:#F0E6CF" data-color="Fresno natural"    title="Fresno natural"></div>
+              </div>
+            </div>
+
+            <div class="color-group">
+              <div class="color-group-label">Maderas cálidas y medias</div>
+              <div class="swatch-row">
+                <div class="color-swatch" style="background:#A0785A" data-color="Teca media"        title="Teca media"></div>
+                <div class="color-swatch" style="background:#8B6914" data-color="Cedro dorado"      title="Cedro dorado"></div>
+                <div class="color-swatch" style="background:#9C6B3A" data-color="Nogal medio"       title="Nogal medio"></div>
+                <div class="color-swatch" style="background:#8B4513" data-color="Caoba natural"     title="Caoba natural"></div>
+                <div class="color-swatch" style="background:#A0522D" data-color="Siena quemada"     title="Siena quemada"></div>
+                <div class="color-swatch" style="background:#7B3F00" data-color="Cerezo oscuro"     title="Cerezo oscuro"></div>
+                <div class="color-swatch" style="background:#CD853F" data-color="Madera peruana"    title="Madera peruana"></div>
+                <div class="color-swatch" style="background:#B8860B" data-color="Nogal dorado"      title="Nogal dorado"></div>
+              </div>
+            </div>
+
+            <div class="color-group">
+              <div class="color-group-label">Maderas oscuras y premium</div>
+              <div class="swatch-row">
+                <div class="color-swatch" style="background:#5C3317" data-color="Wengué"            title="Wengué"></div>
+                <div class="color-swatch" style="background:#4A2C17" data-color="Nogal oscuro"      title="Nogal oscuro"></div>
+                <div class="color-swatch" style="background:#3B1F0E" data-color="Ebano café"        title="Ébano café"></div>
+                <div class="color-swatch" style="background:#1C0A00" data-color="Ébano negro"       title="Ébano negro"></div>
+                <div class="color-swatch" style="background:#2F1B0E" data-color="Teca oscura"       title="Teca oscura"></div>
+                <div class="color-swatch" style="background:#4D2600" data-color="Palisandro"        title="Palisandro"></div>
+                <div class="color-swatch" style="background:#6B3A2A" data-color="Cerezo americano"  title="Cerezo americano"></div>
+                <div class="color-swatch" style="background:#3D1C02" data-color="Chocolate oscuro"  title="Chocolate oscuro"></div>
+              </div>
+            </div>
+
+            <div class="color-group">
+              <div class="color-group-label">Lacas y pinturas</div>
+              <div class="swatch-row">
+                <div class="color-swatch" style="background:#FFFFFF; border:1px solid #E7E5E2" data-color="Laca blanca"       title="Laca blanca"></div>
+                <div class="color-swatch" style="background:#F8F4F0" data-color="Blanco hueso"      title="Blanco hueso"></div>
+                <div class="color-swatch" style="background:#E8E0D5" data-color="Gris arena"        title="Gris arena"></div>
+                <div class="color-swatch" style="background:#BDB5AA" data-color="Gris cálido"       title="Gris cálido"></div>
+                <div class="color-swatch" style="background:#808080" data-color="Gris medio"        title="Gris medio"></div>
+                <div class="color-swatch" style="background:#3D3D3D" data-color="Gris antracita"    title="Gris antracita"></div>
+                <div class="color-swatch" style="background:#1A1A1A" data-color="Negro laca"        title="Negro laca"></div>
+                <div class="color-swatch" style="background:#F5F0E8" data-color="Crema mate"        title="Crema mate"></div>
+              </div>
+            </div>
+
+            <!-- Preview del color seleccionado + input oculto -->
+            <div id="colorPreview" class="selected-color-preview" th:if="${info.color != null and info.color != ''}">
+              <div class="preview-swatch" id="previewSwatch"></div>
+              <span class="preview-label" id="previewLabel" th:text="${info.color}">Color seleccionado</span>
+            </div>
+
+            <input type="hidden" th:field="*{color}" id="colorInput">
+
+            <div class="field" style="margin-top:14px">
+              <label>Acabado específico</label>
+              <select th:field="*{acabado}" class="form-control">
+                <option value="">— Seleccionar acabado —</option>
+                <option value="Barniz brillante">Barniz brillante</option>
+                <option value="Barniz satinado">Barniz satinado</option>
+                <option value="Barniz mate">Barniz mate</option>
+                <option value="Pintura laca">Pintura laca</option>
+                <option value="Óleo natural">Óleo natural</option>
+                <option value="Cera natural">Cera natural</option>
+                <option value="Sin acabado">Sin acabado (madera natural)</option>
+              </select>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Sección 4: Requerimientos especiales -->
+        <div class="card mb-6">
+          <div class="card-header">
+            <h3>Notas y requerimientos especiales</h3>
+          </div>
+          <div class="card-body">
+            <div class="form-grid">
+              <div class="field span-2">
+                <label>Requerimientos especiales</label>
+                <textarea th:field="*{requerimientosEspeciales}"
+                          placeholder="Herramientas, técnicas o condiciones especiales para este pedido..."
+                          class="form-control"></textarea>
+              </div>
+              <div class="field span-2">
+                <label>Notas adicionales para el operario</label>
+                <textarea th:field="*{notasAdicionales}"
+                          placeholder="Instrucciones importantes que el operario debe tener en cuenta..."
+                          class="form-control" style="min-height:70px"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex" style="gap:10px">
+          <button type="submit" class="btn btn-primary btn-lg">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Guardar información técnica
+          </button>
+          <a th:href="@{/tecnica}" class="btn btn-secondary btn-lg">Cancelar</a>
+        </div>
+
+      </form>
 
     </div>
   </div>
 </div>
 <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<script>
+(function() {
+  var swatches = document.querySelectorAll('.color-swatch');
+  var colorInput = document.getElementById('colorInput');
+  var preview = document.getElementById('colorPreview');
+  var previewSwatch = document.getElementById('previewSwatch');
+  var previewLabel = document.getElementById('previewLabel');
+  var currentColor = colorInput ? colorInput.value : '';
+
+  function selectSwatch(sw) {
+    swatches.forEach(function(s) { s.classList.remove('selected'); });
+    sw.classList.add('selected');
+    var colorName = sw.getAttribute('data-color');
+    var colorBg = sw.style.background || sw.style.backgroundColor;
+    if (colorInput) colorInput.value = colorName;
+    if (previewSwatch) previewSwatch.style.background = colorBg;
+    if (previewLabel) previewLabel.textContent = colorName;
+    if (preview) preview.style.display = 'flex';
+  }
+
+  swatches.forEach(function(sw) {
+    if (currentColor && sw.getAttribute('data-color') === currentColor) {
+      sw.classList.add('selected');
+      if (previewSwatch) previewSwatch.style.background = sw.style.background;
+    }
+    sw.addEventListener('click', function() { selectSwatch(this); });
+  });
+})();
+</script>
 </body>
 </html>

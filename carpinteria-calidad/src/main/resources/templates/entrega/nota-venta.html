@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="'Nota de Venta ' + ${pago.numeroRecibo} + ' — Carpintería'">Nota de Venta</title>
+  <link rel="stylesheet" th:href="@{/css/estilo.css}">
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white !important; }
+      .nv-wrap { box-shadow: none !important; border: none !important; }
+    }
+    .nv-wrap {
+      max-width: 620px; margin: 0 auto; background: var(--card);
+      border: 1px solid var(--border); border-radius: var(--r);
+      overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,.06);
+    }
+    .nv-header {
+      background: linear-gradient(135deg, #14532d, #052e16);
+      color: white; padding: 28px 32px; text-align: center;
+    }
+    .nv-logo { font-size: 1.3rem; font-weight: 800; color: #86efac;
+      font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: 1px; }
+    .nv-sub { font-size: .78rem; color: rgba(255,255,255,.55); margin-top: 4px; }
+    .nv-num {
+      display: inline-block; margin-top: 16px; background: rgba(22,163,74,.25);
+      border: 1px solid rgba(22,163,74,.4); color: #86efac;
+      padding: 8px 24px; border-radius: 99px; font-size: 1rem;
+      font-weight: 700; letter-spacing: 1px;
+    }
+    .nv-body { padding: 28px 32px; }
+    .nv-section { margin-bottom: 20px; }
+    .nv-section-title {
+      font-size: .68rem; font-weight: 700; color: var(--text-3); text-transform: uppercase;
+      letter-spacing: .8px; border-bottom: 1px solid var(--border); padding-bottom: 6px;
+      margin-bottom: 12px;
+    }
+    .nv-row { display: flex; justify-content: space-between; align-items: baseline;
+      padding: 5px 0; font-size: .85rem; }
+    .nv-row-label { color: var(--text-2); }
+    .nv-row-value { font-weight: 600; color: var(--text-1); text-align: right; max-width: 60%; }
+    .nv-payments-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px;
+    }
+    .nv-payment-box {
+      border: 1px solid var(--border); border-radius: var(--r-sm); padding: 12px 14px;
+      background: var(--bg2);
+    }
+    .nv-payment-box-label { font-size: .68rem; color: var(--text-3); text-transform: uppercase;
+      letter-spacing: .5px; margin-bottom: 6px; }
+    .nv-payment-box-amount { font-size: 1.05rem; font-weight: 700; color: var(--text-1); }
+    .nv-payment-box-method { font-size: .72rem; color: var(--text-3); margin-top: 2px; }
+    .nv-total-row {
+      display: flex; justify-content: space-between; align-items: center;
+      background: #f0fdf4; border: 1px solid #bbf7d0;
+      border-radius: var(--r-sm); padding: 14px 16px; margin-top: 8px;
+    }
+    .nv-total-label { font-size: .85rem; font-weight: 700; color: #166534; }
+    .nv-total-value { font-size: 1.3rem; font-weight: 800; color: #166534; }
+    .nv-footer {
+      background: var(--bg2); border-top: 1px solid var(--border);
+      padding: 16px 32px; display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 10px;
+    }
+    .nv-firma { font-size: .72rem; color: var(--text-3); }
+    .nv-firma strong { color: var(--text-2); display: block; margin-top: 20px;
+      border-top: 1px solid var(--border-d); padding-top: 6px; min-width: 160px; }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <div th:replace="~{layout/nav :: nav('entrega')}" class="no-print"></div>
+  <div class="main-wrapper">
+    <div class="content-area">
+
+      <div class="no-print" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <nav class="breadcrumb" style="margin:0">
+          <a th:href="@{/pagos-final}">← Pagos Finales</a>
+        </nav>
+        <button onclick="window.print()" class="btn btn-primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Imprimir nota de venta
+        </button>
+      </div>
+
+      <div class="nv-wrap">
+        <!-- Header -->
+        <div class="nv-header">
+          <div class="nv-logo">CARPINTERÍA</div>
+          <div class="nv-sub">Taller de muebles y carpintería fina — Nota de Venta</div>
+          <div class="nv-num" th:text="${pago.numeroRecibo}">NV-2026-0001</div>
+        </div>
+
+        <!-- Body -->
+        <div class="nv-body">
+
+          <!-- Cliente -->
+          <div class="nv-section">
+            <div class="nv-section-title">Datos del cliente</div>
+            <div class="nv-row">
+              <span class="nv-row-label">Nombre</span>
+              <span class="nv-row-value" th:text="${pago.pedido.cotizacion.solicitud.nombreCliente}"></span>
+            </div>
+            <div class="nv-row">
+              <span class="nv-row-label">Teléfono</span>
+              <span class="nv-row-value" th:text="${pago.pedido.cotizacion.solicitud.telefono}"></span>
+            </div>
+          </div>
+
+          <!-- Pedido -->
+          <div class="nv-section">
+            <div class="nv-section-title">Detalle del pedido</div>
+            <div class="nv-row">
+              <span class="nv-row-label">N° Pedido</span>
+              <span class="nv-row-value" th:text="'#' + ${pago.pedido.id}"></span>
+            </div>
+            <div class="nv-row">
+              <span class="nv-row-label">Productos</span>
+              <span class="nv-row-value" th:text="${pago.pedido.cotizacion.solicitud.resumenProductos}"></span>
+            </div>
+            <div class="nv-row">
+              <span class="nv-row-label">Fecha de entrega</span>
+              <span class="nv-row-value" th:text="${#temporals.format(pago.fechaPago,'dd/MM/yyyy')}"></span>
+            </div>
+          </div>
+
+          <!-- Resumen de pagos -->
+          <div class="nv-section">
+            <div class="nv-section-title">Resumen de pagos</div>
+            <div class="nv-payments-grid">
+              <div class="nv-payment-box">
+                <div class="nv-payment-box-label">Anticipo (50%)</div>
+                <div class="nv-payment-box-amount" th:text="'Bs. ' + ${#numbers.formatDecimal(pago.montoRequerido,1,2)}"></div>
+                <div class="nv-payment-box-method">Pago inicial confirmado</div>
+              </div>
+              <div class="nv-payment-box">
+                <div class="nv-payment-box-label">Saldo final (50%)</div>
+                <div class="nv-payment-box-amount" th:text="'Bs. ' + ${#numbers.formatDecimal(pago.montoPagado,1,2)}"></div>
+                <div class="nv-payment-box-method" th:text="${pago.metodoPago}"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total -->
+          <div class="nv-total-row">
+            <span class="nv-total-label">TOTAL CANCELADO</span>
+            <span class="nv-total-value"
+                  th:text="'Bs. ' + ${#numbers.formatDecimal(pago.pedido.cotizacion.precioTotal,1,2)}"></span>
+          </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="nv-footer">
+          <div class="nv-firma">
+            Emitido el <span th:text="${#temporals.format(pago.fechaPago,'dd/MM/yyyy')}"></span>
+            <strong>Firma y sello del taller</strong>
+          </div>
+          <div class="nv-firma" style="text-align:right">
+            Recibí conforme — saldo cancelado
+            <strong>Firma del cliente</strong>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

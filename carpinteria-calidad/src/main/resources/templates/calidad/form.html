@@ -28,6 +28,7 @@
       <div class="page-header">
         <div class="page-header-info">
           <h2 th:text="${titulo}">Inspección de Calidad</h2>
+          <p class="page-subtitle">Aprobado → pasa a embalaje · Retrabajo / Rechazado → vuelve a producción</p>
         </div>
         <div class="page-header-actions">
           <a th:href="@{/calidad}" class="btn btn-secondary">← Volver</a>
@@ -56,9 +57,14 @@
               </div>
               <div class="field">
                 <label>Inspector <span class="req">*</span></label>
-                <input type="text" th:field="*{inspector}"
-                       th:classappend="${#fields.hasErrors('inspector')} ? 'input-error'"
-                       placeholder="Nombre del inspector" class="form-control">
+                <select th:field="*{inspector}"
+                        th:classappend="${#fields.hasErrors('inspector')} ? 'input-error'"
+                        class="form-control">
+                  <option value="">— Seleccionar inspector —</option>
+                  <option th:each="op : ${operarios}"
+                          th:value="${op.nombre}"
+                          th:text="${op.nombre + ' — ' + op.cargo}"></option>
+                </select>
                 <span class="field-error" th:if="${#fields.hasErrors('inspector')}"
                       th:errors="*{inspector}"></span>
               </div>

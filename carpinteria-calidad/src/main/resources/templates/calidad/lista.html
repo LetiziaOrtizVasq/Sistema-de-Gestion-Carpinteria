@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inspecciones de Calidad - Carpintería</title>
+  <title>Inspecciones de Calidad — Carpintería</title>
   <link rel="stylesheet" th:href="@{/css/estilo.css}">
 </head>
 <body>
@@ -12,7 +12,7 @@
   <div class="main-wrapper">
     <div class="topbar-mobile">
       <button class="hamburger" onclick="toggleSidebar()">☰</button>
-      <span class="mobile-brand">Carpintería</span>
+      <span class="mobile-brand">Calidad</span>
     </div>
     <div class="content-area">
 
@@ -27,27 +27,43 @@
       <div class="page-header">
         <div class="page-header-info">
           <h2>Inspecciones de Calidad</h2>
+          <p class="page-subtitle">Verificación del producto terminado antes de la entrega al cliente</p>
         </div>
         <div class="page-header-actions">
-          <a th:href="@{/calidad/nueva}" class="btn btn-primary">+ Nueva Inspección</a>
+          <a th:href="@{/calidad/nueva}" class="btn btn-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nueva inspección
+          </a>
         </div>
       </div>
 
       <div class="table-card">
         <div class="table-toolbar">
-          <span class="count" th:text="${inspecciones.size()} + ' inspección(es)'"></span>
+          <span class="count" th:text="${inspecciones.size()} + ' inspección(es)'">0</span>
         </div>
+
         <div th:if="${inspecciones.isEmpty()}" class="empty-state">
-          <div class="es-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
-          <div class="es-title">Sin inspecciones</div>
-          <div class="es-text">Registrá las inspecciones de calidad antes de entregar los pedidos.</div>
-          <a th:href="@{/calidad/nueva}" class="btn btn-primary">+ Nueva Inspección</a>
+          <div class="es-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <polyline points="9 12 11 14 15 10"/>
+            </svg>
+          </div>
+          <div class="es-title">Sin inspecciones registradas</div>
+          <div class="es-text">Registra las inspecciones de calidad de los pedidos terminados antes de la entrega.</div>
+          <a th:href="@{/calidad/nueva}" class="btn btn-primary">+ Nueva inspección</a>
         </div>
+
         <table th:unless="${inspecciones.isEmpty()}">
           <thead>
             <tr>
-              <th>#</th><th>Pedido</th><th>Inspector</th><th>Resultado</th>
-              <th>Observaciones</th><th>Acción Retrabajo</th><th>Acciones</th>
+              <th>#</th>
+              <th>Pedido / Cliente</th>
+              <th>Inspector</th>
+              <th>Resultado</th>
+              <th>Observaciones</th>
+              <th>Acción retrabajo</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -61,11 +77,12 @@
                                      (${i.resultado == 'OBSERVADO'} ? 'badge-advertencia' : 'badge-peligro')"
                       th:text="${i.resultado}"></span>
               </td>
-              <td th:text="${i.observaciones != null ? i.observaciones : '—'}"></td>
-              <td th:text="${i.accionRetrabajo != null ? i.accionRetrabajo : '—'}"></td>
+              <td class="td-muted" th:text="${i.observaciones != null and i.observaciones != '' ? i.observaciones : '—'}"
+                  style="max-width:200px;white-space:normal"></td>
+              <td class="td-muted" th:text="${i.accionRetrabajo != null and i.accionRetrabajo != '' ? i.accionRetrabajo : '—'}"
+                  style="max-width:180px;white-space:normal"></td>
               <td class="td-actions">
-                <form th:action="@{/calidad/{id}(id=${i.id})}" method="post"
-                      style="display:inline"
+                <form th:action="@{/calidad/{id}(id=${i.id})}" method="post" style="display:inline"
                       onsubmit="return confirm('¿Eliminar esta inspección?')">
                   <input type="hidden" name="_method" value="DELETE">
                   <button type="submit" class="btn btn-danger btn-xs">Eliminar</button>
