@@ -1,0 +1,46 @@
+version: '3.9'
+
+services:
+
+  # ── Base de datos MySQL ────────────────────────────────────────────────────
+  db:
+    image: mysql:8.4
+    container_name: carpinteria-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: Carpinteria2025!
+      MYSQL_DATABASE: carpinteriadb
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - carpinteria-db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pCarpinteria2025!"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ── Aplicación Spring Boot ─────────────────────────────────────────────────
+  app:
+    build: .
+    container_name: carpinteria-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/carpinteriadb?useSSL=false&serverTimezone=America/La_Paz&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: Carpinteria2025!
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+    volumes:
+      - carpinteria-uploads:/root/carpinteria-uploads
+
+volumes:
+  carpinteria-db-data:
+  carpinteria-uploads:
