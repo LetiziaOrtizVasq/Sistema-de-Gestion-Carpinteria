@@ -16,6 +16,7 @@ services:
       - "3306:3306"
     volumes:
       - carpinteria-db-data:/var/lib/mysql
+      - ./docker-init:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pCarpinteria2025!"]
       interval: 10s
